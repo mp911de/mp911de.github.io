@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Mapping :: Spring Data Relational</title>
+    <link rel="prev" href="auditing.html">
+    <link rel="next" href="custom-conversions.html">
+    <meta name="generator" content="Antora 3.2.0-alpha.2">
+    <script>
+!function (theme, navWidth) {
+  if (theme === 'dark') document.documentElement.classList.add('dark-theme')
+  if (navWidth) document.documentElement.style.setProperty('--nav-width', `${navWidth}px`)
+}(localStorage && localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)') && 'dark'),
+  localStorage && localStorage.getItem('nav-width'))
+    </script>
+    <link rel="stylesheet" href="../_/css/site.css">
+    <link rel="stylesheet" href="../_/css/vendor/search.css">
+    <link rel="stylesheet" href="../_/css/vendor/asciidoctor-tabs.css">
+
+    <meta name="version" content="3.2.0">
+    <meta name="component" content="data-relational">
+    <link rel="icon" href="../_/img/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://spring.io">
+        <img
+          id="springlogo"
+          class="block"
+          src="../_/img/spring-logo.svg"
+          alt="Spring"
+        />
+      </a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Why Spring</a>
+          <div class="navbar-dropdown">
+            <a
+              class="navbar-item"
+              href="https://spring.io/why-spring"
+            >Overview</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/microservices"
+            >Microservices</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/reactive"
+            >Reactive</a>
+            <a class="navbar-item" href="https://spring.io/event-driven">Event
+              Driven</a>
+            <a class="navbar-item" href="https://spring.io/cloud">Cloud</a>
+            <a class="navbar-item" href="https://spring.io/web-applications">Web
+              Applications</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/serverless"
+            >Serverless</a>
+            <a class="navbar-item" href="https://spring.io/batch">Batch</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Learn</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://spring.io/learn">Overview</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/quickstart"
+            >Quickstart</a>
+            <a class="navbar-item" href="https://spring.io/guides">Guides</a>
+            <a class="navbar-item" href="https://spring.io/blog">Blog</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Projects</a>
+          <div class="navbar-dropdown" style="min-width: 280px">
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects"
+            >Overview</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-boot"
+            >Spring Boot</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-framework"
+            >Spring Framework</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-cloud"
+            >Spring Cloud</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-cloud-dataflow"
+            >Spring Cloud Data Flow</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-data"
+            >Spring Data</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-integration"
+            >Spring Integration</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-batch"
+            >Spring Batch</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-security"
+            >Spring Security</a>
+            <a
+              class="navbar-item navbar-item-special"
+              href="https://spring.io/projects"
+            >View all projects</a>
+            <a class="navbar-item" href="https://spring.io/tools">Spring Tools 4</a>
+            <a
+              class="navbar-item navbar-item-special-2"
+              href="https://start.spring.io"
+            >Spring Initializr
+              <svg
+                class="external-link-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+              ><polyline
+                  points="15 10.94 15 15 1 15 1 1 5.06 1"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-miterlimit="10"
+                  stroke-width="2"
+                ></polyline><polyline
+                  points="8.93 1 15 1 15 7.07"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-miterlimit="10"
+                  stroke-width="2"
+                ></polyline><line
+                  x1="15"
+                  y1="1"
+                  x2="8"
+                  y2="8"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-miterlimit="10"
+                  stroke-width="2"
+                ></line></svg></a>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Academy</a>
+          <div class="navbar-dropdown">
+            <a
+              class="navbar-item"
+              href="https://spring.academy/courses"
+            >Courses</a>
+            <a
+              class="navbar-item"
+              href="https://spring.academy/learning-path"
+            >Get Certified</a>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Support</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://spring.io/support">Overview</a>
+            <a class="navbar-item" href="https://spring.io/security">Security
+              Advisories</a>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable is-community">
+          <a class="navbar-link" href="#">Community</a>
+          <div class="navbar-dropdown">
+            <a
+              class="navbar-item"
+              href="https://spring.io/community"
+            >Overview</a>
+            <a class="navbar-item" href="https://spring.io/events">Events</a>
+            <a class="navbar-item" href="https://spring.io/team">Team</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <label class="theme-toggler">
+      <input
+        type="checkbox"
+        type="checkbox"
+        id="switch-theme-checkbox"
+        name="switch-theme-checkbox"
+      />
+      <span class="icon"><svg
+          aria-hidden="true"
+          focusable="false"
+          data-prefix="fas"
+          data-icon="moon"
+          class="svg-inline--fa fa-moon moon"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 384 512"
+        ><path
+            fill="currentColor"
+            d="M223.5 32C100 32 0 132.3 0 256S100 480 223.5 480c60.6 0 115.5-24.2 155.8-63.4c5-4.9 6.3-12.5 3.1-18.7s-10.1-9.7-17-8.5c-9.8 1.7-19.8 2.6-30.1 2.6c-96.9 0-175.5-78.8-175.5-176c0-65.8 36-123.1 89.3-153.3c6.1-3.5 9.2-10.5 7.7-17.3s-7.3-11.9-14.3-12.5c-6.3-.5-12.6-.8-19-.8z"
+          ></path>
+        </svg>
+        <svg
+          aria-hidden="true"
+          focusable="false"
+          data-prefix="fas"
+          data-icon="sun"
+          class="svg-inline--fa fa-sun sun"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 512 512"
+        ><path
+            fill="currentColor"
+            d="M361.5 1.2c5 2.1 8.6 6.6 9.6 11.9L391 121l107.9 19.8c5.3 1 9.8 4.6 11.9 9.6s1.5 10.7-1.6 15.2L446.9 256l62.3 90.3c3.1 4.5 3.7 10.2 1.6 15.2s-6.6 8.6-11.9 9.6L391 391 371.1 498.9c-1 5.3-4.6 9.8-9.6 11.9s-10.7 1.5-15.2-1.6L256 446.9l-90.3 62.3c-4.5 3.1-10.2 3.7-15.2 1.6s-8.6-6.6-9.6-11.9L121 391 13.1 371.1c-5.3-1-9.8-4.6-11.9-9.6s-1.5-10.7 1.6-15.2L65.1 256 2.8 165.7c-3.1-4.5-3.7-10.2-1.6-15.2s6.6-8.6 11.9-9.6L121 121 140.9 13.1c1-5.3 4.6-9.8 9.6-11.9s10.7-1.5 15.2 1.6L256 65.1 346.3 2.8c4.5-3.1 10.2-3.7 15.2-1.6zM160 256a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zm224 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0z"
+          ></path>
+        </svg></span>
+      <span class="text">light</span>
+    </label>
+  </nav>
+</header>
+<script>
+!function (theme) {
+  if (theme === 'dark') {
+    document.getElementById('switch-theme-checkbox').parentElement.classList.add('active')
+  }
+}(localStorage && localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)') && 'dark'))
+</script><div class="body">
+<div class="nav-container" data-component="data-relational" data-version="3.2.0">
+  <aside class="nav">
+    <div class="panels">
+      <div class="nav-panel-menu is-active" data-panel="menu">
+        <nav class="nav-menu">
+<div class="context">
+  <span class="title">Spring Data Relational</span>
+  <span class="version">3.2.0-SNAPSHOT</span>
+  <button class="browse-version" id="browse-version">
+    <svg
+      height="24px"
+      id="Layer_1"
+      style="enable-background:new 0 0 512 512;"
+      version="1.1"
+      viewBox="0 0 512 512"
+      width="24px"
+      xml:space="preserve"
+    ><g><path
+          d="M256,224c-17.7,0-32,14.3-32,32s14.3,32,32,32c17.7,0,32-14.3,32-32S273.7,224,256,224L256,224z"
+        ></path><path
+          d="M128.4,224c-17.7,0-32,14.3-32,32s14.3,32,32,32c17.7,0,32-14.3,32-32S146,224,128.4,224L128.4,224z"
+        ></path><path
+          d="M384,224c-17.7,0-32,14.3-32,32s14.3,32,32,32s32-14.3,32-32S401.7,224,384,224L384,224z"
+        ></path></g></svg>
+  </button>
+</div><ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../index.html">Overview</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../commons/upgrade.html">Upgrading Spring Data</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../repositories/introduction.html">Introduction</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/core-concepts.html">Core concepts</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/definition.html">Defining Repository Interfaces</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/create-instances.html">Creating Repository Instances</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/query-methods-details.html">Defining Query Methods</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/projections.html">Projections</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../object-mapping.html">Object Mapping Fundamentals</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../commons/custom-conversions.html">Custom Conversions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/custom-implementations.html">Custom Implementations for Spring Data Repositories</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/core-domain-events.html">Publishing Events from Aggregate Roots</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../commons/entity-callbacks.html">Entity Callbacks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/core-extensions.html">Spring Data Extensions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/null-handling.html">Null Handling of Repository Methods</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/query-keywords-reference.html">Repository query keywords</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repositories/query-return-types-reference.html">Repository query return types</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../jdbc.html">JDBC</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="why.html">Why Spring Data JDBC?</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="domain-driven-design.html">Domain Driven Design and Relational Databases</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="getting-started.html">Getting Started</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="examples-repo.html">Examples Repository</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="configuration.html">Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="entity-persistence.html">Persisting Entities</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="loading-aggregates.html">Loading Aggregates</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="query-methods.html">Query Methods</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="mybatis.html">MyBatis Integration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="events.html">Lifecycle Events</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="logging.html">Logging</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="transactions.html">Transactionality</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="auditing.html">JDBC Auditing</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="mapping.html">Mapping</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="custom-conversions.html">Custom Conversions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="locking.html">JDBC Locking</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../query-by-example.html">Query by Example</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="schema-support.html">Schema Creation</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../r2dbc.html">R2DBC</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/getting-started.html">Getting Started</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/core.html">R2DBC Core Support</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/template.html">Data Access API</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/repositories.html">R2DBC Repositories</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/query-methods.html">Query Methods</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/entity-callbacks.html">EntityCallbacks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/auditing.html">Auditing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/mapping.html">Mapping</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/query-by-example.html">Query By Example</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/kotlin.html">Kotlin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../r2dbc/migration-guide.html">Migration Guide</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../kotlin.html">Kotlin Support</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../kotlin/requirements.html">Requirements</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../kotlin/null-safety.html">Null Safety</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../kotlin/object-mapping.html">Object Mapping</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../kotlin/extensions.html">Extensions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../kotlin/coroutines.html">Coroutines</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="https://github.com/spring-projects/spring-data-commons/wiki">Wiki</a>
+  </li>
+</ul>
+  </li>
+</ul>
+          <div class="toggle-sm">
+            <button id="nav-toggle-2" class="nav-toggle"></button>
+          </div>
+        </nav>
+      </div>
+      <div class="nav-collapse">
+        <button id="nav-collapse-toggle"><span></span></button>        
+      </div>
+    </div>
+    <div class="nav-resize"></div>
+  </aside>
+</div>
+<script>
+!function (sidebar) {
+  if (sidebar) {
+    document.body.classList.add('nav-sm')
+  }
+}(localStorage && localStorage.getItem('sidebar') === 'close')
+</script><main class="article">
+<div class="toolbar" role="navigation">
+  <button id="nav-toggle-1" class="nav-toggle"></button>
+</div>
+  <div class="content">
+<aside class="sidebar">
+  <div class="content">
+    <div
+      class="toc"
+      data-title="Mapping"
+      data-levels="2"
+    >
+      <div class="toc-menu"></div>
+    </div>
+    <div class="sidebar-links">
+        <a href="file:///Users/mpaluch/git/data/spring-data-jdbc/src/main/antora/modules/ROOT/pages/jdbc/mapping.adoc">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+          ><path
+              d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"
+            ></path></svg>
+          Edit this Page
+        </a>
+        <a href="https://github.com/spring-projects/spring-data-jdbc" title="Github">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="512px"
+            id="Layer_1"
+            version="1.1"
+            viewBox="0 0 512 512"
+            width="512px"
+          ><style type="text/css"><![CDATA[
+              .st0{fill-rule:evenodd;clip-rule:evenodd;} ]]></style><g><path
+                class="st0"
+                d="M256,32C132.3,32,32,134.8,32,261.7c0,101.5,64.2,187.5,153.2,217.9c11.2,2.1,15.3-5,15.3-11.1   c0-5.5-0.2-19.9-0.3-39.1c-62.3,13.9-75.5-30.8-75.5-30.8c-10.2-26.5-24.9-33.6-24.9-33.6c-20.3-14.3,1.5-14,1.5-14   c22.5,1.6,34.3,23.7,34.3,23.7c20,35.1,52.4,25,65.2,19.1c2-14.8,7.8-25,14.2-30.7c-49.7-5.8-102-25.5-102-113.5   c0-25.1,8.7-45.6,23-61.6c-2.3-5.8-10-29.2,2.2-60.8c0,0,18.8-6.2,61.6,23.5c17.9-5.1,37-7.6,56.1-7.7c19,0.1,38.2,2.6,56.1,7.7   c42.8-29.7,61.5-23.5,61.5-23.5c12.2,31.6,4.5,55,2.2,60.8c14.3,16.1,23,36.6,23,61.6c0,88.2-52.4,107.6-102.3,113.3   c8,7.1,15.2,21.1,15.2,42.5c0,30.7-0.3,55.5-0.3,63c0,6.1,4,13.3,15.4,11C415.9,449.1,480,363.1,480,261.7   C480,134.8,379.7,32,256,32z"
+              ></path></g></svg>
+          Github Project
+        </a>
+    </div>
+  </div>
+</aside><div class="doc">
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Spring Data Relational</a></li>
+    <li><a href="../jdbc.html">JDBC</a></li>
+    <li><a href="mapping.html">Mapping</a></li>
+  </ul>
+</nav>
+<article>
+<h1 id="page-title" class="page">Mapping</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Rich mapping support is provided by the <code>BasicJdbcConverter</code>. <code>BasicJdbcConverter</code> has a rich metadata model that allows mapping domain objects to a data row.
+The mapping metadata model is populated by using annotations on your domain objects.
+However, the infrastructure is not limited to using annotations as the only source of metadata information.
+The <code>BasicJdbcConverter</code> also lets you map objects to rows without providing any additional metadata, by following a set of conventions.</p>
+</div>
+<div class="paragraph">
+<p>This section describes the features of the <code>BasicJdbcConverter</code>, including how to use conventions for mapping objects to rows and how to override those conventions with annotation-based mapping metadata.</p>
+</div>
+<div class="paragraph">
+<p>Read on the basics about <a href="../object-mapping.html" class="xref page">Object Mapping Fundamentals</a> before continuing with this chapter.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="mapping.conventions"><a class="anchor" href="#mapping.conventions"></a>Convention-based Mapping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>BasicJdbcConverter</code> has a few conventions for mapping objects to rows when no additional mapping metadata is provided.
+The conventions are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The short Java class name is mapped to the table name in the following manner.
+The <code>com.bigbank.SavingsAccount</code> class maps to the <code>SAVINGS_ACCOUNT</code> table name.
+The same name mapping is applied for mapping fields to column names.
+For example, the <code>firstName</code> field maps to the <code>FIRST_NAME</code> column.
+You can control this mapping by providing a custom <code>NamingStrategy</code>.
+Table and column names that are derived from property or class names are used in SQL statements without quotes by default.
+You can control this behavior by setting <code>JdbcMappingContext.setForceQuote(true)</code>.</p>
+</li>
+<li>
+<p>Nested objects are not supported.</p>
+</li>
+<li>
+<p>The converter uses any Spring Converters registered with it to override the default mapping of object properties to row columns and values.</p>
+</li>
+<li>
+<p>The fields of an object are used to convert to and from columns in the row.
+Public <code>JavaBean</code> properties are not used.</p>
+</li>
+<li>
+<p>If you have a single non-zero-argument constructor whose constructor argument names match top-level column names of the row, that constructor is used.
+Otherwise, the zero-argument constructor is used.
+If there is more than one non-zero-argument constructor, an exception is thrown.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jdbc.entity-persistence.types"><a class="anchor" href="#jdbc.entity-persistence.types"></a>Supported Types in Your Entity</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The properties of the following types are currently supported:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>All primitive types and their boxed types (<code>int</code>, <code>float</code>, <code>Integer</code>, <code>Float</code>, and so on)</p>
+</li>
+<li>
+<p>Enums get mapped to their name.</p>
+</li>
+<li>
+<p><code>String</code></p>
+</li>
+<li>
+<p><code>java.util.Date</code>, <code>java.time.LocalDate</code>, <code>java.time.LocalDateTime</code>, and <code>java.time.LocalTime</code></p>
+</li>
+<li>
+<p>Arrays and Collections of the types mentioned above can be mapped to columns of array type if your database supports that.</p>
+</li>
+<li>
+<p>Anything your database driver accepts.</p>
+</li>
+<li>
+<p>References to other entities.
+They are considered a one-to-one relationship, or an embedded type.
+It is optional for one-to-one relationship entities to have an <code>id</code> attribute.
+The table of the referenced entity is expected to have an additional column with a name based on the referencing entity see <a href="entity-persistence.html#jdbc.entity-persistence.types.backrefs" class="xref page">Back References</a>.
+Embedded entities do not need an <code>id</code>.
+If one is present it gets ignored.</p>
+</li>
+<li>
+<p><code>Set&lt;some entity&gt;</code> is considered a one-to-many relationship.
+The table of the referenced entity is expected to have an additional column with a name based on the referencing entity see <a href="entity-persistence.html#jdbc.entity-persistence.types.backrefs" class="xref page">Back References</a>.</p>
+</li>
+<li>
+<p><code>Map&lt;simple type, some entity&gt;</code> is considered a qualified one-to-many relationship.
+The table of the referenced entity is expected to have two additional columns: One named based on the referencing entity for the foreign key (see <a href="entity-persistence.html#jdbc.entity-persistence.types.backrefs" class="xref page">Back References</a>) and one with the same name and an additional <code>_key</code> suffix for the map key.
+You can change this behavior by implementing <code>NamingStrategy.getReverseColumnName(PersistentPropertyPathExtension path)</code> and <code>NamingStrategy.getKeyColumn(RelationalPersistentProperty property)</code>, respectively.
+Alternatively you may annotate the attribute with <code>@MappedCollection(idColumn="your_column_name", keyColumn="your_key_column_name")</code></p>
+</li>
+<li>
+<p><code>List&lt;some entity&gt;</code> is mapped as a  <code>Map&lt;Integer, some entity&gt;</code>.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="jdbc.entity-persistence.types.referenced-entities"><a class="anchor" href="#jdbc.entity-persistence.types.referenced-entities"></a>Referenced Entities</h3>
+<div class="paragraph">
+<p>The handling of referenced entities is limited.
+This is based on the idea of aggregate roots as described above.
+If you reference another entity, that entity is, by definition, part of your aggregate.
+So, if you remove the reference, the previously referenced entity gets deleted.
+This also means references are 1-1 or 1-n, but not n-1 or n-m.</p>
+</div>
+<div class="paragraph">
+<p>If you have n-1 or n-m references, you are, by definition, dealing with two separate aggregates.
+References between those may be encoded as simple <code>id</code> values, which map properly with Spring Data JDBC.
+A better way to encode these, is to make them instances of <code>AggregateReference</code>.
+An <code>AggregateReference</code> is a wrapper around an id value which marks that value as a reference to a different aggregate.
+Also, the type of that aggregate is encoded in a type parameter.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="jdbc.entity-persistence.types.backrefs"><a class="anchor" href="#jdbc.entity-persistence.types.backrefs"></a>Back References</h3>
+<div class="paragraph">
+<p>All references in an aggregate result in a foreign key relationship in the opposite direction in the database.
+By default, the name of the foreign key column is the table name of the referencing entity.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively you may choose to have them named by the entity name of the referencing entity ignoreing <code>@Table</code> annotations.
+You activate this behaviour by calling <code>setForeignKeyNaming(ForeignKeyNaming.IGNORE_RENAMING)</code> on the <code>RelationalMappingContext</code>.</p>
+</div>
+<div class="paragraph">
+<p>For <code>List</code> and <code>Map</code> references an additional column is required for holding the list index or map key. It is based on the foreign key column with an additional <code>_KEY</code> suffix.</p>
+</div>
+<div class="paragraph">
+<p>If you want a completely different way of naming these back references you may implement <code>NamingStrategy.getReverseColumnName(PersistentPropertyPathExtension path)</code> in a way that fits your needs.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 1. Declaring and setting an <code>AggregateReference</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">class Person {
+	@Id long id;
+	AggregateReference&lt;Person, Long&gt; bestFriend;
+}
+
+// ...
+
+Person p1, p2 = // some initialization
+
+p1.bestFriend = AggregateReference.to(p2.id);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Types for which you registered suitable <a id="jdbc.custom-converters"></a>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jdbc.entity-persistence.naming-strategy"><a class="anchor" href="#jdbc.entity-persistence.naming-strategy"></a><code>NamingStrategy</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When you use the standard implementations of <code>CrudRepository</code> that Spring Data JDBC provides, they expect a certain table structure.
+You can tweak that by providing a <a href="https://docs.spring.io/spring-data/jdbc/docs/3.2.0-SNAPSHOT/api/org/springframework/data/relational/core/mapping/NamingStrategy.html"><code>NamingStrategy</code></a> in your application context.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jdbc.entity-persistence.custom-table-name"><a class="anchor" href="#jdbc.entity-persistence.custom-table-name"></a><code>Custom table names</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When the NamingStrategy does not matching on your database table names, you can customize the names with the <a href="https://docs.spring.io/spring-data/jdbc/docs/3.2.0-SNAPSHOT/api/org/springframework/data/relational/core/mapping/Table.html"><code>@Table</code></a> annotation.
+The element <code>value</code> of this annotation provides the custom table name.
+The following example maps the <code>MyEntity</code> class to the <code>CUSTOM_TABLE_NAME</code> table in the database:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Table("CUSTOM_TABLE_NAME")
+class MyEntity {
+    @Id
+    Integer id;
+
+    String name;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jdbc.entity-persistence.custom-column-name"><a class="anchor" href="#jdbc.entity-persistence.custom-column-name"></a><code>Custom column names</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When the NamingStrategy does not matching on your database column names, you can customize the names with the <a href="https://docs.spring.io/spring-data/jdbc/docs/3.2.0-SNAPSHOT/api/org/springframework/data/relational/core/mapping/Column.html"><code>@Column</code></a> annotation.
+The element <code>value</code> of this annotation provides the custom column name.
+The following example maps the <code>name</code> property of the <code>MyEntity</code> class to the <code>CUSTOM_COLUMN_NAME</code> column in the database:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">class MyEntity {
+    @Id
+    Integer id;
+
+    @Column("CUSTOM_COLUMN_NAME")
+    String name;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The <a href="https://docs.spring.io/spring-data/jdbc/docs/3.2.0-SNAPSHOT/api/org/springframework/data/relational/core/mapping/MappedCollection.html"><code>@MappedCollection</code></a>
+annotation can be used on a reference type (one-to-one relationship) or on Sets, Lists, and Maps (one-to-many relationship).
+<code>idColumn</code> element of the annotation provides a custom name for the foreign key column referencing the id column in the other table.
+In the following example the corresponding table for the <code>MySubEntity</code> class has a <code>NAME</code> column, and the <code>CUSTOM_MY_ENTITY_ID_COLUMN_NAME</code> column of the <code>MyEntity</code> id for relationship reasons:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">class MyEntity {
+    @Id
+    Integer id;
+
+    @MappedCollection(idColumn = "CUSTOM_MY_ENTITY_ID_COLUMN_NAME")
+    Set&lt;MySubEntity&gt; subEntities;
+}
+
+class MySubEntity {
+    String name;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>When using <code>List</code> and <code>Map</code> you must have an additional column for the position of a dataset in the <code>List</code> or the key value of the entity in the <code>Map</code>.
+This additional column name may be customized with the <code>keyColumn</code> Element of the <a href="https://docs.spring.io/spring-data/jdbc/docs/3.2.0-SNAPSHOT/api/org/springframework/data/relational/core/mapping/MappedCollection.html"><code>@MappedCollection</code></a> annotation:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">class MyEntity {
+    @Id
+    Integer id;
+
+    @MappedCollection(idColumn = "CUSTOM_COLUMN_NAME", keyColumn = "CUSTOM_KEY_COLUMN_NAME")
+    List&lt;MySubEntity&gt; name;
+}
+
+class MySubEntity {
+    String name;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jdbc.entity-persistence.embedded-entities"><a class="anchor" href="#jdbc.entity-persistence.embedded-entities"></a>Embedded entities</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Embedded entities are used to have value objects in your java data model, even if there is only one table in your database.
+In the following example you see, that <code>MyEntity</code> is mapped with the <code>@Embedded</code> annotation.
+The consequence of this is, that in the database a table <code>my_entity</code> with the two columns <code>id</code> and <code>name</code> (from the <code>EmbeddedEntity</code> class) is expected.</p>
+</div>
+<div class="paragraph">
+<p>However, if the <code>name</code> column is actually <code>null</code> within the result set, the entire property <code>embeddedEntity</code> will be set to null according to the <code>onEmpty</code> of <code>@Embedded</code>, which <code>null</code>s objects when all nested properties are <code>null</code>.<br>
+Opposite to this behavior <code>USE_EMPTY</code> tries to create a new instance using either a default constructor or one that accepts nullable parameter values from the result set.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 2. Sample Code of embedding objects</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">class MyEntity {
+
+    @Id
+    Integer id;
+
+    @Embedded(onEmpty = USE_NULL) <i class="conum" data-value="1"></i><b>(1)</b>
+    EmbeddedEntity embeddedEntity;
+}
+
+class EmbeddedEntity {
+    String name;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>Null</code>s <code>embeddedEntity</code> if <code>name</code> in <code>null</code>.
+Use <code>USE_EMPTY</code> to instantiate <code>embeddedEntity</code> with a potential <code>null</code> value for the <code>name</code> property.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If you need a value object multiple times in an entity, this can be achieved with the optional <code>prefix</code> element of the <code>@Embedded</code> annotation.
+This element represents a prefix and is prepend for each column name in the embedded object.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Make use of the shortcuts <code>@Embedded.Nullable</code> &amp; <code>@Embedded.Empty</code> for <code>@Embedded(onEmpty = USE_NULL)</code> and <code>@Embedded(onEmpty = USE_EMPTY)</code> to reduce verbosity and simultaneously set JSR-305 <code>@javax.annotation.Nonnull</code> accordingly.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">class MyEntity {
+
+    @Id
+    Integer id;
+
+    @Embedded.Nullable <i class="conum" data-value="1"></i><b>(1)</b>
+    EmbeddedEntity embeddedEntity;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Shortcut for <code>@Embedded(onEmpty = USE_NULL)</code>.</td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Embedded entities containing a <code>Collection</code> or a <code>Map</code> will always be considered non empty since they will at least contain the empty collection or map.
+Such an entity will therefore never be <code>null</code> even when using @Embedded(onEmpty = USE_NULL).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jdbc.entity-persistence.read-only-properties"><a class="anchor" href="#jdbc.entity-persistence.read-only-properties"></a>Read Only Properties</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Attributes annotated with <code>@ReadOnlyProperty</code> will not be written to the database by Spring Data JDBC, but they will be read when an entity gets loaded.</p>
+</div>
+<div class="paragraph">
+<p>Spring Data JDBC will not automatically reload an entity after writing it.
+Therefore, you have to reload it explicitly if you want to see data that was generated in the database for such columns.</p>
+</div>
+<div class="paragraph">
+<p>If the annotated attribute is an entity or collection of entities, it is represented by one or more separate rows in separate tables.
+Spring Data JDBC will not perform any insert, delete or update for these rows.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jdbc.entity-persistence.insert-only-properties"><a class="anchor" href="#jdbc.entity-persistence.insert-only-properties"></a>Insert Only Properties</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Attributes annotated with <code>@InsertOnlyProperty</code> will only be written to the database by Spring Data JDBC during insert operations.
+For updates these properties will be ignored.</p>
+</div>
+<div class="paragraph">
+<p><code>@InsertOnlyProperty</code> is only supported for the aggregate root.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="auditing.html">JDBC Auditing</a></span>
+  <span class="next"><a href="custom-conversions.html">Custom Conversions</a></span>
+</nav>
+</article>
+</div>  </div>
+</main>
+<div class="modal micromodal-slide" id="modal-versions" aria-hidden="true">
+    <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true">
+            <main class="modal__content" id="modal-versions-content">
+              <button data-micromodal-close class="modal-versions-close">
+                <svg width="28px" height="28px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><style>.cls-1{fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px;}</style></defs><title/><g id="cross"><line class="cls-1" x1="7" x2="25" y1="7" y2="25"/><line class="cls-1" x1="7" x2="25" y1="25" y2="7"/></g></svg>
+              </button>
+              <div class="colset">
+                <div class="col-left">
+                  <ul class="nav-versions">
+                    <li class="component">
+                      <a class="title" href="../data-commons/index.html">Spring Data Commons</a>
+                      <ul class="versions">
+                        <li class="version is-latest">
+                          <a href="../data-commons/index.html">
+                            3.2.0-SNAPSHOT<span class="current">current</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li class="component is-current">
+                      <a class="title" href="../index.html">Spring Data Relational</a>
+                      <ul class="versions">
+                        <li class="version is-current is-latest">
+                          <a href="../index.html">
+                            3.2.0-SNAPSHOT<span class="current">current</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-right">
+                  <ul>
+                    <li>
+                      Related Spring Documentation
+                      <ul>
+                        <li><a href="https://docs.spring.io/spring-framework/reference/">Spring Framework</a></li>
+                        <li><a href="https://docs.spring.io/spring-security/reference/">Spring Security</a></li>
+                        <li><a href="https://docs.spring.io/spring-ldap/reference/">Spring LDAP</a></li>
+                        <li><a href="https://docs.spring.io/spring-session/reference/">Spring Session</a></li>
+                        <li><a href="https://docs.spring.io/spring-authorization-server/reference/">Spring Authorization Server</a></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+</div>
+<footer class="footer flex">
+    <div id="spring-links flex">
+        <img id="springlogo" src="../_/img/spring-logo.svg" alt="Spring">
+        <p class="smallest antialiased">© <script>var d = new Date();
+        document.write(d.getFullYear());</script> <a href="https://www.vmware.com/">VMware</a>, Inc. or its affiliates. <a href="https://www.vmware.com/help/legal.html">Terms of Use</a> • <a href="https://www.vmware.com/help/privacy.html" rel="noopener noreferrer">Privacy</a> • <a href="https://spring.io/trademarks">Trademark Guidelines</a> <span id="thank-you-mobile">• <a href="https://spring.io/thank-you">Thank you</a></span> • <a href="https://www.vmware.com/help/privacy/california-privacy-rights.html">Your California Privacy Rights</a> • <a class="ot-sdk-show-settings">Cookie Settings</a> <span id="teconsent"></span></p>
+        <p class="smallest antialiased has-gray-text">Apache®, Apache Tomcat®, Apache Kafka®, Apache Cassandra&trade;, and Apache Geode&trade; are trademarks or registered trademarks of the Apache Software Foundation in the United States and/or other countries. Java&trade;, Java&trade; SE, Java&trade; EE, and OpenJDK&trade; are trademarks of Oracle and/or its affiliates. Kubernetes® is a registered trademark of the Linux Foundation in the United States and other countries. Linux® is the registered trademark of Linus Torvalds in the United States and other countries. Windows® and Microsoft® Azure are registered trademarks of Microsoft Corporation. “AWS” and “Amazon Web Services” are trademarks or registered trademarks of Amazon.com Inc. or its affiliates. All other trademarks and copyrights are property of their respective owners and are only mentioned for informative purposes. Other names may be trademarks of their respective owners.</p>
+    </div>
+    <div id="social-icons" class="flex jc-between">
+        <a href="https://www.youtube.com/user/SpringSourceDev" title="Youtube"><svg id="youtube-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle class="cls-1" cx="20" cy="20" r="20"/><path class="cls-2" d="M30.91,14.53a2.89,2.89,0,0,0-2-2C27.12,12,20,12,20,12s-7.12,0-8.9.47a2.9,2.9,0,0,0-2,2A30.56,30.56,0,0,0,8.63,20a30.44,30.44,0,0,0,.46,5.47,2.89,2.89,0,0,0,2,2C12.9,28,20,28,20,28s7.12,0,8.9-.47a2.87,2.87,0,0,0,2-2A30.56,30.56,0,0,0,31.37,20,28.88,28.88,0,0,0,30.91,14.53ZM17.73,23.41V16.59L23.65,20Z"/></svg></a>
+        <a href="https://github.com/spring-projects" title="Github"><svg id="github-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75.93 75.93"><path class="cls-1" d="M38,0a38,38,0,1,0,38,38A38,38,0,0,0,38,0Z"/></g><path class="cls-2" d="M38,15.59A22.95,22.95,0,0,0,30.71,60.3c1.15.21,1.57-.5,1.57-1.11s0-2,0-3.9c-6.38,1.39-7.73-3.07-7.73-3.07A6.09,6.09,0,0,0,22,48.86c-2.09-1.42.15-1.39.15-1.39a4.81,4.81,0,0,1,3.52,2.36c2,3.5,5.37,2.49,6.67,1.91a4.87,4.87,0,0,1,1.46-3.07c-5.09-.58-10.45-2.55-10.45-11.34a8.84,8.84,0,0,1,2.36-6.15,8.29,8.29,0,0,1,.23-6.07s1.92-.62,6.3,2.35a21.82,21.82,0,0,1,11.49,0c4.38-3,6.3-2.35,6.3-2.35a8.29,8.29,0,0,1,.23,6.07,8.84,8.84,0,0,1,2.36,6.15c0,8.81-5.37,10.75-10.48,11.32a5.46,5.46,0,0,1,1.56,4.25c0,3.07,0,5.54,0,6.29s.42,1.33,1.58,1.1A22.94,22.94,0,0,0,38,15.59Z"/></svg></a>
+        <a href="https://twitter.com/springcentral" title="Twitter"><svg id="twitter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75.93 75.93"><circle class="cls-1" cx="37.97" cy="37.97" r="37.97"/><path id="Twitter-2" data-name="Twitter" class="cls-2" d="M55.2,22.73a15.43,15.43,0,0,1-4.88,1.91,7.56,7.56,0,0,0-5.61-2.49A7.78,7.78,0,0,0,37,30a7.56,7.56,0,0,0,.2,1.79,21.63,21.63,0,0,1-15.84-8.23,8,8,0,0,0,2.37,10.52,7.66,7.66,0,0,1-3.48-1v.09A7.84,7.84,0,0,0,26.45,41a7.54,7.54,0,0,1-2,.28A7.64,7.64,0,0,1,23,41.09a7.71,7.71,0,0,0,7.18,5.47,15.21,15.21,0,0,1-9.55,3.37,15.78,15.78,0,0,1-1.83-.11,21.41,21.41,0,0,0,11.78,3.54c14.13,0,21.86-12,21.86-22.42,0-.34,0-.68,0-1a15.67,15.67,0,0,0,3.83-4.08,14.9,14.9,0,0,1-4.41,1.24A7.8,7.8,0,0,0,55.2,22.73Z"/></svg></a>
+    </div>
+</footer>
+<script src="../_/js/vendor/import.js"></script>
+<script src="../_/js/site.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+<script async src="../_/js/vendor/asciidoctor-tabs.js" data-sync-storage-key="docs:preferred-tab"></script>
+  </body>
+</html>

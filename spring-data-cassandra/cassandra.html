@@ -296,10 +296,10 @@
     <a class="nav-link" href="cassandra/cql-template.html">CQL Template API</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cassandra/reactive-cassandra.html">Reactive Cassandra Support</a>
+    <a class="nav-link" href="cassandra/reactive-cassandra.html">Reactive Infrastructure</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cassandra/template.html"><code>CassandraTemplate</code> and <code>ReactiveCassandraTemplate</code></a>
+    <a class="nav-link" href="cassandra/template.html">Persisting Entities</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="cassandra/prepared-statements.html">Prepared Statements</a>
@@ -329,6 +329,9 @@
     <a class="nav-link" href="repositories/definition.html">Defining Repository Interfaces</a>
   </li>
   <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="cassandra/repositories/repositories.html">Cassandra Repositories</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="repositories/create-instances.html">Creating Repository Instances</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -348,12 +351,6 @@
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="repositories/null-handling.html">Null Handling of Repository Methods</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cassandra/repositories/imperative-repositories.html">Cassandra Repositories</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cassandra/repositories/reactive-repositories.html">Reactive Cassandra Repositories</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="cassandra/repositories/cdi-integration.html">CDI Integration</a>
@@ -490,10 +487,10 @@
 <p>Spring configuration support with Java-based <code>@Configuration</code> classes or the XML namespace.</p>
 </li>
 <li>
-<p>The <code>CqlTemplate</code> helper class that increases productivity by properly handling common Cassandra data access operations.</p>
+<p>The <code>CqlTemplate</code>, <code>AsyncCqlTemplate</code>, and <code>ReactiveCqlTemplate</code> helper classes that increases productivity by properly handling common Cassandra data access operations.</p>
 </li>
 <li>
-<p>The <code>CassandraTemplate</code> helper class that provides object mapping between CQL Tables and POJOs.</p>
+<p>The <code>CassandraTemplate</code>, <code>AsyncCassandraTemplate</code>, and <code>ReactiveCassandraTemplate</code> helper classes that provide object mapping between CQL Tables and POJOs.</p>
 </li>
 <li>
 <p>Exception translation into Spring&#8217;s portable <a href="https://docs.spring.io/spring-framework/reference/6.1data-access.html#dao-exceptions">Data Access Exception Hierarchy</a>.</p>
@@ -508,12 +505,12 @@
 <p>Java-based query, criteria, and update DSLs.</p>
 </li>
 <li>
-<p>Automatic implementation of <code>Repository</code> interfaces including support for custom finder methods.</p>
+<p>Automatic implementation of imperative and reactive <code>Repository</code> interfaces including support for custom finder methods.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>For most data-oriented tasks, you can use the <code>CassandraTemplate</code> or the <code>Repository</code> support, both of which use the rich object-mapping functionality. <code>CqlTemplate</code> is commonly used to increment counters or perform ad-hoc CRUD operations. <code>CqlTemplate</code> also provides callback methods that make it easy to get low-level API objects, such as <code>com.datastax.oss.driver.api.core.CqlSession</code>, which lets you communicate directly with Cassandra.
+<p>For most data-oriented tasks, you can use the <code>[Reactive|Async]CassandraTemplate</code> or the <code>Repository</code> support, both of which use the rich object-mapping functionality. <code>[Reactive|Async]CqlTemplate</code> is commonly used to increment counters or perform ad-hoc CRUD operations. <code>[Reactive|Async]CqlTemplate</code> also provides callback methods that make it easy to get low-level API objects, such as <code>com.datastax.oss.driver.api.core.CqlSession</code>, which lets you communicate directly with Cassandra.
 Spring Data for Apache Cassandra uses consistent naming conventions on objects in various APIs to those found in the DataStax Java Driver so that they are familiar and so that you can map your existing knowledge onto the Spring APIs.</p>
 </div>
 <div class="section-summary">
@@ -532,10 +529,10 @@ Spring Data for Apache Cassandra uses consistent naming conventions on objects i
     <a href="cassandra/cql-template.html">CQL Template API</a>
   </li>
   <li>
-    <a href="cassandra/reactive-cassandra.html">Reactive Cassandra Support</a>
+    <a href="cassandra/reactive-cassandra.html">Reactive Infrastructure</a>
   </li>
   <li>
-    <a href="cassandra/template.html"><code>CassandraTemplate</code> and <code>ReactiveCassandraTemplate</code></a>
+    <a href="cassandra/template.html">Persisting Entities</a>
   </li>
   <li>
     <a href="cassandra/prepared-statements.html">Prepared Statements</a>

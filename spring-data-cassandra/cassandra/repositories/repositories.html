@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Cassandra-specific Query Methods :: Spring Data Cassandra</title>
-    <link rel="prev" href="../../repositories/query-methods-details.html">
-    <link rel="next" href="../../repositories/projections.html">
+    <title>Cassandra Repositories :: Spring Data Cassandra</title>
+    <link rel="prev" href="../../repositories/definition.html">
+    <link rel="next" href="../../repositories/create-instances.html">
     <meta name="generator" content="Antora 3.2.0-alpha.2">
     <script>
 !function (theme, navWidth) {
@@ -328,7 +328,7 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../../repositories/definition.html">Defining Repository Interfaces</a>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="repositories.html">Cassandra Repositories</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -337,7 +337,7 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../../repositories/query-methods-details.html">Defining Query Methods</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="query-methods.html">Cassandra-specific Query Methods</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -435,13 +435,13 @@
   <div class="content">
     <div
       class="toc"
-      data-title="Cassandra-specific Query Methods"
+      data-title="Cassandra Repositories"
       data-levels="2"
     >
       <div class="toc-menu"></div>
     </div>
     <div class="sidebar-links">
-        <a href="file:///Users/mpaluch/git/data/spring-data-cassandra/src/main/antora/modules/ROOT/pages/cassandra/repositories/query-methods.adoc">
+        <a href="file:///Users/mpaluch/git/data/spring-data-cassandra/src/main/antora/modules/ROOT/pages/cassandra/repositories/repositories.adoc">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24"
@@ -474,34 +474,45 @@
   <ul>
     <li><a href="../../index.html">Spring Data Cassandra</a></li>
     <li><a href="../../repositories.html">Repositories</a></li>
-    <li><a href="query-methods.html">Cassandra-specific Query Methods</a></li>
+    <li><a href="repositories.html">Cassandra Repositories</a></li>
   </ul>
 </nav>
 <article>
-<h1 id="page-title" class="page">Cassandra-specific Query Methods</h1>
+<h1 id="page-title" class="page">Cassandra Repositories</h1>
 <div id="preamble">
 <div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-This chapter explains Cassandra-specific query methods.
-This documentation uses imperative types.
-By using reactive return types, the same semantics apply to reactive repositories as well.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>To access domain entities stored in Apache Cassandra, you can use Spring Data&#8217;s sophisticated repository support, which significantly eases implementing DAOs.
+To do so, create an interface for your repository, as the following example shows:</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 1. Sample Person entity</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Table
+public class Person {
+
+  @Id
+  private String id;
+  private String firstname;
+  private String lastname;
+
+  // … getters and setters omitted
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 <div class="paragraph">
-<p>Most of the data access operations you usually trigger on a repository result in a query being executed against the Apache Cassandra database.
-Defining such a query is a matter of declaring a method on the repository interface.
-The following example shows a number of such method declarations:</p>
+<p>Note that the entity has a property named <code>id</code> of type <code>String</code>.
+The default conversion mechanism used in <code>MappingCassandraConverter</code> (which backs the repository support) regards properties named <code>id</code> as being the row ID.</p>
+</div>
+<div class="paragraph">
+<p>The following example shows a repository definition to persist <code>Person</code> entities:</p>
 </div>
 <div id="_tabs_1" class="openblock tabs is-sync is-loading">
-<div class="title">PersonRepository with query methods</div>
+<div class="title">Basic repository interface to persist <code>Person</code> entities</div>
 <div class="content">
 <div class="ulist tablist">
 <ul>
@@ -518,274 +529,113 @@ The following example shows a number of such method declarations:</p>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">interface PersonRepository extends CrudRepository&lt;Person, String&gt; {
 
-    List&lt;Person&gt; findByLastname(String lastname);                           <i class="conum" data-value="1"></i><b>(1)</b>
-
-    Slice&lt;Person&gt; findByFirstname(String firstname, Pageable pageRequest);  <i class="conum" data-value="2"></i><b>(2)</b>
-
-    Window&lt;Person&gt; findByFirstname(String firstname, CassandraScrollPosition pos, Limit limit);  <i class="conum" data-value="3"></i><b>(3)</b>
-
-    List&lt;Person&gt; findByFirstname(String firstname, QueryOptions opts);      <i class="conum" data-value="4"></i><b>(4)</b>
-
-    List&lt;Person&gt; findByFirstname(String firstname, Sort sort);              <i class="conum" data-value="5"></i><b>(5)</b>
-
-    List&lt;Person&gt; findByFirstname(String firstname, Limit limit);            <i class="conum" data-value="6"></i><b>(6)</b>
-
-    Person findByShippingAddress(Address address);                          <i class="conum" data-value="7"></i><b>(7)</b>
-
-    Person findFirstByShippingAddress(Address address);                     <i class="conum" data-value="8"></i><b>(8)</b>
-
-    Stream&lt;Person&gt; findAllBy();                                             <i class="conum" data-value="9"></i><b>(9)</b>
-
-    @AllowFiltering
-    List&lt;Person&gt; findAllByAge(int age);                                     <i class="conum" data-value="10"></i><b>(10)</b>
+  // additional custom finder methods go here
 }</code></pre>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The method shows a query for all people with the given <code>lastname</code>.
-The query is derived from parsing the method name for constraints, which can be concatenated with <code>And</code>.
-Thus, the method name results in a query expression of <code>SELECT * FROM person WHERE lastname = 'lastname'</code>.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Applies pagination to a query.
-You can equip your method signature with a <code>Pageable</code> parameter and let the method return a <code>Slice</code> instance, and we automatically page the query accordingly.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Applies scrolling to a query.
-Scrolling wraps Cassandra&#8217;s <code>PagingState</code> into <code>CassandraScrollPosition</code> and allows dynamic limiting.
-You can also use <code>findTop…</code> for a static limit.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Passing a <code>QueryOptions</code> object applies the query options to the resulting query before its execution.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Applies dynamic sorting to a query.
-You can add a <code>Sort</code> parameter to your method signature, and Spring Data automatically applies ordering to the query.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Applies dynamic result limiting to a query.
-Query results can be limited using <code>SELECT … LIMIT</code>.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>Shows that you can query based on properties that are not a primitive type by using <code>Converter</code> instances registered in <code>CustomConversions</code>.
-Throws <code>IncorrectResultSizeDataAccessException</code> if more than one match is found.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="8"></i><b>8</b></td>
-<td>Uses the <code>First</code> keyword to restrict the query to only the first result.
-Unlike the preceding method, this method does not throw an exception if more than one match is found.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="9"></i><b>9</b></td>
-<td>Uses a Java 8 <code>Stream</code> to read and convert individual elements while iterating the stream.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="10"></i><b>10</b></td>
-<td>Shows a query method annotated with <code>@AllowFiltering</code>, to allow server-side filtering.</td>
-</tr>
-</table>
 </div>
 </div>
 <div id="_tabs_1_reactive--panel" class="tabpanel" aria-labelledby="_tabs_1_reactive">
 <div class="listingblock secondary">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">interface ReactivePersonRepository extends ReactiveSortingRepository&lt;Person, Long&gt; {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">interface PersonRepository extends ReactiveCrudRepository&lt;Person, String&gt; {
 
-  Flux&lt;Person&gt; findByFirstname(String firstname);                                <i class="conum" data-value="1"></i><b>(1)</b>
-
-  Flux&lt;Person&gt; findByFirstname(Publisher&lt;String&gt; firstname);                     <i class="conum" data-value="2"></i><b>(2)</b>
-
-  Mono&lt;Person&gt; findByFirstnameAndLastname(String firstname, String lastname);    <i class="conum" data-value="3"></i><b>(3)</b>
-
-  Mono&lt;Person&gt; findFirstByFirstname(String firstname);                           <i class="conum" data-value="4"></i><b>(4)</b>
-
-  @AllowFiltering
-  Flux&lt;Person&gt; findByAge(int age);                                               <i class="conum" data-value="5"></i><b>(5)</b>
+  // additional custom finder methods go here
 }</code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A query for all people with the given <code>firstname</code>.
-The query is derived by parsing the method name for constraints, which can be concatenated with <code>And</code> and <code>Or</code>.
-Thus, the method name results in a query expression of <code>SELECT * FROM person WHERE firstname = :firstname</code>.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A query for all people with the given <code>firstname</code> once the <code>firstname</code> is emitted from the given <code>Publisher</code>.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Find a single entity for the given criteria.
-Completes with <code>IncorrectResultSizeDataAccessException</code> on non-unique results.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Unlike the preceding query, the first entity is always emitted even if the query yields more result rows.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A query method annotated with <code>@AllowFiltering</code>, which allows server-side filtering.</td>
-</tr>
-</table>
 </div>
 </div>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Querying non-primary key properties requires secondary indexes.
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
-<p>The following table shows short examples of the keywords that you can use in query methods:</p>
+<p>Right now, the interface in the preceding example serves only typing purposes, but we add additional methods to it later.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Supported keywords for query methods</caption>
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 33.3333%;">
-<col style="width: 50.0001%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Keyword</th>
-<th class="tableblock halign-left valign-top">Sample</th>
-<th class="tableblock halign-left valign-top">Logical result</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>After</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByBirthdateAfter(Date date)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>birthdate &gt; date</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GreaterThan</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByAgeGreaterThan(int age)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age &gt; age</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GreaterThanEqual</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByAgeGreaterThanEqual(int age)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age &gt;= age</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Before</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByBirthdateBefore(Date date)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>birthdate &lt; date</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>LessThan</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByAgeLessThan(int age)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age &lt; age</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>LessThanEqual</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByAgeLessThanEqual(int age)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age &#8656; age</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Between</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByAgeBetween(int from, int to)</code> and <code>findByAgeBetween(Range&lt;Integer&gt; range)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age &gt; from AND age &lt; to</code> and
-lower / upper bounds (<code>&gt;</code> / <code>&gt;=</code> &amp; <code>&lt;</code> / <code>&#8656;</code>) according to <code>Range</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>In</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByAgeIn(Collection ages)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age IN (ages&#8230;&#8203;)</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Like</code>, <code>StartingWith</code>, <code>EndingWith</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByFirstnameLike(String name)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>firstname LIKE (name as like expression)</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Containing</code> on String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByFirstnameContaining(String name)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>firstname LIKE (name as like expression)</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Containing</code> on Collection</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByAddressesContaining(Address address)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>addresses CONTAINING address</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>(No keyword)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByFirstname(String name)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>firstname = name</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IsTrue</code>, <code>True</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByActiveIsTrue()</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>active = true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IsFalse</code>,  <code>False</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByActiveIsFalse()</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>active = false</code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="cassandra.repositories.queries.delete"><a class="anchor" href="#cassandra.repositories.queries.delete"></a>Repository Delete Queries</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>The keywords in the preceding table can be used in conjunction with <code>delete…By</code> to create queries that delete matching documents.</p>
+<p>Next, in your Spring configuration, add the following (if you use Java for configuration):</p>
+</div>
+<div class="paragraph">
+<p>If you want to use Java configuration, use the <code>@EnableCassandraRepositories</code> respective <code>@EnableReactiveCassandraRepositories</code> annotation.
+The annotation carries the same attributes as the namespace element.
+If no base package is configured, the infrastructure scans the package of the annotated configuration class.
+The following example show how to the different configuration approaches:</p>
 </div>
 <div id="_tabs_2" class="openblock tabs is-sync is-loading">
+<div class="title">Configuration for repositories</div>
 <div class="content">
 <div class="ulist tablist">
 <ul>
-<li id="_tabs_2_imperative" class="tab">
-<p>Imperative</p>
+<li id="_tabs_2_imperative_java_configuration" class="tab">
+<p>Imperative Java Configuration</p>
 </li>
-<li id="_tabs_2_reactive" class="tab">
-<p>Reactive</p>
+<li id="_tabs_2_xml" class="tab">
+<p>XML</p>
+</li>
+<li id="_tabs_2_reactive_java_configuration" class="tab">
+<p>Reactive Java Configuration</p>
 </li>
 </ul>
 </div>
-<div id="_tabs_2_imperative--panel" class="tabpanel" aria-labelledby="_tabs_2_imperative">
+<div id="_tabs_2_imperative_java_configuration--panel" class="tabpanel" aria-labelledby="_tabs_2_imperative_java_configuration">
 <div class="listingblock primary">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">interface PersonRepository extends Repository&lt;Person, String&gt; {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Configuration
+@EnableCassandraRepositories
+class ApplicationConfig extends AbstractCassandraConfiguration {
 
-  void deleteWithoutResultByLastname(String lastname);
+  @Override
+  protected String getKeyspaceName() {
+    return "keyspace";
+  }
 
-  boolean deleteByLastname(String lastname);
+  public String[] getEntityBasePackages() {
+    return new String[] { "com.oreilly.springdata.cassandra" };
+  }
 }</code></pre>
 </div>
 </div>
 </div>
-<div id="_tabs_2_reactive--panel" class="tabpanel" aria-labelledby="_tabs_2_reactive">
+<div id="_tabs_2_xml--panel" class="tabpanel" aria-labelledby="_tabs_2_xml">
 <div class="listingblock secondary">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">interface PersonRepository extends Repository&lt;Person, String&gt; {
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cassandra="http://www.springframework.org/schema/data/cassandra"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/data/cassandra
+    https://www.springframework.org/schema/data/cassandra/spring-cassandra.xsd
+    http://www.springframework.org/schema/beans
+    https://www.springframework.org/schema/beans/spring-beans.xsd"&gt;
 
-  Mono&lt;Void&gt; deleteWithoutResultByLastname(String lastname);
+    &lt;cassandra:session port="9042" keyspace-name="keyspaceName"/&gt;
 
-  Mono&lt;Boolean&gt; deleteByLastname(String lastname);
+    &lt;cassandra:mapping
+            entity-base-packages="com.acme.<strong>.entities"&gt;
+    &lt;/cassandra:mapping&gt;
+
+    &lt;cassandra:converter/&gt;
+
+    &lt;cassandra:template/&gt;
+
+    &lt;cassandra:repositories base-package="com.acme.</strong>.entities"/&gt;
+&lt;/beans&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="_tabs_2_reactive_java_configuration--panel" class="tabpanel" aria-labelledby="_tabs_2_reactive_java_configuration">
+<div class="listingblock third">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Configuration
+@EnableReactiveCassandraRepositories
+class ApplicationConfig extends AbstractReactiveCassandraConfiguration {
+
+  @Override
+  protected String getKeyspaceName() {
+    return "keyspace";
+  }
+
+  public String[] getEntityBasePackages() {
+    return new String[] { "com.oreilly.springdata.cassandra" };
+  }
 }</code></pre>
 </div>
 </div>
@@ -793,22 +643,16 @@ lower / upper bounds (<code>&gt;</code> / <code>&gt;=</code> &amp; <code>&lt;</c
 </div>
 </div>
 <div class="paragraph">
-<p>Delete queries return whether the query was applied or terminate without returning a value using <code>void</code>.</p>
-</div>
-<div class="sect2">
-<h3 id="cassandra.repositories.queries.options"><a class="anchor" href="#cassandra.repositories.queries.options"></a>Query Options</h3>
-<div class="paragraph">
-<p>You can specify query options for query methods by passing a <code>QueryOptions</code> object.
-The options apply to the query before the actual query execution.
-<code>QueryOptions</code> is treated as a non-query parameter and is not considered to be a query parameter value.
-Query options apply to derived and string <code>@Query</code> repository methods.</p>
+<p>The <code>cassandra:repositories</code> namespace element causes the base packages to be scanned for interfaces that extend <code>CrudRepository</code> and create Spring beans for each one found.
+By default, the repositories are wired with a <code>CassandraTemplate</code> Spring bean called <code>cassandraTemplate</code>, so you only need to configure
+<code>cassandra-template-ref</code> explicitly if you deviate from this convention.</p>
 </div>
 <div class="paragraph">
-<p>To statically set the consistency level, use the <code>@Consistency</code> annotation on query methods.
-The declared consistency level is applied to the query each time it is executed.
-The following example sets the consistency level to <code>ConsistencyLevel.LOCAL_ONE</code>:</p>
+<p>Because our domain repository extends <code>CrudRepository</code> respective <code>ReactiveCrudRepository</code>, it provides you with basic CRUD operations.
+Working with the repository instance is a matter of injecting the repository as a dependency into a client, as the following example does by autowiring <code>PersonRepository</code>:</p>
 </div>
 <div id="_tabs_3" class="openblock tabs is-sync is-loading">
+<div class="title">Basic access to Person entities</div>
 <div class="content">
 <div class="ulist tablist">
 <ul>
@@ -823,12 +667,17 @@ The following example sets the consistency level to <code>ConsistencyLevel.LOCAL
 <div id="_tabs_3_imperative--panel" class="tabpanel" aria-labelledby="_tabs_3_imperative">
 <div class="listingblock primary">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">interface PersonRepository extends CrudRepository&lt;Person, String&gt; {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@ExtendWith(SpringExtension.class)
+class PersonRepositoryTests {
 
-    @Consistency(ConsistencyLevel.LOCAL_ONE)
-    List&lt;Person&gt; findByLastname(String lastname);
+    @Autowired PersonRepository repository;
 
-    List&lt;Person&gt; findByFirstname(String firstname, QueryOptions options);
+    @Test
+    void readsPersonTableCorrectly() {
+
+      List&lt;Person&gt; persons = repository.findAll();
+      assertThat(persons.isEmpty()).isFalse();
+    }
 }</code></pre>
 </div>
 </div>
@@ -836,12 +685,14 @@ The following example sets the consistency level to <code>ConsistencyLevel.LOCAL
 <div id="_tabs_3_reactive--panel" class="tabpanel" aria-labelledby="_tabs_3_reactive">
 <div class="listingblock secondary">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">interface PersonRepository extends ReactiveCrudRepository&lt;Person, String&gt; {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class PersonRepositoryTests {
 
-    @Consistency(ConsistencyLevel.LOCAL_ONE)
-    Flux&lt;Person&gt; findByLastname(String lastname);
+    @Autowired ReactivePersonRepository repository;
 
-    Flux&lt;Person&gt; findByFirstname(String firstname, QueryOptions options);
+    @Test
+    public void sortsElementsCorrectly() {
+        Flux&lt;Person&gt; people = repository.findAll(Sort.by(new Order(ASC, "lastname")));
+    }
 }</code></pre>
 </div>
 </div>
@@ -849,7 +700,69 @@ The following example sets the consistency level to <code>ConsistencyLevel.LOCAL
 </div>
 </div>
 <div class="paragraph">
-<p>The DataStax Cassandra documentation includes <a href="https://docs.datastax.com/en/cassandra-oss/3.0/cassandra/dml/dmlConfigConsistency.html">a good discussion of the available consistency levels</a>.</p>
+<p>Cassandra repositories support paging and sorting for paginated and sorted access to the entities.
+Cassandra paging requires a paging state to forward-only navigate through pages.
+A <code>Slice</code> keeps track of the current paging state and allows for creation of a <code>Pageable</code> to request the next page.
+The following example shows how to set up paging access to <code>Person</code> entities:</p>
+</div>
+<div id="_tabs_4" class="openblock tabs is-sync is-loading">
+<div class="title">Paging access to <code>Person</code> entities</div>
+<div class="content">
+<div class="ulist tablist">
+<ul>
+<li id="_tabs_4_imperative" class="tab">
+<p>Imperative</p>
+</li>
+<li id="_tabs_4_reactive" class="tab">
+<p>Reactive</p>
+</li>
+</ul>
+</div>
+<div id="_tabs_4_imperative--panel" class="tabpanel" aria-labelledby="_tabs_4_imperative">
+<div class="listingblock primary">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@ExtendWith(SpringExtension.class)
+class PersonRepositoryTests {
+
+    @Autowired PersonRepository repository;
+
+    @Test
+    void readsPagesCorrectly() {
+
+      Slice&lt;Person&gt; firstBatch = repository.findAll(CassandraPageRequest.first(10));
+
+      assertThat(firstBatch).hasSize(10);
+
+      Slice&lt;Person&gt; nextBatch = repository.findAll(firstBatch.nextPageable());
+
+      // …
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div id="_tabs_4_reactive--panel" class="tabpanel" aria-labelledby="_tabs_4_reactive">
+<div class="listingblock secondary">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@ExtendWith(SpringExtension.class)
+class PersonRepositoryTests {
+
+    @Autowired PersonRepository repository;
+
+    @Test
+    void readsPagesCorrectly() {
+
+      Mono&lt;Slice&lt;Person&gt;&gt; firstBatch = repository.findAll(CassandraPageRequest.first(10));
+
+      Mono&lt;Slice&lt;Person&gt;&gt; nextBatch = firstBatch.flatMap(it -&gt; repository.findAll(it.nextPageable()));
+
+      // …
+    }
+}}</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -858,18 +771,49 @@ The following example sets the consistency level to <code>ConsistencyLevel.LOCAL
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-You can control fetch size, consistency level, and retry policy defaults by configuring the following parameters on the CQL API instances: <code>CqlTemplate</code>, <code>AsyncCqlTemplate</code>, and <code>ReactiveCqlTemplate</code>.
-Defaults apply if the particular query option is not set.
+Cassandra repositories do not extend <code>PagingAndSortingRepository</code>, because classic paging patterns using limit/offset are not applicable to Cassandra.
 </td>
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>The preceding example creates an application context with Spring&#8217;s unit test support, which performs annotation-based dependency injection into the test class.
+Inside the test cases (the test methods), we use the repository to query the data store.
+We invoke the repository query method that requests all <code>Person</code> instances.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cassandra.repositories.reactive"><a class="anchor" href="#cassandra.repositories.reactive"></a>Reactive Repositories</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Data&#8217;s repository abstraction is a dynamic API that is mostly defined by you and your requirements as you declare query methods.
+Reactive Cassandra repositories can be implemented by using either RxJava or Project Reactor wrapper types by extending from one of the library-specific repository interfaces:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ReactiveCrudRepository</code></p>
+</li>
+<li>
+<p><code>ReactiveSortingRepository</code></p>
+</li>
+<li>
+<p><code>RxJava3CrudRepository</code></p>
+</li>
+<li>
+<p><code>RxJava3SortingRepository</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Spring Data converts reactive wrapper types behind the scenes so that you can stick to your favorite composition library.</p>
 </div>
 </div>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="../../repositories/query-methods-details.html">Defining Query Methods</a></span>
-  <span class="next"><a href="../../repositories/projections.html">Projections</a></span>
+  <span class="prev"><a href="../../repositories/definition.html">Defining Repository Interfaces</a></span>
+  <span class="next"><a href="../../repositories/create-instances.html">Creating Repository Instances</a></span>
 </nav>
 </article>
 </div>  </div>

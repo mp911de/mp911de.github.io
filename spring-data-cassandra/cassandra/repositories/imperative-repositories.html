@@ -296,10 +296,10 @@
     <a class="nav-link" href="../cql-template.html">CQL Template API</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../reactive-cassandra.html">Reactive Cassandra Support</a>
+    <a class="nav-link" href="../reactive-cassandra.html">Reactive Infrastructure</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../template.html"><code>CassandraTemplate</code> and <code>ReactiveCassandraTemplate</code></a>
+    <a class="nav-link" href="../template.html">Persisting Entities</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../prepared-statements.html">Prepared Statements</a>
@@ -570,6 +570,9 @@ The following example shows how to use the <code>@EnableCassandraRepositories</c
 <li id="_tabs_2_xml" class="tab">
 <p>XML</p>
 </li>
+<li id="_tabs_2_foo" class="tab">
+<p>Foo</p>
+</li>
 </ul>
 </div>
 <div id="_tabs_2_java--panel" class="tabpanel" aria-labelledby="_tabs_2_java">
@@ -616,6 +619,13 @@ class ApplicationConfig extends AbstractCassandraConfiguration {
 
     &lt;cassandra:repositories base-package="com.acme.</strong>.entities"/&gt;
 &lt;/beans&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="_tabs_2_foo--panel" class="tabpanel" aria-labelledby="_tabs_2_foo">
+<div class="listingblock third">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">foo</code></pre>
 </div>
 </div>
 </div>

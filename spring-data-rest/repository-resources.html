@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Repository resources :: Spring Data REST</title>
+    <link rel="prev" href="introduction/spring-data-rest-examples.html">
+    <link rel="next" href="paging-and-sorting.html">
+    <meta name="generator" content="Antora 3.2.0-alpha.2">
+    <script>
+!function (theme, navWidth) {
+  if (theme === 'dark') document.documentElement.classList.add('dark-theme')
+  if (navWidth) document.documentElement.style.setProperty('--nav-width', `${navWidth}px`)
+}(localStorage && localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)') && 'dark'),
+  localStorage && localStorage.getItem('nav-width'))
+    </script>
+    <link rel="stylesheet" href="./_/css/site.css">
+    <link rel="stylesheet" href="./_/css/vendor/search.css">
+    <link rel="stylesheet" href="./_/css/vendor/asciidoctor-tabs.css">
+
+    <meta name="version" content="4.2.0">
+    <meta name="component" content="data-rest">
+    <link rel="icon" href="./_/img/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://spring.io">
+        <img
+          id="springlogo"
+          class="block"
+          src="./_/img/spring-logo.svg"
+          alt="Spring"
+        />
+      </a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Why Spring</a>
+          <div class="navbar-dropdown">
+            <a
+              class="navbar-item"
+              href="https://spring.io/why-spring"
+            >Overview</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/microservices"
+            >Microservices</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/reactive"
+            >Reactive</a>
+            <a class="navbar-item" href="https://spring.io/event-driven">Event
+              Driven</a>
+            <a class="navbar-item" href="https://spring.io/cloud">Cloud</a>
+            <a class="navbar-item" href="https://spring.io/web-applications">Web
+              Applications</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/serverless"
+            >Serverless</a>
+            <a class="navbar-item" href="https://spring.io/batch">Batch</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Learn</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://spring.io/learn">Overview</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/quickstart"
+            >Quickstart</a>
+            <a class="navbar-item" href="https://spring.io/guides">Guides</a>
+            <a class="navbar-item" href="https://spring.io/blog">Blog</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Projects</a>
+          <div class="navbar-dropdown" style="min-width: 280px">
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects"
+            >Overview</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-boot"
+            >Spring Boot</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-framework"
+            >Spring Framework</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-cloud"
+            >Spring Cloud</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-cloud-dataflow"
+            >Spring Cloud Data Flow</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-data"
+            >Spring Data</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-integration"
+            >Spring Integration</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-batch"
+            >Spring Batch</a>
+            <a
+              class="navbar-item"
+              href="https://spring.io/projects/spring-security"
+            >Spring Security</a>
+            <a
+              class="navbar-item navbar-item-special"
+              href="https://spring.io/projects"
+            >View all projects</a>
+            <a class="navbar-item" href="https://spring.io/tools">Spring Tools 4</a>
+            <a
+              class="navbar-item navbar-item-special-2"
+              href="https://start.spring.io"
+            >Spring Initializr
+              <svg
+                class="external-link-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+              ><polyline
+                  points="15 10.94 15 15 1 15 1 1 5.06 1"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-miterlimit="10"
+                  stroke-width="2"
+                ></polyline><polyline
+                  points="8.93 1 15 1 15 7.07"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-miterlimit="10"
+                  stroke-width="2"
+                ></polyline><line
+                  x1="15"
+                  y1="1"
+                  x2="8"
+                  y2="8"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-miterlimit="10"
+                  stroke-width="2"
+                ></line></svg></a>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Academy</a>
+          <div class="navbar-dropdown">
+            <a
+              class="navbar-item"
+              href="https://spring.academy/courses"
+            >Courses</a>
+            <a
+              class="navbar-item"
+              href="https://spring.academy/learning-path"
+            >Get Certified</a>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Solutions</a>
+          <div class="navbar-dropdown lg">
+            <a class="navbar-item" href="https://spring.io/solutions">Overview</a>
+            <a class="navbar-item" href="https://spring.io/runtime">Spring Runtime</a>
+            <a class="navbar-item" href="https://spring.io/consulting">Spring Consulting</a>
+            <a class="navbar-item" href="https://spring.academy/teams">Spring Academy For Teams</a>
+            <a class="navbar-item" href="https://spring.io/security">Security Advisories</a>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable is-community">
+          <a class="navbar-link" href="#">Community</a>
+          <div class="navbar-dropdown">
+            <a
+              class="navbar-item"
+              href="https://spring.io/community"
+            >Overview</a>
+            <a class="navbar-item" href="https://spring.io/events">Events</a>
+            <a class="navbar-item" href="https://spring.io/team">Team</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <label class="theme-toggler">
+      <input
+        type="checkbox"
+        type="checkbox"
+        id="switch-theme-checkbox"
+        name="switch-theme-checkbox"
+      />
+      <span class="icon"><svg
+          aria-hidden="true"
+          focusable="false"
+          data-prefix="fas"
+          data-icon="moon"
+          class="svg-inline--fa fa-moon moon"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 384 512"
+        ><path
+            fill="currentColor"
+            d="M223.5 32C100 32 0 132.3 0 256S100 480 223.5 480c60.6 0 115.5-24.2 155.8-63.4c5-4.9 6.3-12.5 3.1-18.7s-10.1-9.7-17-8.5c-9.8 1.7-19.8 2.6-30.1 2.6c-96.9 0-175.5-78.8-175.5-176c0-65.8 36-123.1 89.3-153.3c6.1-3.5 9.2-10.5 7.7-17.3s-7.3-11.9-14.3-12.5c-6.3-.5-12.6-.8-19-.8z"
+          ></path>
+        </svg>
+        <svg
+          aria-hidden="true"
+          focusable="false"
+          data-prefix="fas"
+          data-icon="sun"
+          class="svg-inline--fa fa-sun sun"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 512 512"
+        ><path
+            fill="currentColor"
+            d="M361.5 1.2c5 2.1 8.6 6.6 9.6 11.9L391 121l107.9 19.8c5.3 1 9.8 4.6 11.9 9.6s1.5 10.7-1.6 15.2L446.9 256l62.3 90.3c3.1 4.5 3.7 10.2 1.6 15.2s-6.6 8.6-11.9 9.6L391 391 371.1 498.9c-1 5.3-4.6 9.8-9.6 11.9s-10.7 1.5-15.2-1.6L256 446.9l-90.3 62.3c-4.5 3.1-10.2 3.7-15.2 1.6s-8.6-6.6-9.6-11.9L121 391 13.1 371.1c-5.3-1-9.8-4.6-11.9-9.6s-1.5-10.7 1.6-15.2L65.1 256 2.8 165.7c-3.1-4.5-3.7-10.2-1.6-15.2s6.6-8.6 11.9-9.6L121 121 140.9 13.1c1-5.3 4.6-9.8 9.6-11.9s10.7-1.5 15.2 1.6L256 65.1 346.3 2.8c4.5-3.1 10.2-3.7 15.2-1.6zM160 256a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zm224 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0z"
+          ></path>
+        </svg></span>
+      <span class="text">light</span>
+    </label>
+  </nav>
+</header>
+<script>
+!function (theme) {
+  if (theme === 'dark') {
+    document.getElementById('switch-theme-checkbox').parentElement.classList.add('active')
+  }
+}(localStorage && localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)') && 'dark'))
+</script><div class="body">
+<div class="nav-container" data-component="data-rest" data-version="4.2.0">
+  <aside class="nav">
+    <div class="panels">
+      <div class="nav-panel-menu is-active" data-panel="menu">
+        <nav class="nav-menu">
+<div class="context">
+  <span class="title">Spring Data REST</span>
+  <span class="version">4.2.0-SNAPSHOT</span>
+  <button class="browse-version" id="browse-version">
+    <svg
+      height="24px"
+      id="Layer_1"
+      style="enable-background:new 0 0 512 512;"
+      version="1.1"
+      viewBox="0 0 512 512"
+      width="24px"
+      xml:space="preserve"
+    ><g><path
+          d="M256,224c-17.7,0-32,14.3-32,32s14.3,32,32,32c17.7,0,32-14.3,32-32S273.7,224,256,224L256,224z"
+        ></path><path
+          d="M128.4,224c-17.7,0-32,14.3-32,32s14.3,32,32,32c17.7,0,32-14.3,32-32S146,224,128.4,224L128.4,224z"
+        ></path><path
+          d="M384,224c-17.7,0-32,14.3-32,32s14.3,32,32,32s32-14.3,32-32S401.7,224,384,224L384,224z"
+        ></path></g></svg>
+  </button>
+</div><ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Spring Data REST</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="intro.html">Introduction</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="introduction/upgrade.html">Upgrading Spring Data</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="introduction/getting-started.html">Getting started</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="introduction/example-api-usage-with-curl.html">Using cURL to talk to Spring Data REST</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="introduction/spring-data-rest-examples.html">Spring Data REST example projects</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="repository-resources.html">Repository resources</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="paging-and-sorting.html">Paging and Sorting</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="projections-excerpts.html">Projections and Excerpts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="representations.html">Representations</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="etags-and-other-conditionals.html">Conditional Operations</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="validation.html">Validation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="events.html">Events</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="integration.html">Integration</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="metadata.html">Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="security.html">Security</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tools.html">Tools</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="customizing-sdr.html">Customizing Spring Data REST</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="customizing/configuring-the-rest-url-path.html">Configuring the REST URL Path</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="customizing/adding-sdr-to-spring-mvc-app.html">Adding Spring Data REST to an Existing Spring MVC Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="customizing/overriding-sdr-response-handlers.html">Overriding Spring Data REST Response Handlers</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="customizing/customizing-json-output.html">Customizing the JSON Output</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="customizing/custom-jackson-deserialization.html">Adding Custom Serializers and Deserializers to Jackson&#8217;s <code>ObjectMapper</code></a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="customizing/configuring-cors.html">Configuring CORS</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="https://github.com/spring-projects/spring-data-commons/wiki">Wiki</a>
+  </li>
+</ul>
+  </li>
+</ul>
+          <div class="toggle-sm">
+            <button id="nav-toggle-2" class="nav-toggle"></button>
+          </div>
+        </nav>
+      </div>
+      <div class="nav-collapse">
+        <button id="nav-collapse-toggle"><span></span></button>        
+      </div>
+    </div>
+    <div class="nav-resize"></div>
+  </aside>
+</div>
+<script>
+!function (sidebar) {
+  if (sidebar) {
+    document.body.classList.add('nav-sm')
+  }
+}(localStorage && localStorage.getItem('sidebar') === 'close')
+</script><main class="article">
+<div class="toolbar" role="navigation">
+  <button id="nav-toggle-1" class="nav-toggle"></button>
+</div>
+  <div class="content">
+<aside class="sidebar">
+  <div class="content">
+    <div
+      class="toc"
+      data-title="Repository resources"
+      data-levels="2"
+    >
+      <div class="toc-menu"></div>
+    </div>
+    <div class="sidebar-links">
+        <a href="file:///Users/mpaluch/git/data/spring-data-rest/src/main/antora/modules/ROOT/pages/repository-resources.adoc">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+          ><path
+              d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"
+            ></path></svg>
+          Edit this Page
+        </a>
+        <a href="https://github.com/spring-projects/spring-data-rest" title="Github">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="512px"
+            id="Layer_1"
+            version="1.1"
+            viewBox="0 0 512 512"
+            width="512px"
+          ><style type="text/css"><![CDATA[
+              .st0{fill-rule:evenodd;clip-rule:evenodd;} ]]></style><g><path
+                class="st0"
+                d="M256,32C132.3,32,32,134.8,32,261.7c0,101.5,64.2,187.5,153.2,217.9c11.2,2.1,15.3-5,15.3-11.1   c0-5.5-0.2-19.9-0.3-39.1c-62.3,13.9-75.5-30.8-75.5-30.8c-10.2-26.5-24.9-33.6-24.9-33.6c-20.3-14.3,1.5-14,1.5-14   c22.5,1.6,34.3,23.7,34.3,23.7c20,35.1,52.4,25,65.2,19.1c2-14.8,7.8-25,14.2-30.7c-49.7-5.8-102-25.5-102-113.5   c0-25.1,8.7-45.6,23-61.6c-2.3-5.8-10-29.2,2.2-60.8c0,0,18.8-6.2,61.6,23.5c17.9-5.1,37-7.6,56.1-7.7c19,0.1,38.2,2.6,56.1,7.7   c42.8-29.7,61.5-23.5,61.5-23.5c12.2,31.6,4.5,55,2.2,60.8c14.3,16.1,23,36.6,23,61.6c0,88.2-52.4,107.6-102.3,113.3   c8,7.1,15.2,21.1,15.2,42.5c0,30.7-0.3,55.5-0.3,63c0,6.1,4,13.3,15.4,11C415.9,449.1,480,363.1,480,261.7   C480,134.8,379.7,32,256,32z"
+              ></path></g></svg>
+          Github Project
+        </a>
+    </div>
+  </div>
+</aside><div class="doc">
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Spring Data REST</a></li>
+    <li><a href="repository-resources.html">Repository resources</a></li>
+  </ul>
+</nav>
+<article>
+<h1 id="page-title" class="page">Repository resources</h1>
+<div class="sect1">
+<h2 id="repository-resources.fundamentals"><a class="anchor" href="#repository-resources.fundamentals"></a>Fundamentals</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The core functionality of Spring Data REST is to export resources for Spring Data repositories. Thus, the core artifact to look at and potentially customize the way the exporting works is the repository interface. Consider the following repository interface:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">public interface OrderRepository extends CrudRepository&lt;Order, Long&gt; { }</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For this repository, Spring Data REST exposes a collection resource at <code>/orders</code>. The path is derived from the uncapitalized, pluralized, simple class name of the domain class being managed. It also exposes an item resource for each of the items managed by the repository under the URI template <code>/orders/{id}</code>.</p>
+</div>
+<div class="paragraph">
+<p>By default, the HTTP methods to interact with these resources map to the according methods of <code>CrudRepository</code>. Read more on that in the sections on <a href="#repository-resources.collection-resource">collection resources</a> and <a href="#repository-resources.item-resource">item resources</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="repository-resources.methods"><a class="anchor" href="#repository-resources.methods"></a>Repository methods exposure</h3>
+<div class="paragraph">
+<p>Which HTTP resources are exposed for a certain repository is mostly driven by the structure of the repository.
+In other words, the resource exposure will follow which methods you have exposed on the repository.
+If you extend <code>CrudRepository</code> you usually expose all methods required to expose all HTTP resources we can register by default.
+Each of the resources listed below will define which of the methods need to be present so that a particular HTTP method can be exposed for each of the resources.
+That means, that repositories that are not exposing those methods&#8201;&#8212;&#8201;either by not declaring them at all or explicitly using <code>@RestResource(exported = false)</code>&#8201;&#8212;&#8201;won&#8217;t expose those HTTP methods on those resources.</p>
+</div>
+<div class="paragraph">
+<p>For details on how to tweak the default method exposure or dedicated HTTP methods individually see <a href="customizing-sdr.html#customizing-sdr.http-methods" class="xref page">Customizing supported HTTP methods</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="repository-resources.default-status-codes"><a class="anchor" href="#repository-resources.default-status-codes"></a>Default Status Codes</h3>
+<div class="paragraph">
+<p>For the resources exposed, we use a set of default status codes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>200 OK</code>: For plain <code>GET</code> requests.</p>
+</li>
+<li>
+<p><code>201 Created</code>: For <code>POST</code> and <code>PUT</code> requests that create new resources.</p>
+</li>
+<li>
+<p><code>204 No Content</code>: For <code>PUT</code>, <code>PATCH</code>, and <code>DELETE</code> requests when the configuration is set to not return response bodies for resource updates (<code>RepositoryRestConfiguration.setReturnBodyOnUpdate(…)</code>).
+If the configuration value is set to include responses for <code>PUT</code>, <code>200 OK</code> is returned for updates, and <code>201 Created</code> is returned for resource created through <code>PUT</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the configuration values (<code>RepositoryRestConfiguration.returnBodyOnUpdate(…)</code> and <code>RepositoryRestConfiguration.returnBodyCreate(…)</code>) are explicitly set to <code>null</code>&#8201;&#8212;&#8201;which they are by default --, the presence of the HTTP Accept header is used to determine the response code.
+Read more on this in the detailed description of <a href="#repository-resources.collection-resource.supported-methods.post">collection</a> and <a href="#repository-resources.item-resource.supported-methods.put">item resources</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="repository-resources.resource-discoverability"><a class="anchor" href="#repository-resources.resource-discoverability"></a>Resource Discoverability</h3>
+<div class="paragraph">
+<p>A core principle of <a href="https://github.com/spring-guides/understanding/tree/master/hateoas">HATEOAS</a> is that resources should be discoverable through the publication of links that point to the available resources. There are a few competing de-facto standards of how to represent links in JSON. By default, Spring Data REST uses <a href="https://tools.ietf.org/html/draft-kelly-json-hal">HAL</a> to render responses. HAL defines the links to be contained in a property of the returned document.</p>
+</div>
+<div class="paragraph">
+<p>Resource discovery starts at the top level of the application. By issuing a request to the root URL under which the Spring Data REST application is deployed, the client can extract, from the returned JSON object, a set of links that represent the next level of resources that are available to the client.</p>
+</div>
+<div class="paragraph">
+<p>For example, to discover what resources are available at the root of the application, issue an HTTP <code>GET</code> to the root URL, as follows:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">curl -v http://localhost:8080/
+
+&lt; HTTP/1.1 200 OK
+&lt; Content-Type: application/hal+json
+
+{ "_links" : {
+    "orders" : {
+      "href" : "http://localhost:8080/orders"
+    },
+    "profile" : {
+      "href" : "http://localhost:8080/api/alps"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The property of the result document is an object that consists of keys representing the relation type, with nested link objects as specified in HAL.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For more details about the <code>profile</code> link, see <a href="metadata.html#metadata.alps" class="xref page">Application-Level Profile Semantics (ALPS)</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="repository-resources.collection-resource"><a class="anchor" href="#repository-resources.collection-resource"></a>The Collection Resource</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Data REST exposes a collection resource named after the uncapitalized, pluralized version of the domain class the exported repository is handling. Both the name of the resource and the path can be customized by using <code>@RepositoryRestResource</code> on the repository interface.</p>
+</div>
+<div class="sect2">
+<h3 id="repository-resources.collection-resource.supported-methods"><a class="anchor" href="#repository-resources.collection-resource.supported-methods"></a>Supported HTTP Methods</h3>
+<div class="paragraph">
+<p>Collections resources support both <code>GET</code> and <code>POST</code>. All other HTTP methods cause a <code>405 Method Not Allowed</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.collection-resource.supported-methods.get"><a class="anchor" href="#repository-resources.collection-resource.supported-methods.get"></a><code>GET</code></h4>
+<div class="paragraph">
+<p>Returns all entities the repository servers through its <code>findAll(…)</code> method.
+If the repository is a paging repository we include the pagination links if necessary and additional page metadata.</p>
+</div>
+<div class="sect4">
+<h5 id="_methods_used_for_invocation"><a class="anchor" href="#_methods_used_for_invocation"></a>Methods used for invocation</h5>
+<div class="paragraph">
+<p>The following methods are used if present (descending order):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>findAll(Pageable)</code></p>
+</li>
+<li>
+<p><code>findAll(Sort)</code></p>
+</li>
+<li>
+<p><code>findAll()</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information on the default exposure of methods, see <a href="#repository-resources.methods">Repository methods exposure</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="parameters"><a class="anchor" href="#parameters"></a>Parameters</h5>
+<div class="paragraph">
+<p>If the repository has pagination capabilities, the resource takes the following parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>page</code>: The page number to access (0 indexed, defaults to 0).</p>
+</li>
+<li>
+<p><code>size</code>: The page size requested (defaults to 20).</p>
+</li>
+<li>
+<p><code>sort</code>: A collection of sort directives in the format <code>($propertyname,)+[asc|desc]</code>?.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_custom_status_codes"><a class="anchor" href="#_custom_status_codes"></a>Custom Status Codes</h5>
+<div class="paragraph">
+<p>The <code>GET</code> method has only one custom status code:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>405 Method Not Allowed</code>: If the <code>findAll(…)</code> methods were not exported (through <code>@RestResource(exported = false)</code>) or are not present in the repository.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="supported-media-types"><a class="anchor" href="#supported-media-types"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>GET</code> method supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>application/hal+json</code></p>
+</li>
+<li>
+<p><code>application/json</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="related-resources"><a class="anchor" href="#related-resources"></a>Related Resources</h5>
+<div class="paragraph">
+<p>The <code>GET</code> method supports a single link for discovering related resources:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>search</code>: A <a href="#repository-resources.search-resource">search resource</a> is exposed if the backing repository exposes query methods.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.collection-resource.supported-methods.head"><a class="anchor" href="#repository-resources.collection-resource.supported-methods.head"></a><code>HEAD</code></h4>
+<div class="paragraph">
+<p>The <code>HEAD</code> method returns whether the collection resource is available. It has no status codes, media types, or related resources.</p>
+</div>
+<div class="sect4">
+<h5 id="_methods_used_for_invocation_2"><a class="anchor" href="#_methods_used_for_invocation_2"></a>Methods used for invocation</h5>
+<div class="paragraph">
+<p>The following methods are used if present (descending order):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>findAll(Pageable)</code></p>
+</li>
+<li>
+<p><code>findAll(Sort)</code></p>
+</li>
+<li>
+<p><code>findAll()</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information on the default exposure of methods, see <a href="#repository-resources.methods">Repository methods exposure</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.collection-resource.supported-methods.post"><a class="anchor" href="#repository-resources.collection-resource.supported-methods.post"></a><code>POST</code></h4>
+<div class="paragraph">
+<p>The <code>POST</code> method creates a new entity from the given request body.
+By default, whether the response contains a body is controlled by the <code>Accept</code> header sent with the request.
+If one is sent, a response body is created.
+If not, the response body is empty and a representation of the resource created can be obtained by following link contained in the <code>Location</code> response header.
+This behavior can be overridden by configuring <code>RepositoryRestConfiguration.setReturnBodyOnCreate(…)</code> accordingly.</p>
+</div>
+<div class="sect4">
+<h5 id="_methods_used_for_invocation_3"><a class="anchor" href="#_methods_used_for_invocation_3"></a>Methods used for invocation</h5>
+<div class="paragraph">
+<p>The following methods are used if present (descending order):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>save(…)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information on the default exposure of methods, see <a href="#repository-resources.methods">Repository methods exposure</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_custom_status_codes_2"><a class="anchor" href="#_custom_status_codes_2"></a>Custom Status Codes</h5>
+<div class="paragraph">
+<p>The <code>POST</code> method has only one custom status code:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>405 Method Not Allowed</code>: If the <code>save(…)</code> methods were not exported (through <code>@RestResource(exported = false)</code>) or are not present in the repository at all.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types"><a class="anchor" href="#_supported_media_types"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>POST</code> method supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>application/hal+json</p>
+</li>
+<li>
+<p>application/json</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="repository-resources.item-resource"><a class="anchor" href="#repository-resources.item-resource"></a>The Item Resource</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Data REST exposes a resource for individual collection items as sub-resources of the collection resource.</p>
+</div>
+<div class="sect2">
+<h3 id="repository-resources.item-resource.supported-methods"><a class="anchor" href="#repository-resources.item-resource.supported-methods"></a>Supported HTTP Methods</h3>
+<div class="paragraph">
+<p>Item resources generally support <code>GET</code>, <code>PUT</code>, <code>PATCH</code>, and <code>DELETE</code>, unless explicit configuration prevents that (see &#8220;<a href="#repository-resources.association-resource">The Association Resource</a>&#8221; for details).</p>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.item-resource.supported-methods.get"><a class="anchor" href="#repository-resources.item-resource.supported-methods.get"></a>GET</h4>
+<div class="paragraph">
+<p>The <code>GET</code> method returns a single entity.</p>
+</div>
+<div class="sect4">
+<h5 id="_methods_used_for_invocation_4"><a class="anchor" href="#_methods_used_for_invocation_4"></a>Methods used for invocation</h5>
+<div class="paragraph">
+<p>The following methods are used if present (descending order):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>findById(…)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information on the default exposure of methods, see <a href="#repository-resources.methods">Repository methods exposure</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_custom_status_codes_3"><a class="anchor" href="#_custom_status_codes_3"></a>Custom Status Codes</h5>
+<div class="paragraph">
+<p>The <code>GET</code> method has only one custom status code:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>405 Method Not Allowed</code>: If the <code>findOne(…)</code> methods were not exported (through <code>@RestResource(exported = false)</code>) or are not present in the repository.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types_2"><a class="anchor" href="#_supported_media_types_2"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>GET</code> method supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>application/hal+json</p>
+</li>
+<li>
+<p>application/json</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_related_resources"><a class="anchor" href="#_related_resources"></a>Related Resources</h5>
+<div class="paragraph">
+<p>For every association of the domain type, we expose links named after the association property. You can customize this behavior by using <code>@RestResource</code> on the property. The related resources are of the <a href="#repository-resources.association-resource">association resource</a> type.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.item-resource.supported-methods.head"><a class="anchor" href="#repository-resources.item-resource.supported-methods.head"></a><code>HEAD</code></h4>
+<div class="paragraph">
+<p>The <code>HEAD</code> method returns whether the item resource is available. It has no status codes, media types, or related resources.</p>
+</div>
+<div class="sect4">
+<h5 id="_methods_used_for_invocation_5"><a class="anchor" href="#_methods_used_for_invocation_5"></a>Methods used for invocation</h5>
+<div class="paragraph">
+<p>The following methods are used if present (descending order):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>findById(…)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information on the default exposure of methods, see <a href="#repository-resources.methods">Repository methods exposure</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.item-resource.supported-methods.put"><a class="anchor" href="#repository-resources.item-resource.supported-methods.put"></a><code>PUT</code></h4>
+<div class="paragraph">
+<p>The <code>PUT</code> method replaces the state of the target resource with the supplied request body.
+By default, whether the response contains a body is controlled by the <code>Accept</code> header sent with the request.
+If the request header is present, a response body and a status code of <code>200 OK</code> is returned.
+If no header is present, the response body is empty and a successful request returns a status of <code>204 No Content</code>.
+This behavior can be overridden by configuring <code>RepositoryRestConfiguration.setReturnBodyOnUpdate(…)</code> accordingly.</p>
+</div>
+<div class="sect4">
+<h5 id="_methods_used_for_invocation_6"><a class="anchor" href="#_methods_used_for_invocation_6"></a>Methods used for invocation</h5>
+<div class="paragraph">
+<p>The following methods are used if present (descending order):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>save(…)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information on the default exposure of methods, see <a href="#repository-resources.methods">Repository methods exposure</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_custom_status_codes_4"><a class="anchor" href="#_custom_status_codes_4"></a>Custom Status Codes</h5>
+<div class="paragraph">
+<p>The <code>PUT</code> method has only one custom status code:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>405 Method Not Allowed</code>: If the <code>save(…)</code> methods were not exported (through <code>@RestResource(exported = false)</code>) or is not present in the repository at all.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types_3"><a class="anchor" href="#_supported_media_types_3"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>PUT</code> method supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>application/hal+json</p>
+</li>
+<li>
+<p>application/json</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.item-resource.supported-methods-patch"><a class="anchor" href="#repository-resources.item-resource.supported-methods-patch"></a><code>PATCH</code></h4>
+<div class="paragraph">
+<p>The <code>PATCH</code> method is similar to the <code>PUT</code> method but partially updates the resources state.</p>
+</div>
+<div class="sect4">
+<h5 id="_methods_used_for_invocation_7"><a class="anchor" href="#_methods_used_for_invocation_7"></a>Methods used for invocation</h5>
+<div class="paragraph">
+<p>The following methods are used if present (descending order):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>save(…)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information on the default exposure of methods, see <a href="#repository-resources.methods">Repository methods exposure</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_custom_status_codes_5"><a class="anchor" href="#_custom_status_codes_5"></a>Custom Status Codes</h5>
+<div class="paragraph">
+<p>The <code>PATCH</code> method has only one custom status code:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>405 Method Not Allowed</code>: If the <code>save(…)</code> methods were not exported (through <code>@RestResource(exported = false)</code>) or are not present in the repository.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types_4"><a class="anchor" href="#_supported_media_types_4"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>PATCH</code> method supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>application/hal+json</p>
+</li>
+<li>
+<p>application/json</p>
+</li>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc6902">application/patch+json</a></p>
+</li>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc7386">application/merge-patch+json</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.item-resource.supported-methods.delete"><a class="anchor" href="#repository-resources.item-resource.supported-methods.delete"></a><code>DELETE</code></h4>
+<div class="paragraph">
+<p>The <code>DELETE</code> method deletes the resource exposed.
+By default, whether the response contains a body is controlled by the <code>Accept</code> header sent with the request.
+If the request header is present, a response body and a status code of <code>200 OK</code> is returned.
+If no header is present, the response body is empty and a successful request returns a status of <code>204 No Content</code>.
+This behavior can be overridden by configuring <code>RepositoryRestConfiguration.setReturnBodyOnDelete(…)</code> accordingly.</p>
+</div>
+<div class="sect4">
+<h5 id="_methods_used_for_invocation_8"><a class="anchor" href="#_methods_used_for_invocation_8"></a>Methods used for invocation</h5>
+<div class="paragraph">
+<p>The following methods are used if present (descending order):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>delete(T)</code></p>
+</li>
+<li>
+<p><code>delete(ID)</code></p>
+</li>
+<li>
+<p><code>delete(Iterable)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information on the default exposure of methods, see <a href="#repository-resources.methods">Repository methods exposure</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_custom_status_codes_6"><a class="anchor" href="#_custom_status_codes_6"></a>Custom Status Codes</h5>
+<div class="paragraph">
+<p>The <code>DELETE</code> method has only one custom status code:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>405 Method Not Allowed</code>: If the <code>delete(…)</code> methods were not exported (through <code>@RestResource(exported = false)</code>) or are not present in the repository.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="repository-resources.association-resource"><a class="anchor" href="#repository-resources.association-resource"></a>The Association Resource</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Data REST exposes sub-resources of every item resource for each of the associations the item resource has. The name and path of the resource defaults to the name of the association property and can be customized by using <code>@RestResource</code> on the association property.</p>
+</div>
+<div class="sect2">
+<h3 id="repository-resources.association-resource.supported-methods"><a class="anchor" href="#repository-resources.association-resource.supported-methods"></a>Supported HTTP Methods</h3>
+<div class="paragraph">
+<p>The association resource supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>GET</p>
+</li>
+<li>
+<p>PUT</p>
+</li>
+<li>
+<p>POST</p>
+</li>
+<li>
+<p>DELETE</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.association-resource.supported-methods.get"><a class="anchor" href="#repository-resources.association-resource.supported-methods.get"></a><code>GET</code></h4>
+<div class="paragraph">
+<p>The <code>GET</code> method returns the state of the association resource.</p>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types_5"><a class="anchor" href="#_supported_media_types_5"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>GET</code> method supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>application/hal+json</p>
+</li>
+<li>
+<p>application/json</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.association-resource.supported-methods.put"><a class="anchor" href="#repository-resources.association-resource.supported-methods.put"></a><code>PUT</code></h4>
+<div class="paragraph">
+<p>The <code>PUT</code> method binds the resource pointed to by the given URI(s) to the association resource (see Supported Media Types).</p>
+</div>
+<div class="sect4">
+<h5 id="_custom_status_codes_7"><a class="anchor" href="#_custom_status_codes_7"></a>Custom Status Codes</h5>
+<div class="paragraph">
+<p>The <code>PUT</code> method has only one custom status code:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>400 Bad Request</code>: When multiple URIs were given for a to-one-association.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types_6"><a class="anchor" href="#_supported_media_types_6"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>PUT</code> method supports only one media type:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>text/uri-list: URIs pointing to the resource to bind to the association.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.association-resource.supported-methods.post"><a class="anchor" href="#repository-resources.association-resource.supported-methods.post"></a><code>POST</code></h4>
+<div class="paragraph">
+<p>The <code>POST</code> method is supported only for collection associations. It adds a new element to the collection.</p>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types_7"><a class="anchor" href="#_supported_media_types_7"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>POST</code> method supports only one media type:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>text/uri-list: URIs pointing to the resource to add to the association.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.association-resource.supported-methods.delete"><a class="anchor" href="#repository-resources.association-resource.supported-methods.delete"></a><code>DELETE</code></h4>
+<div class="paragraph">
+<p>The <code>DELETE</code> method unbinds the association.</p>
+</div>
+<div class="sect4">
+<h5 id="custom-status-codes"><a class="anchor" href="#custom-status-codes"></a>Custom Status Codes</h5>
+<div class="paragraph">
+<p>The <code>POST</code> method has only one custom status code:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>405 Method Not Allowed</code>: When the association is non-optional.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="repository-resources.search-resource"><a class="anchor" href="#repository-resources.search-resource"></a>The Search Resource</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The search resource returns links for all query methods exposed by a repository. The path and name of the query method resources can be modified using <code>@RestResource</code> on the method declaration.</p>
+</div>
+<div class="sect2">
+<h3 id="repository-resources.search-resource.supported-methods"><a class="anchor" href="#repository-resources.search-resource.supported-methods"></a>Supported HTTP Methods</h3>
+<div class="paragraph">
+<p>As the search resource is a read-only resource, it supports only the <code>GET</code> method.</p>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.search-resource.supported-methods.get"><a class="anchor" href="#repository-resources.search-resource.supported-methods.get"></a><code>GET</code></h4>
+<div class="paragraph">
+<p>The <code>GET</code> method returns a list of links pointing to the individual query method resources.</p>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types_8"><a class="anchor" href="#_supported_media_types_8"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>GET</code> method supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>application/hal+json</p>
+</li>
+<li>
+<p>application/json</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_related_resources_2"><a class="anchor" href="#_related_resources_2"></a>Related Resources</h5>
+<div class="paragraph">
+<p>For every query method declared in the repository, we expose a <a href="#repository-resources.query-method-resource">query method resource</a>. If the resource supports pagination, the URI pointing to it is a URI template containing the pagination parameters.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.search-resource.supported-methods.head"><a class="anchor" href="#repository-resources.search-resource.supported-methods.head"></a><code>HEAD</code></h4>
+<div class="paragraph">
+<p>The <code>HEAD</code> method returns whether the search resource is available. A 404 return code indicates no query method resources are available.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="repository-resources.query-method-resource"><a class="anchor" href="#repository-resources.query-method-resource"></a>The Query Method Resource</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The query method resource runs the exposed query through an individual query method on the repository interface.</p>
+</div>
+<div class="sect2">
+<h3 id="repository-resources.query-resource.supported-method"><a class="anchor" href="#repository-resources.query-resource.supported-method"></a>Supported HTTP Methods</h3>
+<div class="paragraph">
+<p>As the query method resource is a read-only resource, it supports <code>GET</code> only.</p>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.query-resource.supported-method.get"><a class="anchor" href="#repository-resources.query-resource.supported-method.get"></a><code>GET</code></h4>
+<div class="paragraph">
+<p>The <code>GET</code> method returns the result of the query.</p>
+</div>
+<div class="sect4">
+<h5 id="_parameters"><a class="anchor" href="#_parameters"></a>Parameters</h5>
+<div class="paragraph">
+<p>If the query method has pagination capabilities (indicated in the URI template pointing to the resource) the resource takes the following parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>page</code>: The page number to access (0 indexed, defaults to 0).</p>
+</li>
+<li>
+<p><code>size</code>: The page size requested (defaults to 20).</p>
+</li>
+<li>
+<p><code>sort</code>: A collection of sort directives in the format <code>($propertyname,)+[asc|desc]</code>?.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_supported_media_types_9"><a class="anchor" href="#_supported_media_types_9"></a>Supported Media Types</h5>
+<div class="paragraph">
+<p>The <code>GET</code> method supports the following media types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>application/hal+json</code></p>
+</li>
+<li>
+<p><code>application/json</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repository-resources.query-resource.supported-method.head"><a class="anchor" href="#repository-resources.query-resource.supported-method.head"></a><code>HEAD</code></h4>
+<div class="paragraph">
+<p>The <code>HEAD</code> method returns whether a query method resource is available.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="introduction/spring-data-rest-examples.html">Spring Data REST example projects</a></span>
+  <span class="next"><a href="paging-and-sorting.html">Paging and Sorting</a></span>
+</nav>
+</article>
+</div>  </div>
+</main>
+<div class="modal micromodal-slide" id="modal-versions" aria-hidden="true">
+    <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true">
+            <main class="modal__content" id="modal-versions-content">
+              <button data-micromodal-close class="modal-versions-close">
+                <svg width="28px" height="28px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><style>.cls-1h{fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px;}</style></defs><title/><g id="cross"><line class="cls-1h" x1="7" x2="25" y1="7" y2="25"/><line class="cls-1h" x1="7" x2="25" y1="25" y2="7"/></g></svg>
+              </button>
+              <div class="colset">
+                <div class="col-left">
+                  <ul class="nav-versions">
+                    <li class="component is-current">
+                      <a class="title" href="index.html">Spring Data REST</a>
+                      <ul class="versions">
+                        <li class="version is-current is-latest">
+                          <a href="index.html">
+                            4.2.0-SNAPSHOT<span class="current">current</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-right">
+                  <ul>
+                    <li>
+                      Related Spring Documentation
+                      <ul>
+                        <li><a href="https://docs.spring.io/spring-framework/reference/">Spring Framework</a></li>
+                        <li>
+                          Spring Data
+                          <ul>
+                            <li><a href="https://docs.spring.io/spring-data-commons/reference/">Spring Data Commons</a></li>
+                            <li><a href="https://docs.spring.io/spring-data-jpa/reference/">Spring Data JPA</a></li>
+                          </ul>
+                        </li>
+                        <li><a href="https://docs.spring.io/spring-integration/reference/">Spring Integration</a></li>
+                        <li>
+                          <a href="https://docs.spring.io/spring-security/reference/">Spring Security</a>
+                          <ul>
+                            <li><a href="https://docs.spring.io/spring-ldap/reference/">Spring LDAP</a></li>
+                            <li><a href="https://docs.spring.io/spring-session/reference/">Spring Session</a></li>
+                            <li><a href="https://docs.spring.io/spring-authorization-server/reference/">Spring Authorization Server</a></li>
+                            <li><a href="https://docs.spring.io/spring-Vault/reference/">Spring Vault</a></li>
+                            <li><a href="https://docs.spring.io/spring-security-kerberos/reference/">Spring Security Kerberos</a></li>
+                          </ul>
+                        </li>
+                        <li><a href="https://docs.spring.io/spring-ai/reference/">Spring AI</a></li>
+                        <li><a href="https://docs.spring.io/spring-cli/reference/">Spring CLI</a></li>
+                        <li><a href="https://docs.spring.io/spring-graphql/reference/">Spring GraphQL</a></li>
+                        <li><a href="https://docs.spring.io/spring-shell/reference/">Spring Shell</a></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+</div>
+<footer class="footer flex">
+    <div id="spring-links flex">
+        <img id="springlogo" src="./_/img/spring-logo.svg" alt="Spring">
+        <p class="smallest antialiased">© <script>var d = new Date();
+        document.write(d.getFullYear());</script> <a href="https://www.vmware.com/">VMware</a>, Inc. or its affiliates. <a href="https://www.vmware.com/help/legal.html">Terms of Use</a> • <a href="https://www.vmware.com/help/privacy.html" rel="noopener noreferrer">Privacy</a> • <a href="https://spring.io/trademarks">Trademark Guidelines</a> <span id="thank-you-mobile">• <a href="https://spring.io/thank-you">Thank you</a></span> • <a href="https://www.vmware.com/help/privacy/california-privacy-rights.html">Your California Privacy Rights</a> • <a class="ot-sdk-show-settings">Cookie Settings</a> <span id="teconsent"></span></p>
+        <p class="smallest antialiased has-gray-text">Apache®, Apache Tomcat®, Apache Kafka®, Apache Cassandra&trade;, and Apache Geode&trade; are trademarks or registered trademarks of the Apache Software Foundation in the United States and/or other countries. Java&trade;, Java&trade; SE, Java&trade; EE, and OpenJDK&trade; are trademarks of Oracle and/or its affiliates. Kubernetes® is a registered trademark of the Linux Foundation in the United States and other countries. Linux® is the registered trademark of Linus Torvalds in the United States and other countries. Windows® and Microsoft® Azure are registered trademarks of Microsoft Corporation. “AWS” and “Amazon Web Services” are trademarks or registered trademarks of Amazon.com Inc. or its affiliates. All other trademarks and copyrights are property of their respective owners and are only mentioned for informative purposes. Other names may be trademarks of their respective owners.</p>
+    </div>
+    <div id="social-icons" class="flex jc-between">
+        <a href="https://www.youtube.com/user/SpringSourceDev" title="Youtube"><svg id="youtube-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle class="cls-1" cx="20" cy="20" r="20"/><path class="cls-2" d="M30.91,14.53a2.89,2.89,0,0,0-2-2C27.12,12,20,12,20,12s-7.12,0-8.9.47a2.9,2.9,0,0,0-2,2A30.56,30.56,0,0,0,8.63,20a30.44,30.44,0,0,0,.46,5.47,2.89,2.89,0,0,0,2,2C12.9,28,20,28,20,28s7.12,0,8.9-.47a2.87,2.87,0,0,0,2-2A30.56,30.56,0,0,0,31.37,20,28.88,28.88,0,0,0,30.91,14.53ZM17.73,23.41V16.59L23.65,20Z"/></svg></a>
+        <a href="https://github.com/spring-projects" title="Github"><svg id="github-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75.93 75.93"><path class="cls-1" d="M38,0a38,38,0,1,0,38,38A38,38,0,0,0,38,0Z"/></g><path class="cls-2" d="M38,15.59A22.95,22.95,0,0,0,30.71,60.3c1.15.21,1.57-.5,1.57-1.11s0-2,0-3.9c-6.38,1.39-7.73-3.07-7.73-3.07A6.09,6.09,0,0,0,22,48.86c-2.09-1.42.15-1.39.15-1.39a4.81,4.81,0,0,1,3.52,2.36c2,3.5,5.37,2.49,6.67,1.91a4.87,4.87,0,0,1,1.46-3.07c-5.09-.58-10.45-2.55-10.45-11.34a8.84,8.84,0,0,1,2.36-6.15,8.29,8.29,0,0,1,.23-6.07s1.92-.62,6.3,2.35a21.82,21.82,0,0,1,11.49,0c4.38-3,6.3-2.35,6.3-2.35a8.29,8.29,0,0,1,.23,6.07,8.84,8.84,0,0,1,2.36,6.15c0,8.81-5.37,10.75-10.48,11.32a5.46,5.46,0,0,1,1.56,4.25c0,3.07,0,5.54,0,6.29s.42,1.33,1.58,1.1A22.94,22.94,0,0,0,38,15.59Z"/></svg></a>
+        <a href="https://twitter.com/springcentral" title="Twitter"><svg id="twitter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75.93 75.93"><circle class="cls-1" cx="37.97" cy="37.97" r="37.97"/><path id="Twitter-2" data-name="Twitter" class="cls-2" d="M55.2,22.73a15.43,15.43,0,0,1-4.88,1.91,7.56,7.56,0,0,0-5.61-2.49A7.78,7.78,0,0,0,37,30a7.56,7.56,0,0,0,.2,1.79,21.63,21.63,0,0,1-15.84-8.23,8,8,0,0,0,2.37,10.52,7.66,7.66,0,0,1-3.48-1v.09A7.84,7.84,0,0,0,26.45,41a7.54,7.54,0,0,1-2,.28A7.64,7.64,0,0,1,23,41.09a7.71,7.71,0,0,0,7.18,5.47,15.21,15.21,0,0,1-9.55,3.37,15.78,15.78,0,0,1-1.83-.11,21.41,21.41,0,0,0,11.78,3.54c14.13,0,21.86-12,21.86-22.42,0-.34,0-.68,0-1a15.67,15.67,0,0,0,3.83-4.08,14.9,14.9,0,0,1-4.41,1.24A7.8,7.8,0,0,0,55.2,22.73Z"/></svg></a>
+    </div>
+</footer>
+<script src="./_/js/vendor/import.js"></script>
+<script src="./_/js/site.js"></script>
+<script async src="./_/js/vendor/highlight.js"></script>
+<script async src="./_/js/vendor/asciidoctor-tabs.js" data-sync-storage-key="docs:preferred-tab"></script>
+  </body>
+</html>

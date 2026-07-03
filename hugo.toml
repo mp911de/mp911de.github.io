@@ -22,8 +22,8 @@ appleTouchIcon = 'apple-touch-icon.png'
 
 [menu]
 [[menu.main]]
-name = 'About'
-url = '/about/'
+name = 'About me'
+url = '/about-me/'
 weight = 10
 [[menu.main]]
 name = 'Privacy'

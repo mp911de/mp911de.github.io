@@ -1,0 +1,81 @@
++++
+title = "Reading from master, slave or nearest Redis Cluster nodes"
+date = "2015-09-03T09:14:46"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "reading-from-masters-slaves-or-nearest-redis-cluster-nodes"
+wordpress_id = "222"
+url = "/2015/09/03/reading-from-masters-slaves-or-nearest-redis-cluster-nodes/"
+categories = ["Blog"]
++++
+lettuce 4.0.Beta2 features ReadFrom Settings. ReadFrom affects how lettuce routes read operations to the members of a Redis Cluster.
+
+By default, lettuce routes its read operations to the master node. Reading from the master returns the most recent version of the data because write operations are issued to the single master node. Reading from masters guarantees strong consistency.
+
+You can reduce latency or improve read throughput by distributing reads to slave members of the Redis cluster for applications that do not require fully up-to-date data. `ReadFrom` is set per connection, meaning you can use different connections with different `ReadFrom` settings.
+
+<!--more-->
+
+[source,java]
+----
+RedisClusterClient clusterClient = new RedisClusterClient(RedisURI.Builder.redis("localhost", 7379).build());
+StatefulRedisClusterConnection<String, String> connection = clusterClient.connect();
+
+connection.setReadFrom(ReadFrom.SLAVE);
+
+String value = connection.sync().get("key");
+----
+
+The code example illustrates how to connect a Redis Cluster. The `ReadFrom` is set to `SLAVE`. Writes are issued always to the master but reads are dispatched in this case to a slave node. lettuce takes care that it uses the right slave. Keys are partitioned by slot hashes; A slot is handled by one master which can be backed by zero, one or multiple slaves. A slave holds the copy of exactly one master and not the whole cluster.
+
+== Use Cases for non-master reads
+
+The following use cases are common for using non-master read settings and encourage eventual consistency:
+
+* Providing local reads for geographically distributed applications. If you have Redis and application servers in multiple data centers, you may consider having a geographically distributed cluster. Using the `NEAREST` setting allows the client to read from the lowest-latency members, rather than always reading from the master node.
+* Maintaining availability during a failover. Use `MASTER++_++PREFERRED` if you want an application to read from the master by default, but to allow stale reads from slaves when the master node is unavailable. `MASTER++_++PREFERRED` allows a "read-only mode" for your application during a failover.
+* Increase read throughput by allowing stale reads If you want to increase your read throughput by adding additional slave nodes to your cluster Use `SLAVE` to read explicitly from slaves and reduce read load on the master node. Using slave reads can highly lead to stale reads.
+
+All `ReadFrom` settings except `MASTER` may return stale data because slaves replication is asynchronous and requires some delay. You need to ensure that your application can tolerate stale data.
+
+== Read from settings
+
+[width="100%",cols="50%,50%",options="header",]
+|===
+|Setting |Description
+|MASTER |Default mode. Read from the current master node.
+|MASTER++_++PREFERRED |Read from the master, but if it is unavailable, read from slave nodes.
+|SLAVE |Read from slave nodes.
+|NEAREST |Read from any node of the cluster with the lowest latency.
+|===
+
+Custom read settings can be implemented by extending the `com.lambdaworks.redis.ReadFrom` class.
+
+ReadFrom Settings are available in lettuce 4.0.Beta2 and can be downloaded from https://github.com/mp911de/lettuce/releases/tag/4.0.Beta2[Github] or the http://search.maven.org/#artifactdetails%7Cbiz.paluch.redis%7Clettuce%7C4.0.Beta2%7Cjar[Maven Central Repository].
+
+== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/4.0.Beta2[Release on Github]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/redis/lettuce/4.0.Beta2/lettuce-4.0.Beta2.jar[Download lettuce 4.0.Beta2]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+* http://redis.paluch.biz/docs/api/snapshots/4.0.Beta2/[Javadoc]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>4.0.Beta2</version>
+</dependency>
+
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>4.0.Beta2</version>
+    <classifier>shaded</classifier>
+</dependency>
+----
+
+Any feedback is appreciated or file an https://github.com/mp911de/lettuce/issues[issue on GitHub].

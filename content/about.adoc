@@ -1,0 +1,147 @@
++++
+title = "About"
+aliases = ["about"]
++++
+Hello friends!
+
+I am Mark Paluch, or https://bsky.app/profile/mp911de.bsky.social[@mp911de] on socials. Please feel encouraged to reach out. I'm always down to chat.
+
+image::/images/2024/12/Mark-Paluch.jpg[Mark Paluch,width=300]
+
+Welcome to my personal home on the internet. This is a place where I collect thoughts for tech related content as this is largely an outlet of what happens during my endeavours in work and music that is interesting to me. I am a highly creative person.
+
+Feel encouraged to navigate to areas of interest via the Table of Contents. This "About me" is full of oddities, topics, and tangents. Find what is interesting to you and just go with the flow ❤️.
+
+I am proud of my family. Understanding myself has been key to understanding the unique similarities and differences that make us who we are in our relationships.
+
+I've been doing many things in my Life. Technically, I am proud of creating https://r2dbc.io/[R2DBC] and maintaining a https://github.com/redis/lettuce[reactive Redis driver] 🥬. The https://spring.io/authors/mp911de[Spring 🍃 team] is dear to my heart and that is where I spend most of my time in the recent years creating frameworks to increase developer productivity.
+
+I am humbled to be part of the Java Community that nominated me as a https://javachampions.org/members.html#:~:text=265-,Mark%20Paluch,-Germany[Java Champion] as well as being part of the MongoDB Community who also nominated me https://www.mongodb.com/community/champions/mark-paluch/[MongoDB Champion].
+
+* <<_language_expression_ideas>>
+* <<_nature>>
+* <<_arts_traits_hobbies_work>>
+* <<_navigating_life_differently>>
+* <<_authenticity_and_identity>>
+* <<_self_actualization_improvement>>
+* <<_form_follows_function>>
+* <<_flow_vs_cognitive_state>>
+* <<_my_lived_experience>>
+
+== Language, Expression, & Ideas
+
+While German is my native language, English is my favorite language. I adore words, using them, and exchanging them always everywhere, anytime, forever. I studied copywriting to spread my horizon of expressivity.
+
+Favorite topics include tech past, present, and future. I love getting into topics like problem-solving, empowering people, community development, and building tools for tomorrow. Be warned, I will also go off and beyond on other topics. As an impulsive-driven, no-filters human being, I can easily span from peacefully getting along to radically changing future ideas in no time.
+
+== Nature
+
+With moving to the Northwest towards Germany's shore 🌊 I adore the outdoors here. Whether walking the Border Collies, lake fun, or just cruising on a boat adventure: My heart belongs into the nature we so miraculously benefit from. Wild waters, hefty winds 🌬️, the untamed violent side of nature is what resonates with my impulsive 💥 being.
+
+== Arts, Traits, Hobbies & Work
+
+From the first day on, I follow my thousand inner voices. Driven by curiosity, love, freedom and adventure, I alway strive for expressivity and doing the right thing. The right thing has many meanings and can be very different for the other person. Being useful and being needed are dear to my heart. Without, I question whether a thing is right for me.
+
+Solving puzzles all day long while balancing traits is taking up a major part of my time. The creative process is extremely important to me, my outcomes represent all of the core reasons I love to be alive for. I am here to create. Driven by my thousand inner voices I create code, prose, music, eats, and plants.
+
+I use my hands to craft, to drive tools for a better home and to please my inner voices. I extremely rarely ask for help. I help myself. I redo things if they do not suffice my perfectionism. I have troubles letting others do things as they rarely meet my level of expectation. I do not want them to discourage nor do I accept inferior outcomes. It can be difficult to get along with me.
+
+From Spring until Fall, my Garden gives me the ground to build ingredients that enrich our daily food. It is an aspiration for a wholesome future for myself and my family.
+
+My Music studio 🎹 is an essential part of my journey through Life. I always wanted to learn playing the Piano but never made my way through that excercise. Driven by impulse I started collecting gear yet I feared to produce something prevented by anxiety. What goes around, comes around and so it was gratitude that led me into learning Music Production.
+
+Producing music pipes emotions through the valve of musical expression. Finishing a tune and adding it to my playlist captures a facet of my Life. Silencing my inner voices by blasting my music into my ears is the most rewarding aspect of this passion. A way to tame daemons that would otherwise control me.
+
+I never felt I'd worked a single minute. There's no difference between the things I'm doing, yet every type of activity deserves its time slots, as that is how our society is organized.
+
+Yet, I feel I'm working eternal hours I have to wait, I am slowed down or cannot go at my pace.
+
+== Navigating Life Differently
+
+I am not your neurotypical neighbor 🧠. I am different 🌈.
+
+I was born in Poland 🇵🇱, moved to Germany 🇩🇪 and raised in a conservative catholic family. My Father forced us to go to Church and follow his view of Life. I am fortunate to have a mother who realized that path is my Father's way of coping with life and that it is not necessarily the right thing for everyone.
+
+I have had the benefit of my Autism spectrum neuro-divergence 🌈 diagnosis since I was 43. Better late than never. "Navigating Life Differently" is what always has defined me. I didn't receive any diagnosis as a child, yet I promised myself that I was going to be true to myself. Never allow anyone to let you act against your own nature.
+
+Neurodiversity impacts how I perceive, understand, and react to the world and all of the beautiful people in it. I'm proudly weird, a part-time dork, and I play a cool kid 😎 with some success professionally. Most importantly, with a worldview shaped by an Autistic shadow, I feel a strong moral compass 🧭 and am deeply connected to fostering an objective sense of justice. I feel physical pain whenever my loved ones (or the ones I care about) experience moral injustice.
+
+After all, my Father 👨‍🌾 isn't that different from me. He has chosen a different junction to make his turn in Life.
+
+== Authenticity and Identity
+
+Recently, I feel privileged to be growing into my age. As a kid, everyone tells you to grow up. Suddenly, you are at a certain age, yet nothing has changed, just the number of experiences and how you react to them.
+
+Perhaps an odd thing to say; however, I have largely lived split between the qualities of being too mature for my age and simultaneously too inexperienced at the same time. These symptoms of my life story may still exhibit evidence frequently from day to day, but I've done enough in Life now to appreciate the traditions I come from, the values I've learned to value, and the ability to make informed decisions with reasonably good instincts to lean on.
+
+Much of the maturity I enjoy now originates from learning from my guiding lights to become a decent human being. Learn about socially acceptable norms, as I didn't initially get that letter. Coping with no-filters and being able to change zoom levels from overview to the smallest detail.
+
+Authenticity has become a paramount and fundamental necessity in my relationships of all kinds. Caveats and imperfections acknowledged life is incredibly short when it is filled with time well-spent. I avoid all sorts of small talk as I am unable to follow superficial nonsense blabber. Marvelous interactions between people become real once we dive into what matters to you.
+
+I'm here to connect with people on a real level, to learn, grow, and understand perspectives that may be new or uncomfortable at first, and I hope to add to the empathy and joy in the world despite the chaos and drama each day brings. I am not blunt; I have no filters.
+
+== Self Actualization & Improvement
+
+Standing still is not in my nature. I am constantly seeking to improve myself and be the best that I can be. This is a very consuming endeavor yet oddly satisfying. Being the weirdo kid for decades took all self confidence yet I grew into excelling on things that inspired me.
+
+Applying my knowledge and knowing that is my best while learning every day from my guiding lights creates a healthy relationship between my perfectionism and my inner voices. I do not let my perfectionism stand in my way to create a toxic barrier. Instead, giving my best helps me to get along reasonably well.
+
+Following my routines allows me to focus on what matters on that day the most. Being myself requires a high degree of freedom, otherwise I cannot truly give my best as the pathways towards what it needs to get there are blocked. A common trait of businesses doing business things is imposing restrictions for the majority.
+
+I am not your neurotypical employee. I am navigating Life differently with a very different strengths vs. weaknesses profile. So do not tell me I should achieve something while you're preventing me from getting there. This isn't going to end well.
+
+== Form follows Function
+
+I adore beautiful things. Since ever I keep my eyes open for well-designed yet functional gadgets that can enrich my daily Life. It can be as simple as a water kettle or a well-engineered piece of code. Conventional human spaces surround me with largely underwhelming furniture, colors, arrangements, lighting, and order. Equipped with a low baseline of dopamine every aspect that sparks joy, that delights every days life without depleting itself resonates on a sympathetic level.
+
+A well-designed and well-crafted piece is a statement on its own. Its designers and creators express love for detail. They factually attest understanding of their craft by creating something beautiful yet useful.
+
+Things have a lifecycle: It is equally important to acquire things as it is to let them go. While something has been useful in the past, there is nothing that warrants its usefulness in future times. Accumulated cruft has to be let go. Avoidance in doing so leads to constant tension. Putting things out of sight can be a good first step, yet this is often a form of avoidance caused by fear of creating a void. Fear of being wrong. Fear of losing something that might or might not be useful in the future. Accepting lifecycle and letting go is a relief. It cultivates the space for change. Things no longer detriment joy; instead, their absence contributes to a better well-being.
+
+== Flow vs Cognitive State
+
+*Flow State*
+
+* _Characteristics_: Complete absorption in an activity, loss of self-consciousness, no sense of time, intrinsic motivation, chaos.
+* _Experience_: Activities feel effortless, there's a deep sense of fulfillment, creativity flows, individual parts emerge from unseen depths of the cosmos and influence each other and productivity peaks. I am the conductor entering a cacophony of ideas to ultimately turn dissonances into harmonies to ascend beyond what I believed is possible.
+* _Benefits_: Enhanced performance, increased creativity, improved emotional regulation, and greater overall satisfaction.
+
+*Cognitive State*
+
+* _Characteristics_: Deliberate, logical, impulsive, and effortful thinking, often involving problem-solving, planning, and reasoning.
+* _Experience_: Activities require conscious effort, can lead to fatigue if prolonged, and involve constant self-monitoring and correction.
+* _Benefits_: Effective problem-solving, strategic planning, and learning new information. However, it can be mentally exhausting and less enjoyable compared to flow.
+
+== My Lived Experience
+
+Flow state is a remarkable, highly satisfactory state to be in. I cannot plan for it, I just can (create++|++be in) an Environment that enables flow state. Motivation and freedom play into it a lot.
+
+I am in a hyper cognitive condition my whole Life. All sensory input is feed without filter into my brain 🧠, directly affecting my thinking. Crowds, temperatures over 23.5°C 🌡️, a messy desk easily overwhelm me 🤯. Everything has always been a cognitive, thought, and logic-driven activity in my mind that has been overly analyzed a thousand times.
+
+https://en.wikipedia.org/wiki/Flow_(psychology)[Flow], a concept introduced by https://en.wikipedia.org/wiki/Mihaly_Csikszentmihalyi[Mihály Csíkszentmihályi], is a mental state where a person is fully immersed in an activity, with a sense of energized focus, full involvement, and enjoyment.
+
+In flow, actions and awareness merge, time flies, and self-consciousness fades. It's about being "in the zone," where the challenge of the task meets your skills perfectly, leading to peak performance and deep satisfaction. I vaguely assume that the myth of the 10x developer has something to do with it.
+
+Flow state is a delicate little thing that whose existence can be extincted easily. A lot of things need to come together to cultivate ground for getting into the zone.
+
+When entering the flow state, the energies of different chakras unite. While I am not certain, the best way to describe it is if you are high on a mental trip that can take you everywhere. It allows you to overcome limitations by giving you access to areas in your brain that you didn't know existed 🪢.
+
+You cannot consciously enter the flow state; it just happens. You will know that you're in the zone the same way you know you're alive. Leaving the zone is a bit like leaving a crazy ride. Thoughts keep going round and round until they slowly disperse, leaving you here and now.
+
+There are certain similarities to creativity:
+
+* Creativity requires _knowledge_: Without knowing your field, you cannot create anything new in that field.
+* Creativity requires _freedom_: Dictating ways of working and standardizing are natural opponents to creativity.
+* Finally, creativity requires _time to develop_: Imposing hard time limits takes away the cultivating ground that creativity requires to sprout.
+
+Until my diagnosis, I kept myself engaging with many many things. I just thought I get bored easily. That magnitude of interests allowed me entering flow state so many times, no matter it is work, craft or music. Anything resonating with my intrinsic motivators that is able to entangle with my mind by overcoming opposing forces of rationality of can lay the foundation for entering flow state.
+
+Flow is a vital part of my Life, representing a harmonious blend of cognitive and emotional engagement. It's about embracing the present moment, trusting my skills, and finding joy in the process. Whether I'm working on a tech project, engaging in a hobby, or simply spending time with friends, flow allows me to be my best self, fully immersed and genuinely happy.
+
+While I fully believe in the likelihood of superior beings, I also fully reject the premise of divinity and divine beings. All scientifically observable evidence indicates that conventional religion is exclusively human fabrication and that humanity and all Life that inhabits Earth are entirely independent of divine influence in the present.
+
+Based on this belief, I hold great reverence for spiritual experiences and currently hold onto the idea that there may be a science-based natural phenomenon allowing for a non-physical or not-currently-observable supernatural-appearing connection across time, space, and matter. I believe in the power of focused intent and the influence of emotional and non-physical realities.
+
+I acknowledge that religious beliefs are important for people for various reasons, as that is their Life. However, I will always confront toxic human activity, including bigotry, sexism, neglect, and abuse, regardless of whether it is rooted in secular, selfish, or religious beliefs. Modernity is plagued by superstitions from millennia of indoctrination by the sword.
+
+Whatever your beliefs, I respect your humanity and dignity above all else and humbly request to be treated with the same due grace and goodwill. Finally, everyone makes a decision for themselves whether to be kind or not.

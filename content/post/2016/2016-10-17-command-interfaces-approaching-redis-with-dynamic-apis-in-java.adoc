@@ -1,0 +1,214 @@
++++
+title = "Command Interfaces: Approaching Redis with dynamic APIs in Java"
+date = "2016-10-17T15:44:49"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "command-interfaces-approaching-redis-with-dynamic-apis-in-java"
+wordpress_id = "260"
+url = "/2016/10/17/command-interfaces-approaching-redis-with-dynamic-apis-in-java/"
+categories = ["Blog"]
++++
+Redis is a data store supporting over 190 documented commands and over 450 command permutations. The community supports actively Redis development; each major Redis release comes with new commands. This year Redis was opened up for 3rd party vendors to develop modules that extend Redis functionality. Command growth and keeping track with upcoming modules are challenging for client developers and Redis users.
+
+<!--more-->
+
+== Command growth
+
+Command growth in Redis is a challenging business for client libraries. Several clients expose a typed API that declares a method (function) signature for each Redis API call. Static declarations are beneficial for use but the amount of Redis commands pollutes clients with tons of method signatures. Some commands can be executed in different ways that affects the response type (`ZREVRANGE`, `ZREVRANGE … WITHSCORES`) that require additional signatures. Let’s take a closer look on some method signatures:
+
+*redis-rb*
+
+[source,ruby]
+----
+# Get the values of all the given hash fields.
+# 
+# @example
+#   redis.hmget("hash", "f1", "f2")
+  def hmget(key, *fields, &blk)
+----
+
+*jedis*
+
+[source,java]
+----
+public List<String> hmget(final String key, final String... fields) 
+----
+
+*lettuce*
+
+[source,java]
+----
+List<V>
+public List<K> hmget(K key, K... fields)
+----
+
+Declared methods provide type safety and documentation to developers, but they are static at the same time. As soon as a Redis introduces a new command, the client vendor has to change the API otherwise new commands are not usable. Most Redis clients expose a client call API to execute custom commands to address this issue:
+
+*redis-rb*
+
+[source,ruby]
+----
+ client.call([:hmget, key] + fields)
+----
+
+*jedis*
+
+[source,java]
+----
+final byte[][] params = …;
+jedis.sendCommand(HMGET, params);
+----
+
+*lettuce*
+
+[source,java]
+----
+lettuce.dispatch(CommandType.HMGET, new ValueListOutput<>(codec),
+new CommandArgs<>(codec)
+   .addKey(key)
+   .addKey(field));
+----
+
+*Jedipus*
+
+[source,java]
+----
+rce.accept(client -> client.sendCmd(Cmds.HMGET, "hash", "field1", "field2", …));
+----
+
+Other clients, like `node++_++redis` create function prototypes based on Redis commands. This is an improvement to static APIs because it enables a certain flexibility in the API.
+
+Constructing a Redis command requires knowledge about its request and response structure. This knowledge is written down at a location inside of the calling code. This is handy because you put it in the place where you need the code, but it comes with a few downsides. Because custom commands are run from inside a method, custom commands require additional effort to be reusable. The typical method signature as found on many clients is not required. This approach makes introspection more challenging, if not following an API component approach. This is, because all custom commands call the same method with just different arguments.
+
+The nature of static method declarations with a fixed parameter list is limited to accept the provided parameters only. Contextual controls to method calls cannot be applied through that method. Lettuce for example provides a synchronous API that allows controlling the command timeout for all commands but not on command invocation level.
+
+Let’s approach Redis with a dynamic API.
+
+== Dynamic API
+
+Dynamic APIs are programming interfaces that give a certain amount of flexibility because they follow conventions. Dynamic APIs might be known from https://docs.jboss.org/resteasy/docs/3.0-beta-3/userguide/html/RESTEasy_Client_Framework.html#d4e2049[Resteasy Client Proxies] or http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.query-methods.query-creation[Spring Data’s Query Derivation]. Both are interfaces that live in userland code. Resteasy/Spring Data inspect the interfaces and implement those by providing Java proxies. Method calls on these interfaces (proxies) are intercepted, inspected and translated into the according call. Let’s see how this could work for Java and Redis:
+
+_A simple command interface_
+
+[source,java]
+----
+public interface MyRedisCommands {
+
+  List<String> hmget(String key, String... values);
+
+}
+----
+
+The interface from above declares one method: `List++<++String ++>++ hmget(String key, String... fields)`. We can derive from that declaration certain things:
+
+* It should be executed synchronously – there’s no asynchronous or reactive wrapper declared in the result type
+* The Redis command method returns a `List` of `String`s – that tells us about the command result expectation, so we expect a Redis array and convert each item into a string
+* The method is named `hmget`. As that’s the only detail available, we assume the command is named `hmget`.
+* There are two parameters defined: `String key` and `String... values`. This tells us about the order of parameters and their types. Although Redis does not take any other parameter types than bulk strings, we still can apply a transformation to the parameters – we can conclude their serialization from the declared type.
+
+The command from above called would look like:
+
+....
+commands.hmget("key", "field1", "field2");
+....
+
+and translated to a Redis Command:
+
+....
+HMGET key field1 field2
+....
+
+The declaration on an interface comes with two interesting properties:
+
+[arabic]
+. There’s a method signature. Although that’s an obvious fact, it is a common executable that gets called. It allows analyzing callers quickly by building searching for references to this method.
+. There’s blank space above the method signature, ideally for documentation purposes.
+
+*Multiple execution models*
+
+[source,java]
+----
+public interface MyRedisCommands {
+
+  List<String> hmget(Timeout timeout, String key, String... values);
+
+  RedisFuture<List<String>> mget(String... keys);
+
+  Flux<String> smembers(String key);
+
+}
+----
+
+A dynamic API allows variance in return types. Let’s see how this affects the things we could derive from their return types.
+
+* You already know `hmget` is executed in a blocking way. But wait, what’s that `Timeout` parameter? This is an own parameter type to declare a timeout on invocation level. The underlying execution applies timeouts from the parameter and no longer the defaults set on connection level.
+* `mget` declares a `RedisFuture` return type wrapping a `List` of `String`. `RedisFuture` is a wrapper type for asynchronous execution and returns a handle to perform synchronization or method chaining in a later stage. This method could be executed asynchronously.
+* `smembers` uses `Flux` of `String`. Based on the return type we can expect two properties: `Flux` is a reactive execution wrapper that delay execution until a subscriber subscribes to the `Flux`. The `List` type is gone because a `Flux` can emit `0..N` items so we can decide for a streaming reactive execution.
+
+*Command structure*
+
+[source,java]
+----
+public interface MyRedisCommands {
+
+  List<String> mget(String... keys);
+
+  @Command("MGET")
+  RedisFuture<List<String>> mgetAsync(String... keys);
+
+  @CommandNaming(strategy = DOT)
+  double nrRun(String key, int... indexes)
+
+  @Command("NR.OBSERVE ?0 ?1 -> ?2 TRAIN")
+  List<Integer> nrObserve(String key, int[] in, int... out)
+}
+----
+
+Java requires methods to vary in name or parameter types. Variance in just the return type is supported at bytecode level but not when writing methods in your code. What if you want to declare one synchronously executed method and one that asynchronously executed taking the same parameters? You need to specify a different name. But doesn’t this clash with the previously explained name derivation? It does.
+
+* Take a closer look at `mget` and `mgetAsync`. Both methods are intended to execute the `MGET` command – synchronously and asynchronously. `mgetAsync` is annotated with `@Command` that provides the command name to the command and overrides the assumption that the method would be named `MGETASYNC` otherwise.
+* Redis is open to modules. Each module can extend Redis by providing new commands where the command pattern follows the ++<++PREFIX++>++.++<++COMMAND++>++ guideline. However, dots are not allowed in Java method names. Let’s apply a different naming strategy to `nrRun` with `@CommandNaming(strategy = DOT)`. Camel humps (changes in letter casing) are expressed by placing a dot between individual command segments and we’re good to run `NR.RUN` from link:++https://github.com/antirez/neural-redis#nrrun-key-i0-i1-i2-i3-i4--in++[Neural Redis].
+* Some commands come with a more sophisticated syntax that does not allow just concatenation of parameters. Take a look at `NR.OBSERVE`. It has three static parts with parameters in between. That command structure is expressed in a command-like language. `NR.OBSERVE ?0 ?1 -++>++ ?2 TRAIN` describes the command as string and puts in index references for arguments. All string parts in the command are constants and parameter references are replaces with the actual parameters.
+
+== Conclusion
+
+Applying a dynamic API to Redis shifts the view to a new perspective. It can provide a simplified custom command approach to users without sacrificing reusability. The nature of method declaration creates a place for documentation and introspection regarding its callers.
+
+A dynamic API is beneficial also to other applications using RESP such as https://github.com/antirez/disque[Disque] or https://github.com/tidwall/tile38[Tile38].
+
+An experimental implementation is available with https://github.com/mp911de/lettuce[lettuce] from Sonatype’s OSS Snapshot repository https://oss.sonatype.org/content/repositories/snapshots/:
+
+[source,xml]
+----
+<dependency>
+     <groupId>biz.paluch.redis</groupId>
+     <artifactId>lettuce</artifactId>
+     <version>5.0.0-dynamic-api-SNAPSHOT</version>
+</dependency>
+----
+
+_Using RedisCommandFactory_
+
+[source,java]
+----
+RedisCommandFactory factory = new RedisCommandFactory(connection);
+
+TestInterface api = factory.getCommands(TestInterface.class);
+String value = api.get("key");
+
+public interface TestInterface {
+
+  String get(String key);
+
+  @Command("GET")
+  byte[] getAsBytes(String key);
+}
+----
+
+== Reference
+
+* `@Command`: Command annotation specifying a command name or the whole command structure by using a command-like language.
+* `@CommandNaming`: Annotation to specify the command naming strategy.
+* `Timeout`: Value object containing a timeout.
+* `RedisFuture`: A Future result handle.
+* `Flux`: link:projectreactor.io[Project Reactor] publisher for reactive execution that emits `0..N` items.

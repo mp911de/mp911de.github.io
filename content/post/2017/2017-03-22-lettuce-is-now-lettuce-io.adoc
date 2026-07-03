@@ -1,0 +1,70 @@
++++
+title = "Lettuce is now lettuce.io"
+date = "2017-03-22T20:34:00"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "lettuce-is-now-lettuce-io"
+wordpress_id = "263"
+url = "/2017/03/22/lettuce-is-now-lettuce-io/"
+categories = ["Blog"]
++++
+The Lettuce driver project graduates after three years now to a top-level project.
+
+.Lettuce
+image::/images/2017/03/lettuce-green-text%403x.png[Lettuce]
+
+It has been three years now since I took over the Lettuce driver project whereas I wanted initially just fix a bug – so to say scratch my own itch I had in an other project. I published Lettuce under `biz.paluch.redis:lettuce` in June 2014 for the first time, and so I became the maintainer of Lettuce. The original driver was used to be quite popular until its maintenance stopped in 2013 and adoption of my fork began slowly.
+
+<!--more-->
+
+Today, lettuce is heading towards the fifth major release with Reactive Streams support based on https://projectreactor.io[Project Reactor], dynamic command interfaces to integrate with Redis Modules and has a broad user base. Therefore, Lettuce gets its own domain https://lettuce.io[lettuce.io], Twitter handle https://twitter.com/LettuceDriver[@LettuceDriver], and Github organization https://github.com/lettuce-io/[github.com/lettuce-io/]. Beginning with Lettuce 5, the GroupId/ArtifactID and package names are relocated to `io.lettuce:lettuce-core`, respective `io.lettuce.core`. Lettuce distributions will come with a https://lettuce.io/core/snapshot/reference/[reference guide] that originates in the https://github.com/mp911de/lettuce/wiki[Lettuce Wiki], and it received a beautiful logo to define Lettuce’s personality so you can continue to _build elastic data access_ with https://redis.io[Redis].
+
+image:/images/2017/03/lettuce-green-text%403x.png[/images/2017/03/lettuce-green-text%403x]
+
+If it happens that you meet me at a http://lanyrd.com/profile/mp911de/future/[conference] such as https://www.javaland.eu/[JavaLand], ask me for Lettuce stickers.
+
+== As a Developer, What do I need to know?
+
+Two things change for you:
+
+[arabic]
+. Use a different GroupId and ArtifactId for versions beginning as of 5.0:
+
+_Old_
+
+[source,xml]
+----
+<dependency>
+  <groupId>biz.paluch.redis</groupId>
+  <artifactId>lettuce</artifactId>
+  <version>(3|4).y.z</version>
+</dependency>
+----
+
+_New_
+
+[source,xml]
+----
+<dependency>
+  <groupId>io.lettuce</groupId>
+  <artifactId>lettuce-core</artifactId>
+  <version>5.y.z</version>
+</dependency>
+----
+
+[arabic, start=2]
+. Replace `com.lambdaworks.redis` with `io.lettuce.core` in your imports and logging config files.
+. There’s no 3., that’s it!
+
+With 5.0, the version numbering scheme changes slightly. Snapshots are published as `5.0.0.BUILD-SNAPSHOT`, milestones as `5.0.0.M1`/`5.0.0.RC1` and releases as `5.0.0.RELEASE`.
+
+All links to https://redis.paluch.biz[redis.paluch.biz] are rewritten to https://lettuce.io[lettuce.io] so don’t worry if you have links set to the documentation available from https://redis.paluch.biz[redis.paluch.biz], these links will redirect to the corresponding location on the new site.
+
+== TL;DR
+
+* Maven Coordinates: `io.lettuce:lettuce-core:5.0.0.BUILD-SNAPSHOT`
+* Package name: `io.lettuce.core`
+* Github: https://github.com/lettuce-io/lettuce-core[lettuce-io/lettuce-core]
+* Gitter: https://gitter.im/lettuce-io/Lobby[lettuce-io/Lobby]
+* Twitter: https://twitter.com/LettuceDriver[@LettuceDriver]
+* Mailinglist: https://groups.google.com/d/forum/lettuce-redis-client-users[lettuce-redis-client-users@googlegroups.com]

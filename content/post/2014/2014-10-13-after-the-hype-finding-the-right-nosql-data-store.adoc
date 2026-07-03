@@ -1,0 +1,34 @@
++++
+title = "After the hype: Finding the right NoSQL data store"
+date = "2014-10-13T05:47:22"
+lastmod = "2025-01-03T22:49:12"
+draft = false
+slug = "after-the-hype-finding-the-right-nosql-data-store"
+wordpress_id = "180"
+url = "/2014/10/13/after-the-hype-finding-the-right-nosql-data-store/"
+categories = ["Blog"]
++++
+A choice of decision for a NoSQL data store depends on several factors. It's no longer a hot-or-not decision. The big hype is over, reality comes back now.
+
+<!--more-->
+
+Remember the days in which we all were blind because of the web? We got crazy in our heads when ever we heard about a web application. Someone dropped "web application" into the discussion and we forgot how to build good applications, because, oh my gosh, it web! Pretty the same happened to NoSQL. We've heard about document stores, key-value databases and forgot how to database. We even forgot how good data models look like. Every data had to be in a NoSQL-something. Don't get me wrong. NoSQL stores are great for certain cases. The world existed before NoSQL and we did great applications. The tipping point of the NoSQL hype is over. Many of us got disillusioned and are back in reality.
+
+NoSQL data stores teached us one important thing: You can scale horizontally. Break up the mantra of putting lots of CPU, RAM and Disk into one machine, instead add machines. Beside schema-less/schema-bound, key-values and Map-Reduce this might be one of the most valuable experiences. Traditional database systems will reach sooner or later a natural limit. Data partitioning/sharding is on regular RDBMS either complex, expensive (and this by a enormous magnitude) or both. Just think of Oracle RAC or IBM's DB2 on z/OS.
+
+A growing number of businesses sees already limits of their database systems. These businesses are not necessarily Internet companies. Just think about Walmart: There are thousands of stores, producing billions of receipts, for every retail transaction one. This data needs to be stored somehow.
+
+* What happens with the data then?
+* How does it look like?
+* Are there flat records or is it hierarchical data?
+
+These are the questions worth to ask. Every database system has answers on how it wants to store and query data. Now it is time to find patterns how to deal with data in a particular data store.
+
+* Is it the way you want to deal with it?
+* Will anyone operate your favored data system?
+* What else is important for your use cases?
+* How about tooling and support?
+* What about the development and operating eco-system?
+* Which "prices" do you have to pay for what (CPU time for compression, Disk space for performance, Performance for less RAM, ...)?
+
+You have to find answers to these questions, essential for finding your right data store. Sometimes you even end up with polyglott persistence: storing some data in NoSQL data stores and other data in regular RDBMS. There are lots of comparisons and benchmarks. What really counts are your use cases.

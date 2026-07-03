@@ -1,0 +1,56 @@
++++
+title = "Redis Client lettuce 3.0 Final released"
+date = "2014-09-12T08:24:49"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "lettuce-3-0-final-released"
+wordpress_id = "178"
+url = "/2014/09/12/lettuce-3-0-final-released/"
+categories = ["Blog"]
++++
+lettuce 3.0 was released. Lettuce is a scalable thread-safe Redis client providing both synchronous and asynchronous connections. Multiple threads may share one connection provided they avoid blocking and transactional operations such as BLPOP, and MULTI/EXEC. Multiple connections are efficiently managed by the excellent netty NIO framework. Support for advanced Redis features such as Sentinel, Cluster and Redis data models are included.
+
+Some of the major changes are:
+
+* Support for the latest Redis commands
+* Redis Cluster support
+* Redis Sentinel support
+* Upgrade to netty 4.0.19 (from netty 3.x)
+* CDI and Spring support
+* Streaming API
+* Listenable Futures (using Guava) for true async operations
+* Tons of bugfixes, tests and documentation
+
+Lettuce 3.0 is a fork of original lettuce@wg with preserved packages and mostly the same API. The original lettuce is no longer in active development.
+
+== What's next?
+
+My plan is to keep up with tight Redis development and to integrate the new fork into Spring Data Redis. Redis Cluster has to get mature, and the current implementation has to prove in production.
+
+== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/3.0.Final[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.Redis%22%20AND%20a%3A%22lettuce%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/Redis/lettuce/3.0.Final/lettuce-3.0.Final.jar[Download lettuce 3.0.Final]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+* http://redis.paluch.biz[Maven Site (Javadoc)]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.Final</version>
+    <classifier>shaded</classifier>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/lettuce/issues[issues on GitHub].

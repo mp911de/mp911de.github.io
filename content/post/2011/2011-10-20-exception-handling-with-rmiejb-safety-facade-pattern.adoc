@@ -1,0 +1,68 @@
++++
+title = "Exception-Handling with RMI/EJB: Safety Facade Pattern"
+date = "2011-10-20T06:19:47"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "exception-handling-with-rmiejb-safety-facade-pattern"
+wordpress_id = "46"
+url = "/2011/10/20/exception-handling-with-rmiejb-safety-facade-pattern/"
+categories = ["Blog"]
++++
+In many software systems and use cases there are exceptions. Exceptions, that are triggered by conditions that do not allow the expected sequence (ideally). These exceptions and dealing with those are hiding behind the lapidary used "exception handling". A fast-created try-catch is often not the solution. And in those cases in which exceptions are forwarded to the client, there are some pitfalls.
+
+<!--more-->
+
+The pattern of exception wrapping is often used and thus a best practice. This allows integrating 3rd party exceptions in your own exeption hierarchy. This is very useful for your own code, because it needs only be forwarded or dealt with your own exceptions. If this goes across application boundaries, this often leads to dependency problems. This results in the fact that the client does not know about the exception class, you've thrown and causes no proper exception on the client side. What often happens is a ClassNotFound exception - an error of an error.
+
+To prevent this from happening, there are two approaches:
+
+* Either to ensure that the exceptions are not passed with dependencies (What ends in a catch (Exception)) or
+* Use of Safety Facade
+
+== Safety Facade
+
+The Safety Facade is a mixture of exception handling and exception decoupling and it consists of a few classes. The idea is to establish a generic handler layer, which handles all the exceptions and resolves class dependencies, but which preserves the exception information (stack trace, exception types).
+
+[source,java]
+----
+public String executeWithException() throws TechnicalException() 
+{
+    return SafetyFacade.execute(new IUnsafe<String>()
+    {
+        public String run()
+        {
+            if(something)
+                throw new IllegalStateException("blubb");
+            
+            return "result";
+        }
+    }, TechnicalException.class);
+}
+----
+
+The Safety Facade is built of following parts:
+
+* Executable interface (similar to the Command Pattern)
+* Executor
+* Execption handler (within the executor)
+* Executable interfaces
+
+Code must be readable and easily understandable. Therefore, the Safety Facade helps to use a command pattern to do so. The unsafe code is defined in the scope of the executable interface and later executed by the executor. It should be only a few lines within the executable scope.
+
+== Executor
+
+The executor is the controller. It is located behind the SafetyFacade class, calls the run() method on the individual executables and returns the result. In the event of an error exception handling occurs within the Executors. This includes an exception class which is given to the executor, so that all the exceptions are wrapped in this exception type.
+
+== Execption handler
+
+The exception handler is encapsulated by the executor and the actual code is not visible to the user. The exception handler performs the task of analyzing the exceptions and extracting the information. Then, the original exception is transformed into an exception hierarchy, which is known by all involved parties. The transformation preserves the hierarchical structure and also the contained information.
+
+== The Execption handler in detail
+
+The secret of the exception handler are special NestedProxyException's that simulate the original exception type and include the partial stack trace. These proxies are therefore part of the API that is exchanged between the involved parties.
+
+== Conclusion
+
+The Safety Facade makes a major contribution to resolve by EJB / RMI interfaces technical problems. Once the principle is understood, the usage of Safety Facade pattern belongs to everyday use. The Safety Facade pattern has been proven in many of my projects as a very successful solution and contributes daily to the improvement of the operational business.
+
+The code for the Safety Facade is on Github.com and can be downloaded from there: https://github.com/mp911de/Public/tree/master/safety-facade

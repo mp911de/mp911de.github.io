@@ -1,0 +1,184 @@
++++
+title = "Carrier Kernel Thread Pinning of Virtual Threads (Project Loom)"
+date = "2020-09-28T14:27:16"
+lastmod = "2025-11-08T19:03:24"
+draft = false
+slug = "carrier-kernel-thread-pinning-of-virtual-threads-project-loom"
+wordpress_id = "276"
+url = "/2020/09/28/carrier-kernel-thread-pinning-of-virtual-threads-project-loom/"
+categories = ["Blog"]
+aliases = ["/blog/183-carrier-kernel-thread-pinning-of-virtual-threads-project-loom.html"]
++++
+In my link:/2020/09/25/experimenting-with-project-loom-eap-and-spring-webmvc/[previous blog post] I started an experiment with using Project Loom. The post outlined the first steps to make use of virtual Threads on a best-effort basis (i.e., without rewriting the entire libraries involved, instead fixing issue by issue until it works™).
+
+<!--more-->
+
+I also shared the first numbers that weren’t really promising. It’s now time to dig more into the internals to understand what Loom provides and understand its current limitations. When running code on a virtual thread, the threading infrastructure detects calls to blocking. These calls get redirected so that the carrier thread can be freed to continue with other work. The detection happens in a lot of places by inspecting whether the thread is a virtual one.
+
+....
+Thread thread = currentThread();
+if (thread.isVirtual()) {
+   // park thread and try to yield on VirtualThread
+} else {
+    // call native sleep method
+}
+....
+
+A lot of Loom’s implementation happens inside Java which makes it quite robust. It’s also a key differentiator from a Kernel Fiber. The Kernel thread/Java thread split reduces memory interference and the likelihood of suffering from commonly observed issues of other Coroutine/Fiber endeavors.
+
+A limitation of the Loom implementation is that monitors (entering `synchronized` method or block and calls to `Object.wait(…)`) are not yet intercepted in the way how Java blocking calls are intercepted. Waiting for an unavailable object causes the call to dive into native code where it blocks the current thread until the object becomes available.
+
+This behavior is called http://cr.openjdk.java.net/~rpressler/loom/loom/sol1_part1.html#pinning[pinning] the virtual thread to its carrier thread since the virtual thread cannot be unmounted from its carrier. And that is precisely what happens in a lot of code paths, specifically in the experimental code arrangement.
+
+== Mitigating Limitations
+
+....
+class Endpoint {
+    
+    synchronized void doCall() {
+        // …
+    }
+}
+
+Endpoint endpoint = …;
+
+// Thread 1 calls the method
+endpoint.doCall();
+
+// Thread 2 blocked until Thread 1 exists the doCall method
+endpoint.doCall();
+....
+
+Assuming the code above is called using virtual threads, all calls except the first to `doCall` would block their carrier thread. Eventually, the pool of carrier threads is fully utilized, and the application cannot accept more tasks.
+
+To mitigate this limitation, we can switch to `ReentrantLock` (or `StampedLock`) by rewriting the code to:
+
+....
+class Endpoint {
+    
+    final Lock lock = new ReentrantLock();
+    
+    void doCall() {
+        lock.lock();
+        try {
+        // …
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+
+Endpoint endpoint = …;
+
+// Thread 1 calls the method
+endpoint.doCall();
+
+// Thread 2 parked until Thread 1 exists the doCall method
+endpoint.doCall();
+....
+
+From a caller perspective, the method signature remains the same (`synchronized` flag is no longer set by the compiler). Calls to `doCall` while another thread is working inside the locked sections are properly identified so the virtual thread can be properly parked without holding on to its carrier thread.
+
+Once the changes are applies, the Loom EAP build shines with the expected performance:
+
+*Virtual Threads (fixed carrier thread pool size 16, reduced pooled virtual threads, addressed thread pinning)*
+
+....
+wrk -c 1000 -t 5 -d 10s --latency http://localhost:8080    
+Running 10s test @ http://localhost:8080
+  5 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.01s    12.93ms   1.08s    91.85%
+    Req/Sec    66.51     75.89   434.00     89.34%
+  Latency Distribution
+     50%    1.01s 
+     75%    1.01s 
+     90%    1.01s 
+     99%    1.07s 
+  2061 requests in 10.09s, 231.46KB read
+  Socket errors: connect 753, read 206, write 10, timeout 0
+Requests/sec:    204.22
+Transfer/sec:     22.94KB
+
+wrk -c 1000 -t 5 -d 10s --latency http://localhost:8080
+Running 10s test @ http://localhost:8080
+  5 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.01s     3.75ms   1.02s    62.66%
+    Req/Sec    58.82     90.13   470.00     92.39%
+  Latency Distribution
+     50%    1.00s 
+     75%    1.01s 
+     90%    1.01s 
+     99%    1.01s 
+  2199 requests in 10.04s, 246.96KB read
+  Socket errors: connect 753, read 140, write 0, timeout 0
+Requests/sec:    218.99
+Transfer/sec:     24.59KB
+....
+
+RSS: 234 MB
+
+*300 Kernel Threads*
+
+....
+wrk -c 1000 -t 5 -d 10s --latency http://localhost:8080
+Running 10s test @ http://localhost:8080
+  5 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.01s     3.86ms   1.02s    72.97%
+    Req/Sec    45.10     27.70   135.00     76.42%
+  Latency Distribution
+     50%    1.00s 
+     75%    1.01s 
+     90%    1.01s 
+     99%    1.02s 
+  2157 requests in 10.06s, 242.24KB read
+  Socket errors: connect 753, read 196, write 0, timeout 0
+Requests/sec:    214.51
+Transfer/sec:     24.09KB
+
+wrk -c 1000 -t 5 -d 10s --latency http://localhost:8080
+Running 10s test @ http://localhost:8080
+  5 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.00s     2.58ms   1.02s    66.67%
+    Req/Sec    46.95     56.47   394.00     97.89%
+  Latency Distribution
+     50%    1.00s 
+     75%    1.01s 
+     90%    1.01s 
+     99%    1.01s 
+  2196 requests in 10.02s, 246.62KB read
+  Socket errors: connect 753, read 152, write 0, timeout 0
+Requests/sec:    219.15
+Transfer/sec:     24.61KB
+....
+
+RSS: 302 MB
+
+Both measurements’ arrangement is sized so that virtual threads and kernel threads usage yield roughly the same performance (about 2200 requests/sec). Virtual Threads require 16 Kernel Threads with a RSS of 234 MB. The scenario using kernel threads requires about 300 threads and has a RSS of 302 MB.
+
+The benchmark shows that staying within Loom’s limitations, the current state properly parks virtual threads at lower memory requirements than using kernel threads.
+
+== `synchronized`
+
+The limitation regarding `synchronized` is expected to go away eventually, however, we’re not there yet.
+
+Analyzing the used core libraries that are primarily involved in the request processing, we can observe a large number of `synchronized` methods/blocks:
+
+* Hikari: 12
+* Tomcat (Embed Core): 576
+* PGJDBC: 134
+* Spring Data: 13
+* Spring Framework: 329
+* `grep -R synchronized ++*++ ++|++ wc -l` over Java’s `src.zip`: 7527
+* `grep -R Lock ++*++ ++|++ wc -l` over Java’s `src.zip`: 4965
+
+Addressing all of these occurrences is outside of this experiment’s scope. `synchronized` is heavily used across libraries to create happens-before relationships and to serialize access to objects. If the `synchronized` limitation is here to stay, this limitation will impose a lot of work on library authors. If this limitation gets lifted, then there’s probably not so much to do for library authors to be good citizens on virtual threads.
+
+A major task still remains, which is deciding when to use `VirtualThread`. When switching from kernel threads to virtual threads, virtual threads should not be pooled since these aren’t costly resources and likely the cost of pooling a virtual thread exceeds the cost for creating a new one. That being said, `Executors.newVirtualThreadExecutor()` is likely to be a better choice than `new ThreadPoolExecutor(…, new VirtualThreadFactory())`.
+
+== Conclusion
+
+Right now, virtual threads seem to be a good option when workloads are known to use locks (also in the form of a `BlockingQueue`), I/O or are used to park/sleep (e.g. Timers). Computational workloads (like pure functions without sharing mutable resources) do not gain much from virtual threads as they typically yield an efficient CPU usage profile.

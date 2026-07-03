@@ -1,0 +1,43 @@
++++
+title = "Book Review: Couchbase Essentials"
+date = "2015-03-16T09:23:01"
+lastmod = "2025-01-03T22:49:03"
+draft = false
+slug = "book-review-couchbase-essentials"
+wordpress_id = "209"
+url = "/2015/03/16/book-review-couchbase-essentials/"
+categories = ["Blog"]
++++
+Couchbase Essentials is a book written by former Couchbase Inc. developer http://about.me/johnzablocki[John Zablocki]. The book claims to be for developers, but it is valuable to software architects as well. The book starts with a lot of marketing about Couchbase, explaining the history from CouchDB and memcached. This chapter will guide its readers through a very detailed installation procedure that reminds on a very detailed Couchbase manual. Nearly every click is explained.
+
+<!--more-->
+
+The first part was no fun to read. Once the setup part lies behind, the reader will be rewarded with very valuable details on sharding and replication, detailed hints on the SDK's. The book enables understanding the key-value nature of this document store. This book contains seven chapters
+
+[arabic]
+. Getting Comfortable with Couchbase
+. Using Couchbase CRUD Operations
+. Creating Secondary Indexes with Views
+. Advanced Views
+. Introducing N1QL
+. Designing a Schema-less Data Model
+. Creating a To-do App with Couchbase
+
+Every chapter guides its reader through the functionality and points out some details that aren't that obvious. One of them is that cross-SDK access in the key-value API does not guarantee interoperability because of platform-dependent model serializers/deserializers. That means models serialized by Python might be not readable by Java and vice versa. To achieve interoperability, Couchbase users need to use formats such as JSON or XML instead the default model serializers. The code samples provided in the book (EPUB on iPad) are hard to read due to lots of line breaks containing hyphens (-) combined with a lack of code formatting. Hyphens in code line breaks are confusing.
+
+Couchbase functionality is nice explained, and the path throughout the Couchbase features explains from basic to advanced. The reader never gets lost. I got already in touch with Couchbase and tried to establish a data model by myself, which was quite hard for me. Couchbase Essentials helped me to find a style for data modelling and explains how to fit data models in the key-value thinking. There is no guide for what data/use cases Couchbase fits the best or what data should be not stored.
+
+The guide for data modelling does not cover the "make up you mind on how you want to query your data" fully. The secondary indexes chapter and the todo app help to understand the way of working with data in Couchbase.
+
+There is a part on N1QL (pronounced nickel), the looks-like-SQL queries. This chapter gives a brief overview of what to expect of N1QL. I was impressed by the flexibility, but N1QL is still alpha, and that chapter gave me the impression of marketing material again. Perhaps there will be a version 2 of the book with the final N1QL guide. Always reading that it is alpha and not yet supported on all SDK's is a fun killer. There is also not explained at what cost N1QL comes.
+
+Couchbase Essentials is worth reading and supplies lots of details. Looking forward for a version 2 of this book where several typos and the N1QL are fixed.
+
+* Title: Couchbase Essentials
+* Author: John Zablocki
+* Format: Paperback, E-Book
+* Publisher: Packt Publishing Limited
+* ISBN: 9781784394493
+* Pages: 170
+* Release Date: February 2015
+* Link:https://bit.ly/1wtEbwl

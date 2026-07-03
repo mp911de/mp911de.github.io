@@ -1,0 +1,22 @@
++++
+title = "Heckenlights plays this season the last time"
+date = "2016-12-21T08:51:01"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "heckenlights-plays-this-season-the-last-time"
+wordpress_id = "261"
+url = "/2016/12/21/heckenlights-plays-this-season-the-last-time/"
+categories = ["Blog"]
++++
+Heckenlights is an interactive Christmas lights installation that can be controlled online by just visiting http://heckenlights.org[heckenlights.org]. Heckenlights consists of over 3000 LED lights that are controlled via MIDI in 12 tracks. Each MIDI note switches the lights on and off.
+
+It all started in 2012 with the idea to control a Relay with MIDI and lead to what it is today. Now, this season is the last one for Heckenlights. It’s been a great fun building Heckenlights and even more stepping outside, opening http://heckenlights.org[heckenlights.org] on a smartphone and triggering the lights to play.
+
+I’m moving next year to a new house. Heckenlights (originating from Heckenpfad, the address I live) is no more appropriate then.
+
+You can see and operate Heckenlights until Jan 6th, 2017 between 5 pm and 10 pm (CET). After that date, it will be shut down.
+
+Resources:
+
+* https://github.com/mp911de/midi-relay[midi-relay at Github]
+* https://github.com/mp911de/heckenlights[Heckenlights at Github]

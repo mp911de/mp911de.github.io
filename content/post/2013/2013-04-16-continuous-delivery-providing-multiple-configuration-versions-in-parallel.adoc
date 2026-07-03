@@ -1,0 +1,31 @@
++++
+title = "Continuous Delivery: Providing multiple configuration versions in parallel"
+date = "2013-04-16T08:30:06"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "continuous-delivery-providing-multiple-configuration-versions-in-parallel"
+wordpress_id = "82"
+url = "/2013/04/16/continuous-delivery-providing-multiple-configuration-versions-in-parallel/"
+categories = ["Blog"]
++++
+In Continuous Delivery you deliver often and to different environments. When it comes to configuration files you have to maintain multiple instances at a time. You can’t just have one fits it all. The Configuration Server is built to support you in this scenario. Basic idea of the Configuration Server is: Serve configuration based on your host for multiple artifacts and versions.
+
+<!--more-->
+
+Configuration data is accessed using HTTP like:
+
+GET http://my.server.host/dns/myArtifact/2.2/config.properties
+
+This request will serve you the configuration file for your artifact „myArtifact“ in version 2.0 and for your environment (Dev, UAT, Production). Behind the scenes it’s possible to have the config file for version 2.0 of your artifact. The Configuration Server analyzes the requested version. In case there is no 2.2 and no 2.1 but a 2.0 you’ll get the 2.0. This fallback saves you from creating configuration just because it’s a rule but nothing really changed.
+
+So your directory structure would be:
+
+....
+myArtifact 
+├───2.0 
+│  └───config.properties 
+├───2.1 
+│  └───config.properties
+....
+
+A different scenario is to prepare configuration for rollout. Many Ops use provisioning and management software like Chef and Puppet. These can deploy applications for example. In case you’ve split responsibilities, Ops deploy the application you deploy the configuration also the Configuration Server is perfect: Just prepare configuration for version 2.3 (would be the next) of your artifact and deploy it to your configuration data repository. As soon as the new artifact version is deployed it’ll pull the right version of the configuration. The older installation will still stick to the old configuration and won’t be tangled by this change.

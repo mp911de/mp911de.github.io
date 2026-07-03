@@ -1,0 +1,31 @@
++++
+title = "Clean Architecture Example: Code for an Onion Architecture"
+date = "2013-08-02T12:33:14"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "clean-architecture-code-examples-for-an-onion-architecture"
+wordpress_id = "92"
+url = "/2013/08/02/clean-architecture-code-examples-for-an-onion-architecture/"
+categories = ["Blog"]
++++
+A couple days ago I wrote about link:index.php?option=com_content&view=article&id=80;clean-your-architecture-databases-the-web-and-service-interfaces-are-just-plugins&catid=8;blog&Itemid=108[Clean Architecture.] I was also excited, how it will look like within code. How does it feel? How can I progress.
+
+<!--more-->
+
+Yesterday I started to hack for a while. I was very surprised since a long time ago. I started right off with the use cases. Just defined a bunch of them:
+
+* CreateOrUpdateItem
+* CreateOrUpdateUser
+* ListItems
+* ListOrders
+* PlaceOrder
+
+I defined my application model, the boundaries. After that I lifted off by going Test-Driven. This was an amazing experience. My use cases were done in less than two hours. Everything. Done.
+
+In the second step I integrated JPA, some In-Memory-Database and got stuck in relations mapping for some hours. The collections I mapped didn’t want do load. Persistence was fine, but loading did not work out. After some 2 hours I figured it out and everything went smooth then. This is an indicator, that external integrations are way more complex than internal use cases.
+
+JSF and REST were as well easy-peasy. Some resources, models and controllers, now we can run.
+
+Take a look on the code: https://github.com/mp911de/CleanArchitecture
+
+There you’ll find a fully running example. All you need then is Maven and a JBoss 7.2 (JBoss EAP 6.1). This way of working is really amazing, it feels even faster than Rapid Application Development.

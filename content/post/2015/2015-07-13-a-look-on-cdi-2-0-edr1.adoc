@@ -1,0 +1,166 @@
++++
+title = "A look on CDI 2.0 EDR1"
+date = "2015-07-13T14:51:39"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "a-look-on-cdi-2-0-edr1"
+wordpress_id = "217"
+url = "/2015/07/13/a-look-on-cdi-2-0-edr1/"
+categories = ["Blog"]
++++
+CDI is one of the best additions to Java EE of the recent. This opinion is widely shared amongst users and integrators. CDI 1.2, the current version, was released in April, 2014. Now in mid-2015, we face the early draft review of the CDI 2.0 spec. CDI 2.0 will run on Java 8 and higher.
+
+<!--more-->
+
+The final release is scheduled for 2016, and the roadmap contains several interesting items:
+
+* Splitting the API in two parts and Java SE: The API split is an important step that supports the micro service movement. Boot CDI from every `main()` in just a couple of lines.
+* Async and prioritized events allow to control event observer ordering and delivering events asynchronously
+* JDK 8: CDI 1.x was targeted on Java 1.6 and higher. Java 8 allows numerous improvements and helps to streamline CDI's API.
+* CDI allows extension from its genesis on. The SPI is great to enhance CDI using frameworks like DeltaSpike, Spring Data, Camel, Metrics for CDI, and many more. CDI 2.0 aims to improve its support for extensions
+* Did you know? CDI uses heavily AOP to enable a very comfortable use. All normal scopes like RequestScoped, ConversationScoped, SessionScoped and ApplicationScoped use proxies to lookup contextual instances. But one limit spec is, that CDI does not allow for self-injections or interceptors on local method calls. The AOP package will take care of these issues and improve certain parts of the spec.
+
+However, let us take a look on the API of CDI 2.0 EDR (early draft review), the *new and noteworthy*.
+
+== Async Events
+
+Async events is the ++#++1 item on the CDI users wish list. The issue was raised in early 2011 and is one of the highlights in CDI 2.0. A lot of hot discussions were necessary to enable async processed events and not breaking existing code by introducing asynchronicity. The current draft requires http://www.cdi-spec.org/news/#_why_this_double_activation_is_needed[double-end activation]
+
+[source,java]
+----
+public class AsyncEvents {
+
+    @Inject
+    private Event<MyEventPayload> event;
+
+    public void triggerEvent() {
+        event.fireAsync(new MyEventPayload());
+    }
+
+    public void asyncEventObserver(@ObservesAsync 
+                                    MyEventPayload payload) {
+        System.out.println("Yay, I'm called async!");
+    }
+
+    public void eventObserver(@Observes MyEventPayload payload) {
+        System.out.println("Yay, I'm called too. " + 
+                          "Other @Observes are notified in order.");
+    }
+
+    public static class MyEventPayload {
+
+    }
+}
+----
+
+Events can be triggered with an asynchronous processing of asynchronous-enabled observers. Observers using `@Observes` are notified too, in the calling thread. The completion of async event observers can be tracked using a `CompletionStage` that is returned when invoking `fireAsync`.
+
+Asynchronous event observers can operate on contextual bean instances, when event processing is active. By default enabled scopes are `@RequestScoped` and `@ApplicationScoped`. The `@SessionScoped` is excluded for variuous reasons. Just think of how to behave when the session ends in the middle of event processing. Users should be aware of effects, when modifying the event payload or data in contextual instances. CDI does not enforce immutability of the event payload but it's strongly recommended to prevent race conditions due to concurrency.
+
+The CDI container is responsible to provide the multi-threading infrastructure. Sometimes, you want to provide an own executor to control the level of concurrency or wrap the async calls. The `fireAsync` method allows to specify individual executors for each invocation.
+
+[source,java]
+----
+    private ExecutorService executor;
+
+    @Inject
+    private Event<MyEventPayload> event;
+
+    @PostConstruct
+    public void postConstruct() {
+        int threads = Runtime.getRuntime().availableProcessors();
+        executor = new ThreadPoolExecutor(threads, threads, 1, 
+             TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        executor.shutdown();
+    }
+
+    public void triggerEventWithExecutor() {
+        event.fireAsync(new MyEventPayload(), executor);
+    }
+----
+
+The example above creates/destroys the executor. You could use a CDI-managed executor with a producer method (`@Produces`) and `@Inject` it wherever you need it. CDI is cool, eh?
+
+Async events will remain a hot topic, and this is for sure not its final form.
+
+== Ordered event observers
+
+The order of notification when using event observers is non-predictable in CDI 1.2. With 2.0, this will change.
+
+[source,java]
+----
+public class PrioritizedEvents {
+
+    @Inject
+    private Event<MyEventPayload> event;
+
+    public void trigger() {
+        event.fire(new MyEventPayload());
+    }
+
+    public void observeBeforeOtherObservers(@Observes 
+                    @Priority(Interceptor.Priority.APPLICATION + 499) MyEventPayload payload) {
+        System.out.println("Notified before all other observers");
+    }
+
+    public void observeAfterOtherObservers(@Observes 
+                    @Priority(Interceptor.Priority.APPLICATION + 501) MyEventPayload payload) {
+        System.out.println("Notified after all other observers");
+    }
+
+    public static class MyEventPayload {
+
+    }
+}
+----
+
+The order of event observers can be influenced by applying the `@Priority` annotation. Why influenced and not controlled?
+
+The answer to this question is a bit longer and you need to understand the typesafe-resolution part of CDI. Event observers are selected by their event payload type. Event observers can observe different types, interfaces, classes, subtypes, qualified and non-qualified types. The selection of event observers happens at the moment an event is triggered, either by using the `Event` or `BeanManager` API. You can notify a different set of event observers by using a type or its subtype for example. Therefore, no global event observer order is available, which leads us to the `@Priority` annotation.
+
+By applying `@Priority` certain event observers can be notified earlier and some later. The default value is `Interceptor.Priority.APPLICATION {plus} 500` which results to `2500`. This is the default for all event observers, that do not carry a `@Priority` annotation.
+
+A close look at `@Priority` reveals, that it is only applicable to types right now. This will change until CDI 2.0 is final.
+
+== CDI JumpStart aka. CDI for Java SE
+
+CDI for JavaSE is available since its very beginning, or, let me say it that way: You can boot Weld and OpenWebBeans in JavaSE without the necessity of a JavaEE container. CDI 2.0 specifies just a standard way to boot your CDI container in a standardized way. This item is my personal favorite.
+
+[source,java]
+----
+public class CDIJumpStart {
+
+    public static void main(String[] args) {
+        try(CDI<Object> cdi = CDI.getCDIProvider().initialize()) {
+            cdi.select(MyApp.class).get().runMyApplication();
+        }
+    }
+
+    private static class MyApp{
+        public void runMyApplication(){
+            // ...
+        }
+    }
+}
+----
+
+The code will start the CDI container and invoke a method to run your app. Once your app is done, the container will be closed by using the `try-with-resources` pattern. The code to jump-start a standalone and perhaps microservice-ish application is two lines longer than Spring Boot. A major difference to Spring or Dropwizard is the eco-system, I could not find an integration for an embedded Tomcat, out-of-the box. I guess, it will take some time until CDI for JavaSE hits the tipping point to be a real microservice framework-thingy alternative.
+
+== Conclusion
+
+CDI 2.0 EDR is just a small result of the ongoing JSR365 effort. There are plenty of issues waiting to be discussed and specified. JBoss' Weld team works hard on the spec's progress and will come up with a RI somewhere in the future. CDI is a hot topic and remains very attractive - for Java EE and SE. Stay tuned and follow CDI 2.0
+
+Get in touch with the CDI Spec:
+
+* Spec Website: http://www.cdi-spec.org/
+* Github: https://github.com/cdi-spec/cdi
+* Primary mailing list: https://lists.jboss.org/mailman/listinfo/cdi-dev
+* CDI 2.0 JCP page: http://jcp.org/en/jsr/summary?id=365
+* IRC: irc://freenode.net/++#++cdi-dev
+* Twitter: @cdispec
+* Google{plus}: https://plus.google.com/+CdiSpecOrgPage/posts

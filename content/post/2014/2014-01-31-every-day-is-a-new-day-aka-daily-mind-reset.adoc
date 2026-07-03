@@ -1,0 +1,15 @@
++++
+title = "Every day is a new day aka. daily mind reset"
+date = "2014-01-31T20:38:20"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "every-day-is-a-new-day-aka-daily-mind-reset"
+wordpress_id = "103"
+url = "/2014/01/31/every-day-is-a-new-day-aka-daily-mind-reset/"
+categories = ["Blog"]
++++
+Imagine you're talking about something today with your product owner or boss. It get's the highest priority for today, because it's cool or something. Tomorrow you're not done with it but have again a cool feature idea. Or a collegue of you. And guess what, it gain's again highest priority.
+
+And what about the first topic? Forgotten again. Not having a mid-term or long-term plan can get a horror. Not having a product vision or a strategy for your product is even harder. Every day things can change, old stuff gets obsolete and there is no red thread what your system is and what it's not. How it behaves and how not. This causes uncertainty and the involved developers cannot be confident about their implementation. Always and ongoing discussions and changes of directions are the consequence. The whole product looks and works like a mixed litterbox which causes confused users and no one is happy with the application.
+
+Don't become that team.

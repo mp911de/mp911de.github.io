@@ -1,0 +1,82 @@
++++
+title = "Model based development mit EMF"
+date = "2011-05-06T23:00:00"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "model-based-development-mit-emf"
+wordpress_id = "22"
+url = "/2011/05/06/model-based-development-mit-emf/"
+categories = ["Blog"]
++++
+EMF kann aus einem Modell Java-Code erzeugen. Das so erzeugte Java-Programm kann Instanzen dieses Modells erstellen, abfragen, manipulieren, serialisieren (eingebaut als XMI oder anderes XML, mit Plugin auch in einer relationalen DB), validieren und auf Änderungen überwachen (für MVC). Darüber hinaus wird JUnit-Code erzeugt, der den generierten Code testet.
+
+<!--more-->
+
+Das Modell kann aus einer XSD (wie etwa bei JAXB), aus annotierten Java-Interfaces oder aus UML-Diagrammen (Rose, Magic Draw und Omondo) generiert werden, oder auch von Hand (mit einem "Baumeditor" oder dem Topcased Ecore Diagram Editor) erstellt werden. Der aus dem Modell generierte Code umfasst den eigentlichen Modell-Code (wie ihn etwa JAXB erzeugt), Code für Wizards, Editoren, bis hin zum Code für die eigentliche RCP-Anwendung.
+
+Das Modell selbst, die Generierung daraus sowie der generierte Code können angepasst werden, implementierte Funktionalität und neu generierter Code werden dabei gemerged (JMerge, siehe unten). Für weitergehende Ansprüche bietet EMF etwa die Möglichkeit, Modelle dynamisch zur Laufzeit zu generieren (etwa wenn erst dann das Modell bekannt ist).
+
+Das Modell ist nicht nur Pojo - Es kann mehr! Das wird deutlich, wenn man sich die Basisklassen und die Gedanken hinter Ecore anschaut. Alle Typen können das EObject zur Basisklasse nehmen. Alle Typen, die mit E++*++ beginnen, gehören zur Ecore Basis. Diese Typen sind mit Notifiern ausgestattet, so dass man beim Ändern der Objekte "zuhören" kann. Alle Eigenschaften im Modell sind Features, diese Definitionen werden ebenfalls von EMF generiert.
+
+[source,java]
+----
+  private void hookIntoModel(EObject model) 
+  {
+    if (model != null) {
+      model.eAdapters().add(this);
+    }
+  }
+ 
+  /** 
+   * Notification-Listener. 
+   */
+  public void notifyChanged(Notification notification) 
+  {
+    int type = notification.getEventType();
+    int listenToFeatureId = MainPackage.Literals.SOME_FEATURE;
+    int featureId = notification.getFeatureID(MainPackage.class);
+    if (type == Notification.ADD || type == Notification.REMOVE) 
+    {
+      if (featureId == listenToFeatureId) 
+      {
+        refreshChildren();
+      }
+    }
+  }
+----
+
+Nicht nur der PropertyChangeSupport ist ein wertvolles Feature. Ecore bringt auch ein quasi-reflection ohne Reflection mit sich: Alle Typen werden mit eSet() und eGet()-Methoden ausgestattet. So lassen sich die gewünschten Parameter auslesen oder schreiben, ohne dass man den entsprechenden Getter oder Setter direkt aufruft. Dies wird seitens EMF generiert.
+
+Aufpassen muss man nur beim Containment: Elemente, die einem Parent-Element zugeordnet sind (eContainer) können nicht problemlos auch einem anderen Element zugewiesen werden. Bei einer Zuweisung wird automatisch der Parent auf das neue Element gestellt und dem vorherigen Parent weggenommen. Hierfür muss das Element kopiert werden
+
+[source,java]
+----
+EcoreUtil.copy(EObject)
+----
+
+EcoreUtil hält noch eine ganze Menge weiterer hilfreicher Methoden bereit, die viel Arbeit & Ärger abnehmen
+
+== Graphical Editor Framework
+
+GEF ist ein Framework für grafische Editoren. Auch GEF basiert auf Eclipse und bringt viele interessante & einfache Mittel mit sich. Bisher mussten grafische Editoren komplett manuell implementiert werden. Von der Selection über's Resizing/Repositioning bis hin zur eigentlichen Modell-Bearbeitung. Diese Features bringt GEF von Haus aus mit sich.
+
+Strukturell gesehen gibt es EditParts, die sich um die Visualisierung des Modells kümmern. Dies erfolgt über Figures (das Root-Interface ist IFigure). Von der IFigure leiten sich viele Standard-Shapes ab, die mit verschiedenen Borders und Inhalten befüllt werden können. Es können aber auch eigene Figures implementiert werden.
+
+Zur Positionierung von Figures gibt es, genau wie im SWT, zwei Möglichkeiten, wobei im GEF die komplette Positionierung durch LayoutManager durchgeführt werden. Dafür stehen hauptsächlich folgende Implementierungen zur Verfügung
+
+* XYLayout (absolute Positionierung)
+* GridLayout
+* FlowLayout
+* BorderLayout
+
+Neben der Positionierung können auch nested Figures, also Container verwaltet werden. Alle Child-Elemente können im Container herumgeschoben oder resized werden. Durch das Überschreiben der einzelnen Methoden (getContentPane, getModelChildren usw.) können nahezu unendlich viele Konstrukte abgebildet werden
+
+Neben den Shapes sind auch Verbindungen (Connectors) ein Bestandteil von GEF. Die Verbindungen zwischen den einzelnen Shapes werden von ConnectionAnchor's geführt und als LineConnection oder PolyLineConnection visualisiert.
+
+Ausgestattet mit diesen Features und Werkzeugen lässt sich mit wenig Aufwand ein Editor erstellen, der grafisch und technisch vieles zu bieten hat. Auf den Quellen können Tutorials und nähere Beschreibungen gefunden werden, alles im bekannten Eclipse Style.
+
+=== Quellen
+
+* http://www.eclipse.org/articles/Article-GEF-EMF/gef-emf.html[]
+* http://www.ibm.com/developerworks/java/library/os-gef/
+* http://help.eclipse.org/ganymede/index.jsp?topic=/org.eclipse.emf.doc/references/overview/EMF.html

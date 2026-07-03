@@ -1,0 +1,73 @@
++++
+title = "Performance Probleme und Optimierungen in Java/J2EE Umgebungen (Teil 2)"
+date = "2011-05-22T18:25:21"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "performance-probleme-und-optimierungen-in-javaj2ee-umgebungen-teil-2"
+wordpress_id = "39"
+url = "/2011/05/22/performance-probleme-und-optimierungen-in-javaj2ee-umgebungen-teil-2/"
+categories = ["Blog"]
++++
+Im link:blog/37-performance-probleme-und-optimierungen-in-javaj2ee-umgebungen-teil-1.html[ersten Teil] ging es um die Top 5 Ursachen für Performance-Probleme in Java und J2EE-Umgebungen. Nun will ich mich den anderen Ursachen widmen, die zu Lasten der Performance gehen.
+
+<!--more-->
+
+== Komplexe In-Memory Sortierung/Listenoperationen
+
+An einigen Stellen eines Software-Systems werden häufig viele Informationen zusammengeführt. Gerade bei der Ermittlung von Informationen aus Listen stecken manchmal die Tücken im Detail. Mit verschiedenen Listen, die unterschiedliche Informationen enthalten sammelt sich schnell die Anzahl der Listen-Iterationen, da sich diese mit zunehmender Verschachtelung potenzieren. Stammen die Informationen aus unterschiedlichen Quellen (Text- oder XML-Dateien, Web-Service, Datenbank, Enterprise Information System), so lässt es sich nicht vermeiden, alle Listen zu verarbeiten. Da bleibt häufig nur die Optimierung in der Datenbeschaffung. Stammen die Daten jedoch aus einer Quelle (aus einer Datenbank), so lässt sich manchmal durch eine geschickte SQL Abfrage einiges an Performance gewinnen.
+
+Mögliche Optimierungen können sein:
+
+* Verlagerung der Sortierung in eine Datenbank
+* Anzahl der Listen und Sortierungen verringern
+* Vereinfachung der Programmlogik
+
+== Falsche Nutzung von Komponenten
+
+Aus fachlichen Anforderungen ergeben sich technische Lösungen. Aus technischen Lösungen und Ideen des Kunden weitere Anforderungen. Entsteht nun eine Anforderung, die auf bestehenden Komponenten aufsetzt, die jedoch nicht so richtig zu den eingesetzten Komponenten passt, so können schnell Bottlenecks entstehen. Soll beispielsweise eine detaillierte Suche um eine Volltextsuche erweitert werden (die Daten aus einer Datenbank abfragt), so wird gerne die bestehende Technik-Basis weitergenutzt. Dabei sind Datenbanken nicht gerade die richtige Wahl wenn es darum geht, einen Volltext-Index aufzubauen. Datenbanken dienen dem Speichern und Abfragen von Daten, der Suche nur sehr begrenzt.
+
+Ein anderes Beispiel ist die Kopplung von unterschiedlichen Systemen. Waren noch vor 10 Jahren CORBA und eine Datenbank-Schnittstelle (System A legt werte in einer Datenbank ab, System B verarbeitet diese, System A holt die verarbeiteten Daten aus der Datenbank) eine gängige Praxis, so erlauben es heute Web-Services, RESTful Interfaces und andere Standard-Komponenten, diese Systeme miteinander zu vernetzen. Grundsätzlich gilt: So wenig (Overhead) wie möglich, so viel (Funktionalität, Sicherheit, usw.) wie nötig. Oftmals reichen wenige Daten und ein einfaches XML-Format aus, um erforderliche Daten zwischen System zu übertragen. Spätestens wenn ein Web-Service-Aufruf 5 MB Nutzdaten überträgt stellt sich die Frage: Setze ich die richtige Komponente für meine Anforderung ein?
+
+Mögliche Optimierungen können sein:
+
+* Fragestellung: Welche Anforderung gilt es abzudecken, was sind die gängigen Lösungswege?
+* Einsatz einer Datenbank für Speichern und Abfragen von Daten, Suche begrenzt (Ideale Suche über eindeutige Parameter wie z. B. Foreign Keys)
+* Einsatz eines Volltext-Index für Volltext-Suche (enorme Performance-Steigerung)
+* Nutzung von gängigen und Ressourcen-schonenden Protokollen, ggfs. Minimierung der Datenvolumen/Strukturen falls möglich
+
+== Zu komplexe UI's
+
+Oberflächen dienen als direkte Schnittstelle zum Anwender. Manchmal wachsen aus kleinen Masken Oberflächen mit mehreren 100 Feldern. Oder es werden Listen angelegt, die aufgrund komplexer Business-Regeln verschiedene Status-Optionen ermitteln. Diese Oberflächen haben häufig neben Performance-Problemen (Laden der Oberfläche dauert zu lange) auch den Charme, den Anwender zu überfordern. Rein Funktionale Oberflächen treten in der Business-IT-Welt sehr häufig auf (ca. 85 % aller Business-Software hat kein oder nur ein unzureichendes Screen-Design), der Schritt zu einer unübersichtlichen und langsamen Oberfläche ist daher nicht weit. Masken mit vielen Feldern werden oftmals auf einmal geladen, d. h. alle Feldinhalte müssen geladen und ggfs. formatiert werden. Bei Listenseiten, die eine gesamte Liste auf viele Informationen überprüfen summiert sich die Zeit, die die Liste zur Abarbeitung benötigt. Wird bei jedem Listen-Eintrag ein Datenbank-Lookup durchgeführt, so dauert dies um so länger.
+
+Was kann dagegen getan werden?
+
+* Screen Design mit Usability-Team durchführen
+* Listenseiten: Verlagerung der Status-Informationen auf eine Detail-Seite
+* Aufteilung von überfüllten Masken auf separate Masken (evtl. getrennt nach Funktion oder Aspekt des Business-Prozesses)
+* Vermeiden von Komplett-Aktualisierungen einer Oberfläche, falls nicht erforderlich
+
+== Exzessive Speichernutzung
+
+In der heutigen Zeit gehört das Zählen von Bits und Bytes der Vergangenheit an. Wurde auf einem frühen Host-System (Großrechner) noch der Speicherbedarf bis auf die letzten Bytes optimiert, so ist dies heute, in der Zeit von Gigabytes an Massen- und flüchtigem Speicher nicht mehr die gängige Praxis. Wenn an einer Stelle neue oder weitere Informationen benötigt werden, so wird einfach ein neues DTO (Data Transfer Object) oder mal schnell eine neue Datenstruktur eingesetzt. Auch ein Cache zum Puffern von Datenbank-Daten ist gängige Praxis. Dabei fällt erst im Nachhinein, bei den Integrations- oder Akzeptanztests, ja sogar manchmal erst im produktiven Betrieb auf, dass die Anwendung mehr Speicher benötigt, als verfügbar ist.
+
+Ein anderes Beispiel aus meiner Praxis zeigt, dass nicht nur die Entwickler, sondern auch Komponenten zu einer enormen Speichernutzung führen, werden diese falsch eingesetzt: In einem Projekt ging es darum, mit einen Batchprozess eine Masse an Daten (ca. 100.000 Datensätze) zu verarbeiten. Technische Basis waren Hibernate und eine Datenbank. Der Prozess galt als atomar und sollte daher in *einer* Transaktion laufen. Hibernate hält in einer Session alle geladenen Objekte (Session Cache/First Level Cache, es sei denn, diese werden bewusst aus der Session gelöst, was nicht der Fall war). Die Updates des Second Level Caches werden erst nach dem Abschluss (Transaktionaler Cache, Update nach Commit) der Transaktion durchführt. So kam es dazu, dass fast 200.000 Objekte im Heap verwaltet wurden und irgendwann verabschiedete sich der Prozess mit einem OutOfMemoryError. Was ist die Lösung für dieses Problem? Änderung der Prozesslogik auf eine manuelle Transaktionssynchronisation.
+
+Wie können aber sonst Speicherprobleme in den Griff bekommen werden?
+
+* Bei akuten Problemen: Profiling der Anwendung (im Java-Bereich: Heapdump-Analyse, Memory-Profiling mit Visual VM oder JProfiler)
+* Sind zusätzliche Daten tatsächlich erforderlich oder sind diese bereits an einer anderen Stelle vorhanden?
+* Freigabe von belegten Ressourcen (z. B. close() bei Sessions, Verbindungen, Streams)
+* Freigabe von Ressourcen durch automatische Speicherverwaltung ermöglichen (Bei manuellem Cache Nutzung von WeakReference statt direkter Objekt-Pointer)
+
+== Unnötige Funktionalität
+
+In der Regel wird ein Software-System mit zunehmendem Alter entsprechend komplexer. Es gibt jedoch auch den Fall, dass eine Funktionalität nicht mehr benötigt wird. Diese kann dann seitens Entwicklung einfach im Code belassen werden, da diese nicht stört oder entfernt werden. Ähnlich verhält es sich mit YAGNI (You Ain’t Gonna Need It): Wird in weiser Voraussicht eine Komponente besonders flexibel gestaltet, obwohl dies derzeit nicht erforderlich ist, so ist zu 99 % der Fall, dass diese Komponente oversized ist. Aber eine andere Komponente, mit der niemand gerechnet hat, wird dafür aufgebohrt.
+
+Der agile Entwicklungsansatz fördert, dass die Komponenten mit ihren Anforderungen wachsen, ein häufiges Refactoring erhalten (Refactoring ist Wellness für den Code) und somit im finalen Zustand ein Design haben, als wäre die Komponente nie für einen anderen Zweck gedacht.
+
+Was also tun?
+
+* Entwicklung nur der benötigten Funktionalität
+* Alte, unbenutzte oder nicht erforderliche Funktionalität entfernen (Das Code-Repository kennt die Code-Historie), diese macht den Code langsam und unübersichtlich
+
+Dies waren meine Top 10 der Performance-Probleme. Manche von ihnen gehen Hand in Hand mit anderen Problemen. Was sie alle gemeinsam haben, ist, dass diese häufig schleichend entstehen und zu einem Zeitpunkt auftreten, an dem man solche Probleme überhaupt nicht gebrauchen kann. Deshalb ist ein regelmäßiges Code-Review, auch durch das eigene Team eine sinnvolle Maßnahme.

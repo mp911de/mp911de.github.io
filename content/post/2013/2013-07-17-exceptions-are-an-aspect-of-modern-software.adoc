@@ -1,0 +1,106 @@
++++
+title = "Exceptions are an aspect of modern software"
+date = "2013-07-17T09:46:27"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "exceptions-are-an-aspect-of-modern-software"
+wordpress_id = "88"
+url = "/2013/07/17/exceptions-are-an-aspect-of-modern-software/"
+categories = ["Blog"]
++++
+Java is currently the one and only language having checked exceptions. More and more frameworks switch to unchecked exceptions over time, moving them out of focus, making them invisible. Therefore exceptions become an aspect of modern software and should be treaded in an adequate way: Don't let your code be exception driven.
+
+<!--more-->
+
+A major issue in current software systems is exception handling. The least of us devs know how to approach. There are a couple of proven strategies and patterns, how to handle exceptions.
+
+All we know in the moment when dealing with exceptions is: There is an exception, I have to deal with it. I have to do something, else my code does not compile. Either I wrap it. Or I create a try/catch block. Or I delegate it to my caller (which is mostly the best solution, by the way).
+
+Long time ago, in a time transactions had to be managed in an explicit way, we had the same sad problem. Lot's of transaction handling code, in almost every part of our code. Because of all that transaction code, try/catch blocks we did not see what's really going on in the code. Today all EJB containers and the Spring Framework allow you to use managed transactions. You simple annotate transaction boundaries, if necessary. The other part is handled for you, so you do not need to bother. I see this coming for exceptions as well. Perhaps in a different way, but same principle.
+
+== Exception handling in software
+
+Take a look below. These code examples are common patterns when dealing with exceptions: You want to handle multiple exceptions in a common way, but don't want to catch the overall Exception type. Ok, using Java 7 makes it more handy, but still, as soon as this block repeats more than 1 time it starts bad code evolves.
+
+[source,java]
+----
+try {
+    ...
+} catch (IOException e) {
+    handleException(e);
+} catch (ManagedBeanNotFoundException e) {
+    handleException(e);
+} catch (Exception e) {
+    handleException(e);
+}
+----
+
+Next one is an example for the my-code-must-compile-but-the-exception pattern. Wrapping something into a try/catch block. If an error happens, so what, just ignore it. And logging to files no one ever cares. In such a case, the execution should be terminated and the exception delegated to the caller (at least in 99% of all cases).
+
+[source,java]
+----
+try {
+    JaxbMarshaller jaxb = new JaxbMarshaller(DocumentQuery.class);
+    docExport.setQuery(jaxb.marshal(query));
+} catch (JAXBException e) {
+    LOGGER.error(e);
+}
+docExportDao.persist(docExport);
+LOGGER.info("Export persisted");
+----
+
+The last one is somehow the worst.
+
+Dev: _"I've heard, that exception wrapping is a well-suited pattern."_
+
+Well, it is, but not for wrapping your own exceptions in wrappers in wrappers in wrappers. Exception wrapping is a best practice when dealing with 3rd-Party code. You don't want to see 3rd-Party exceptions all over your code. This breaks nearly every principle of an clean architecture.
+
+[source,java]
+----
+try {
+    parent.addChild(child.getValue());
+} catch (MyApplicationException e) {
+    // Should not hapepen
+    throw new MyAppRuntimeException("cycle in structure <" + child.getId() + ">", e);
+}
+----
+
+== The time of exception handling is over
+
+Do not handle exceptions within your business code. Just don't.
+
+The only places for handling exceptions are the boundaries, where it's worth it. Most exceptions result in some kind of message for the user. Why also stressing code with tons of exception types. Using exceptions as flow control is discouraged. Use something different, like if-clauses.
+
+== Exceptions are still there
+
+We did not got rid of exceptions, just because we do not handle them. Exceptions have to be handled. Exception handling is important such as Caching, Logging and Transactions. But where and how. The best exception handling is one, you do not see. Use unchecked exceptions. Checked exceptions have their benefits, for some critical libraries or sometimes even validations. Thing someone really can take care of, not programming errors or I/O problems. The price for checked exceptions is as well high. You have to define them on every method they can occur. You have to do something in order to delegate the exception as well, mostly defining them in your method signature. Checked exceptions break the Open-Closed-Principle: As soon as you add a new checked exception, you have to define it up the whole calling hierarchy. Therefore use unchecked exceptions.
+
+== Exception as an aspect (EAAA)
+
+In recent time, exception as an aspect (EAAA) worked very pretty amazing in different scenarios and projects for me. Aspects (derived from AOP) are things you usually do not see, but they exist. Like Transactions, Logging and Caching. Some of them do not work until you enable them or create something in order to make them work. The same applies to EAAA. In EAAA are all exceptions unchecked exceptions. You don't see them. You don't feel them. Only in the places they're raised. There are some places, mostly boundaries of the delivery method, where you have to take care of them. From business code perspective and even within UI exception handling is invisible. These boundaries for exception handling are listed below:
+
+=== SOAP Services
+
+SOAP Services are remote boundaries. SOAP does not know anything about exceptions. SOAP uses faults for things which are done by exceptions. Therefore you've got to catch exceptions in your SOAP facade and create SOAP faults. Logging is valuable. But do not rely on: Something will happen. This is undefined.
+
+=== REST Resources/HTTP Services
+
+Same as above but HTTP is a transport protocol for hypermedia resources. HTTP knows headers and status codes but no exceptions. JAX-RS (JSR-311) has a very nice aspect-oriented approach to handle exceptions: As developer you define Exception-Mapper types, which are used by the framework every time an exception comes over the boundary. Exception handling is completely outside the application code (REST resources).
+
+=== EJB Facades
+
+EJB's are Java. Usually we throw as exceptions over this boundary. This is OK for NullPointers or business exceptions. Not for raw technical exceptions. 3rd party exceptions or exceptions from libraries not available on the client hide the real cause an result in NoClassDefFound-Errors. The reason for this is because the referenced classes within the exception are not available. Not just that you get an error, you do not even know what's going on.
+
+You can create in each facade a try/catch, which converts your exception to something safe, but mostly you loose the stack trace. To be honest: I would not like having over and over the same code in every facade method - and I have tons of them. Take a look at the https://github.com/mp911de/Public/tree/master/safety-facade[Safety Facade]. There you'll find a solution how to decouple exceptions at the EJB boundary. And decoupling is in this case exception handling. The handler code is located within an EJB Interceptor, so you do not have any try/catches in your facade code at all.
+
+=== The UI
+
+Oh boy. What happens with exceptions in the most cases in the UI: You create a message. There are also cases, where either a message or the stack trace is displayed. Why do you create tons of exception types then? The pattern is always the same: Try/catch/message/log. In 100's of methods. I do not like it. Java Server Faces has a built-in exception handler factory, which looks very nice for external exception handling. For other frameworks such as AWT, Swing, SWT, Vaadin: Wrap the action listeners, so that you can invoke your UI code. That wrapper layer takes care of handling the exceptions.
+
+=== Orchestration Layer/Services
+
+Business Process Management engines, Actors like http://akka.io[Akka] or even own workflow processors behave in a specific manner as soon as exceptions come into place. Mostly they requeue the current action for retry. Or they try a different action instead. Is the one WebServie not reachable so try the other one. Is the number of attempts exceeded, so send the process instance over to the ops guys, they will handle it. The orchestration layer is a manager in between. This layer knows what to do in case something unexpected happens. Although this exception handling is very explicit, this is the right place to decide how to go on with the things you try to execute.
+
+== Conclusion
+
+Using Exceptions as an aspect (EAAA) you never ever have to think what to do in case of exceptions. At least not when you're within deepest details and you don't have an idea, what the heck you should do with exceptions. You always delegate it to someone who cares. Using unchecked exceptions does not enforce you to change the whole call hierarchy adding exceptions to the method signatures. So give it a try and handle exceptions as an aspect.

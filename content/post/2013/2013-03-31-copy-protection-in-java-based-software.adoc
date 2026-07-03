@@ -1,0 +1,49 @@
++++
+title = "Copy protection in Java-based software"
+date = "2013-03-31T19:58:46"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "copy-protection-in-java-based-software"
+wordpress_id = "79"
+url = "/2013/03/31/copy-protection-in-java-based-software/"
+categories = ["Blog"]
++++
+Once someone has written a software and he wants to sell it, ideas of licenses and copy protection arise. There are several ways, how software can deal with that: No license control at all, license keys, serial numbers, online activations, encrypted source code. Every type has its pros and cons.
+
+<!--more-->
+
+link:/images/2013/03/Copy-protection-in-java.png[image:/images/2013/03/Copy-protection-in-java.png[/images/2013/03/Copy-protection-in-java]]
+
+In general, everything created by mankind can be understood/reversed by mankind. The only question is: How much effort is it? Every copy protection has a weak point.
+
+Java is a interpreter-based programming language. This makes it much easier to take a look what’s inside. Please note: This is not a guide/call for hacking, but my personal experiences. Just take any Jar-file and drop it on the class path of any IDE project. You’ll get instant code completion/code assist proposals, you can directly inspect the API. Some IDE’s even show you a nicely outlined bytecode, which tells you roughly what happens. This point makes Java vulnerable to reverse engineering attacks (beware, reverse engineering is in 99.9% prohibited by the copyrighter).
+
+Another vulnerability is the open class loading behavior. You can drop any small portions of Java classes into the VM. The order of the class path defines therefore the loading order and can cause, that classes with the same class names are not loaded at all.
+
+These facts make it hard to create a reliable and hard-to-break copy protection. As soon as any license information are transported in data models (after validating a key, decrypting signed licenses or querying remote license servers) there’s a flaw.
+
+A complication is done by obfuscation. Obfuscation renames any classes from
+
+....
+de.paluch.test.LicenseDecoder
+....
+
+to
+
+....
+de.paluch.a.a 
+....
+
+and so on. Same applies to methods. The original, readable names are replaced by something else. This is sort of "security by obscurity". Sure, it’s hard to find out, what the role of
+
+....
+a.b.c#d(a)
+....
+
+is, but by reading byte code you’ll figure out. Most projects I know don’t rely on obfuscation, only some silly ones.
+
+You can add more complexity using native parts. There are frameworks to encrypt bytecode. These classes are loaded using a native class loader. This solution relocates the core security aspects from Java to native libraries. It’s hard to read Assembler, but not impossible to understand, what’s going on.
+
+Trying to understand a copy protection is fun for spare time for me. It showed me also, some vendors use a generic library for all their products. You understood the function for one product - you understood all of them.
+
+The currently only two safe ways of copy protection/license control are either use nothing or a hosted service by the software vendor their own.

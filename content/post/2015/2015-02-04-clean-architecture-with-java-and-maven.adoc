@@ -1,0 +1,65 @@
++++
+title = "Clean Architecture with Java and Maven"
+date = "2015-02-04T20:21:32"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "clean-architecture-with-java-and-maven"
+wordpress_id = "205"
+url = "/2015/02/04/clean-architecture-with-java-and-maven/"
+categories = ["Blog"]
++++
+I wrote about link:blog/83-clean-architecture-code-examples-for-an-onion-architecture.html[2 years ago] about Clean Architecture/Onion Architecture. Now it is time to revisit this topic.
+
+*_Architecture is about purpose and not about tools._*
+
+This rule applies to architecture of buildings the same way as it applies to software. Software consists of several parts that make the software do something. Software architecture represents what code is located in what place.
+
+<!--more-->
+
+== Java EE Blueprints
+
+The link:/images/external/corej2eepatterns/CJP2Catalog.gif[Java EE Blueprints catalog] was published in 2005. Since then this was a guide for architecture in Java EE. It had all the Front Controller, Facades, Application Services, Business Objects, Transfer Objects, Delegates and many more. A certain part of these patterns made it also into Java SE applications. There are many patterns, but there is no place for the business logic. The central data structures are degraded to transfer objects and the main focus, when it comes to data structures (entities) are persistent entities managed by JPA.
+
+link:/images/external/corej2eepatterns/CJP2Catalog.gif[Java EE Blueprints] lead to:
+
+[arabic]
+. business logic/business rules are distributed all over the code base
+. most business rules are within a service
+. business rules in services depend in several cases on business rules that located in the delivery mechanism (GUI, Web, and others)
+
+So there is no one place where you can find all the use cases. The only thing you see, is the persistence module, the web module, the facade and services module. Your application purpose is obfuscated by tools. Don’t get me wrong, several of these patterns are effective and proven. Patterns and tools must not dominate your application else you become a slave of tools and frameworks that may change externally. Then you have to adopt these changes because your foundation is the framework. That is a modern way of slavery.
+
+== Use-case driven approach
+
+There are several different approaches. The approach with the most benefit for decreased costs of change improved maintainability, flexibility and TDD’bility is the use-case driven approach from Ivar Jacobson. It was published in the early 90’s. The essence of the use-case driven approach is (beside the main point that you design use-cases first):
+
+* Entities: Business objects or functions that incorporate application-independent rules or data structures. You could reuse them within one domain across multiple applications (Until now no one mentioned that these guys are persistent in any way).
+* Interactors (or use-cases): The layer where your application magic happens. These objects implement application-specific rules. The use-cases depend on your entities.
+* Boundaries/Adaptors (everything else): In this layer lives everything else. Connectors to remote systems, persistence implementations that accept/return Entities, cache implementations, the delivery mechanism (such as the Web UI or a Rich Client).
+
+Clean architecture reduces the database, the web framework, even the dependency injection framework to just a plugin, a plugin that can be changed with a moderate effort. Moreover, you gain unit testability because everything that is expensive (such as booting a web server or dealing with a database) is hidden behind a boundary.
+
+I created a Github repo (https://github.com/mp911de/CleanArchitecture) containing a Maven Multi-Module project in order to give you an impression how to implement this style of clean architecture.
+
+image:/images/2015/02/clean-architecture-folders.png[clean-architecture-folders]It all starts with the data structures/entities/application model. They live within the application-model module. Business rules and use cases, the things your application does, reside within the use-cases module. They depend on the application-model and perhaps on external things that are represented by boundaries, located in contracts. Boundaries are an agreement between the use case and the other side. The contracts module depends only on the application-model. No ORM entities or external-specific API/persistent entities. ORM, caching implementations, clients to external services implement a contract that is located in external and its sub-modules.
+
+All parts are tied together by the delivery mechanism that integrates the externals and connects the use cases by supplying dependencies to come the system to life.
+
+Once in a while, some projects may need common patterns how to solve recurring and specific problems. One of them might be how to obtain the current date or checking strings against emptiness/null. In this case, you would use either existing libraries, which do not enslave you. Alternatively, you create an own module containing the support for your patterns.
+
+The dependency structure illustrates the particuar components and it dependencies.
+
+link:/images/2015/02/cleanarchitecture.png[image:/images/2015/02/cleanarchitecture.png[Dependencies]]
+
+== My motivation for this post
+
+My motivation to revisit this topic is my experience applying clean architecture. It is a whole different approach having one place for all the business logic. It just feels right. Clean architecture decouples the parts involved in an application. TDD gains a very specific quality, and you nearly stop having cyclic dependencies.
+
+Tests do not depend on heavy frameworks anymore in order to test a small use case. You gain the freedom to postpone decisions about tools and frameworks until you really get to the point (which was very late in my last projects). The web and the database become just a plugin. MVC or ORM patterns are still valid but live then only within the external plugin, hidden by a boundary.
+
+== Resources
+
+* Core Java EE Patterns: http://www.corej2eepatterns.comhttp://www.corej2eepatterns.com[]
+* Ivar Jacobson Object Oriented Software Engineering: A Use Case Driven Approach: http://www.amazon.com/Object-Oriented-Software-Engineering-Approach/dp/0201544350http://www.amazon.com/Object-Oriented-Software-Engineering-Approach/dp/0201544350[]
+* Java Clean Architecture Sample Code: http://github.com/mp911de/CleanArchitecture
+* Ruby Clean Architecture Project: https://github.com/RetroMocha/obvious_status

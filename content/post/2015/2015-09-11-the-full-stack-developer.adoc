@@ -1,0 +1,88 @@
++++
+title = "The Full Stack Developer"
+date = "2015-09-11T09:15:24"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "the-full-stack-developer"
+wordpress_id = "227"
+url = "/2015/09/11/the-full-stack-developer/"
+categories = ["Blog"]
++++
+image:/images/2015/09/4263328317_0025dbf23d_o-scaled.jpg[/images/2015/09/4263328317++_++0025dbf23d++_++o-scaled]
+
+I read https://blog.growth.supply/the-full-stack-developer-is-a-myth-4e3fb9c25867[The full stack developer is a myth] story written by https://twitter.com/hadsie[Scott Hadfield] the other day. Once I got through the post, I realized a couple of things. The first major point is, there’s no uniform understanding what full stack developer means. More issues are the views of the commenters to the article and the opinion of companies mentioned in the article. It shares my experience how companies deal with so-called full stack developers. This article will clarify that view. Let me give you some context before I come back to full stack developers.
+
+<!--more-->
+
+A couple years ago, perhaps in 2011, if one asked me: Hey, what’s the role of a Software Architect I would have given most probably following answer: I have no idea. I guess something with frameworks and creating interfaces. And, yes, doing concepts.
+
+At that time, a lot of developers with more experience called them software architects. It was quite hard to find a developer doing features. Blog posts and developer magazines at that time were full of software architecture articles. These articles told one what software architecture is and how to do software architecture. Every single of them was different. The most common thing was the headline. Nothing else. That facts support my thesis: Only the least had a clear idea what the role of a software architect was.
+
+== The term software architect was overused, misused and misunderstood.
+
+But this changed. Today there’s a more clear distinction between software engineer, senior software engineer, DevOp and software architect. The role of a software architect is to define the software architecture with preparing/postponing major decisions, working on the big picture, creating and verifying the concepts by coding as part of the team. A software architect handles all the big how’s with adding the why’s and keeping track of them. I would say the software architect is the level-up to a senior software engineer.
+
+____
+The earliest definition of a full stack engineer seems to be a post from Facebook Engineer Carlos Bueno who defines it as a generalist with a deep knowledge of performance implications. Scott Hadfield
+____
+
+Rare industries suffer from a constant change as the IT industry.
+
+== Suffer? Hell, no! Constant change is key!
+
+Information technology is subject to change since its genesis. The more we evolve, the more we know, the faster we grow, the more possibilities we see.
+
+Frameworks, technologies, way-of-working, are constantly changing. Only a few topics survived from before 10 years. 10 years ago we could hardly believe to release and deploy continuously and yet this became part of our daily business. So the people evolved. Some of us used to be C{plus}{plus} developers and then switched to a different language. Some of us are experts in particular domains others know how to get the most out of a system. There are experts with a deep understanding of particular tools and some can work with nearly everything.
+
+If you know the software craftsmanship movement, you perhaps got in touch with their values and view of a programmer’s job. Software development is a unique combination of creativity and craftsmanship. Writing code might be considered a commodity job but software development is far away from commodity. Creating software is building up something out of nothing than just ideas is a creative process, a design that materializes into code. Unit testing, writing documentation, building software, doing version control are repetitive tasks which can be observed in the daily business. Doing them in a proper way, committing to goals, following principles and believing in values are indicators for professionals. No matter what professionals: Doctors, lawyers, accountants. Software craftsmanship encourages software engineers to cease unreliability and to get the view for the things that matter to level up for a professional.
+
+'''''
+
+What’s this foolishness of software engineers that makes them believe software is just a fun thing?
+
+'''''
+
+A something without relation to business value? How comes the belief, this behavior could be acceptable in any way for a company? I do not know.
+
+Let me escape once more in another aspect before I come back to the full stack developer. I’m asked over whether I know JUnit, which build too I use, whether I attended scrum planning meetings and sometimes even whether I’m familiar with a particular web framework.
+
+How insane is that? Not because someone is concerned about the tool set I should know but about the following:
+
+image:/images/2015/09/2370612355_6f54b216ae_o.jpg[/images/2015/09/2370612355++_++6f54b216ae++_++o] +
+
+Has anyone ever asked a carpenter whether he knows a hammer? In which cases, he uses a saw and why? Or whether he is comfortable with using a screwdriver of a certain brand? Or he is familiar with drills?
+
+These questions might hit a very young apprentice although I’ m not sure even about that. They might ask them whether they built large tables or stools, but that’s probably it.
+
+Why are we engineers asked about that technologies? Why this focus on tools? My best guess: The client that is about to hire the next developer, want’s to make sure that he has not to educate his hire too much. He wants the engineer to be ready and not to screw up the project — as perhaps his/hers predecessor did. Software developers have this unreliable and gamer-geeky touch — somehow.
+
+The technology-focussed approach has lead to our pride on technology: „Look, I’m a node.js developer.“, „Hey, my expertise is Scala. And I did frontends and backends“. „I’m doing JUnit tests“.
+
+Technology changes. Frameworks too. Remember JSP and Struts? In the early 2000’s we thought we could rule the world by using those tools. And today? Developer start looking ashamed if they mention they still use Struts.
+
+Those, who understand mostly call themselves senior software engineers, architects, software craftsmen or
+
+== full stack developer.
+
+I merge all aspects of senior software engineers, architects, and agile working software craftsmen into the term of full stack developer.
+
+Full stack developers leave particular technologies behind them because their understanding has evolved. They understand technology as part of the ecosystem and know, that technology changes faster than principles of computer science. They care about every one aspect of a software development endeavor. Full stack developers might be specialized in a certain area, yet they are polyglot and comfortable by applying new languages, tools and techniques. They know that technology is always evolving. They do not stand still at the technology and knowledge of their past. They have learned not to assume everything we know about software development is true. It might be true in limited context.
+
+'''''
+
+*Action, reaction. Cause, effect* — causality is always part of their considerations for finding the right solution to the very particular problem. Full stack developers won’t ever use a one and only tool or framework for all of their solutions. Yet they are aware of a broad toolset. They to choose the appropriate one and are always conscious of the cost and benefit it takes. They are always seeing the big picture while caring about details. Caring about the team, architecting sustainable systems.
+
+Full stack developers have a consistent set of values and measures that help them and others to achieve the best goal for a certain case. They say no and they illustrate the why, together with an alternative. Different projects are not magical unicorns to them. Rather they understand that every software needs to implement a unique set of business rules by applying individual actions to create business value — and yet software is still just software. Only better written, better designed and more crafted with sustainability.
+
+They help to build and maintain a culture of values, principles, and measures. They spread knowledge because they learn by sharing and explaining knowledge. They help others to improve. They improve continuously the way of working, the code, the documentation, the tests. The whole product reflects a significant part of their culture. They add features to support their daily work, the operations and the developer experience that makes working on the project a joy. Full stack developers emphasize nonfunctional requirements and let the magic happen. Driven by becoming the best in class they do not fear diversity in other cultures, people but encourage diversity. They design, build, test, run and maintain, they combine a variety of roles and responsibilities in one person.
+
+Perhaps they don’t know all and everything, but they understand where to get the knowledge from. Full stack developers can work in a wide field of domains until they reach their own limits. And yet they are capable of extending those.
+
+'''''
+
+And companies? They look for experts with a broad knowledge. They try to make the best deal. But are they ready to handle the answer that results in hiring a full stack developer?
+
+== Image credits
+
+* Keyvisual: https://www.flickr.com/photos/10361931@N06/4263328317/[Horia Varlan]
+* Carpenters workshop: https://www.flickr.com/photos/11121568@N06/2370612355/[Alan Cleaver]

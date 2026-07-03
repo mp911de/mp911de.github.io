@@ -1,0 +1,129 @@
++++
+title = "Finding the right NoSQL data store: Results for my use case and a surprise"
+date = "2014-10-29T09:25:52"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "finding-the-right-nosql-data-store-results-for-my-use-case-and-a-surprise"
+wordpress_id = "194"
+url = "/2014/10/29/finding-the-right-nosql-data-store-results-for-my-use-case-and-a-surprise/"
+categories = ["Blog"]
++++
+Some time ago, I wrote about link:index.php?option=com_content&view=article&id=121;after-the-hype-finding-the-right-nosql-data-store&catid=8;blog&Itemid=108[finding the right NoSQL data store]. It depends pretty much on what you want to do. After a series of tests I finally have some results I want to share. My goal: Find the most appropriate NoSQL data store for our project's use case.
+
+== Requirements
+
+The requirements is to parse XML files which are stored on a storage system and put relevant keys into a data store to be able to find the data again. It's a sort of index. The data is hierarchical with two levels (master and detail). The data stream is continuous and there is a lot of data (not big data). 10's of TB's.
+
+<!--more-->
+
+To find a suitable data store we've decided to setup a test. We created a data model and imported the data in some data stores to see how they behave and what resources they will need. We used following data stores for the test:
+
+* Apache Cassandra
+* MongoDB
+* TokuMX
+
+* Two import machines (8 core, 32GB RAM, 1GbE Network, index service)
+* Four data store machines (8 core, 32 GB RAM, 1GbE Network, each with all three data stores installed)
+
+link:/images/2014/10/components.png[image:/images/2014/10/components.png[Components]]
+
+According to each system the data model was corresponding. Two column families for Apache Cassandra and one document model for MongoDB/TokuMX. The data model is aligned with the later queries and both strategies (Cassandra and MongoDB/TokuMX) can be used by just switching a config flag. This means, the query application is built to support both ways for better comparison. The importer/indexer service itself is a component responsible for reading (File over NFS), parsing (JAXB) and writing (NoSQL) the data. It is built on akka.io so we can tune concurrency.
+
+== First Steps
+
+After fiddling around with concurrency we found the settings to fit the best. We imported some 10 GB's of raw data. In the first place we used virtual machines to host the data stores. We found out soon that the used systems do not suffice for our test needs. Therefore we switched to hardware servers. That's something we can talk now.
+
+*System layout Apache Cassandra*
+
+Since Apache Cassandra nodes are all equal (in their role), there is not much to say. We use replication factor 2 to prevent data loss.
+
+*System layout MongoDB/TokuMX*
+
+Both databases are set up as shared/replicated cluster, 4 replica sets (every server carries a master and a slave of a different replica set), 3 config servers (server 1 through 3 carry a config server in addition to the shard server instances) and 3 sharding router (mongos).
+
+== The test
+
+After moving to real hardware we increased our data amount to 100GB. When starting the test first, we ran out of memory on our application servers. The massive file load killed our machines. After increasing the memory we could watch the system working. After a while we increased our data chunk to 100GB. The load on the application servers was in the upper 90% for all cores. This is a optimal utilization of the CPUs without having too much I/O waits. The importer process decouples I/O intensive work so NFS reading is not synchronized with XML parsing or NoSQL writing. Each of these processes have their own queues. After some test series we've found out that:
+
+[arabic]
+. The NoSQL data stores are not a limiting factor
+. The storage cache has massive impact on how fast the data is available (6ms cached vs. 50ms not cached)
+. The network is our limit
+
+*NoSQL performance* We are writing to the NoSQL data stores using 20 threads on each application server (40 in total). The more threads we add the more throughput we achieve. We did not hit the point where adding more workers slows down the system. The particular data stores have different response times and draw different pictures of system load.
+
+*Response Times for writing a batch of data*
+
+[cols=",,",]
+|===
+|Apache Cassandra |MongoDB |TokuMX
+|81ms |21ms |17ms
+|===
+
+ +
+ +
+
+[width="100%",cols="100%",]
+|===
+|link:/images/2014/10/write-latency.png[image:/images/2014/10/write-latency.png[Write latency]]
+|*Write latency*
+|===
+
+When our tests were running, we achieved some 103MB/sec on inbound traffic (NFS read of XML files, measured on the network interface) and 20MB/sec outbound (write the data into the NoSQL data store). This was mostly when only one importer node ran. As soon as both nodes were working, inbound traffic rates dropped between 500MB/sec to 70MB/sec. Adding more nodes/workers caused not a higher throughput but rather the available network bandwidth was shared amongst the importer nodes. The storage performance remained stable.
+
+*Data size of the NoSQL data stores*
+
+After running the imports we measured the disk usage of the NoSQL data stores. This is an important metric for us to estimate our hardware needs. We differentiate between the net data size (usage of the column families within keyspace/collections within the database) and the gross data size (keyspace/database with oplog/commit log)
+
+[cols=",,,",]
+|===
+| |Apache Cassandra |MongoDB |TokuMX
+|Net |10 GB |21 GB |2,4 GB
+|Gross |39 GB |218 GB |5,6 GB
+|===
+
+ +
+ +
+
+Here are some monitoring snapshots while the import was running
+
+*nmon on the Data Store Servers*
+
+[width="100%",cols="50%,50%",]
+|===
+|link:/images/2014/10/nmon-cassandra.png[image:/images/2014/10/nmon-cassandra.png[nmon while Apache Cassandra use]] |link:/images/2014/10/nmon-mongo.png[image:/images/2014/10/nmon-mongo.png[nmon while MongoDB use]]
+|Apache Cassandra |MongoDB
+|link:/images/2014/10/nmon-tokumx.png[image:/images/2014/10/nmon-tokumx.png[nmon while TokuMX use]] |
+|TokuMX |
+|===
+
+*nmon on the Importer Server (Application Server)*
+
+[width="100%",cols="50%,50%",]
+|===
+|link:/images/2014/10/nmon-importer.png[image:/images/2014/10/nmon-importer.png[nmon Snapshot 1]] |link:/images/2014/10/nmon-importer2.png[image:/images/2014/10/nmon-importer2.png[nmon Snapshot 2]]
+|nmon Snapshot 1 |nmon Snapshot 2
+|===
+
+ +
+ +
+
+[width="100%",cols="50%,50%",]
+|===
+|link:/images/2014/10/disk-consumption.png[image:/images/2014/10/disk-consumption.png[/images/2014/10/disk-consumption]] |link:/images/2014/10/iops.png[image:/images/2014/10/iops.png[/images/2014/10/iops]]
+|Disk Consumption |IOPS
+|link:/images/2014/10/system-load.png[image:/images/2014/10/system-load.png[/images/2014/10/system-load]] |link:/images/2014/10/nmon-system.png[image:/images/2014/10/nmon-system.png[/images/2014/10/nmon-system]]
+|System Load |nmon System details
+|===
+
+ +
+ +
+*Used versions*
+
+* Apache Cassandra 2.1.0
+* MongoDB 2.4.12
+* TokuMX 2.0.0
+
+== Lessons learned
+
+We learned a lot about our setup. We have now a feeling how our components behave when putting load on them. The most surprising insight is the network limit factor. Hope we can convince some network engineers to improve our setup so we can stress the NoSQL data stores. In the current results the NoSQL systems seem quite bored to me. It is amazing to see the system under load and to see that the application utilizes the hardware in a such an efficient way.

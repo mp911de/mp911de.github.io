@@ -1,0 +1,215 @@
++++
+title = "Redis Client lettuce 3.3 Final released"
+date = "2015-08-27T15:14:05"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "redis-client-lettuce-3-3-final-released"
+wordpress_id = "221"
+url = "/2015/08/27/redis-client-lettuce-3-3-final-released/"
+categories = ["Blog"]
++++
+I'm very excited to present you lettuce 3.3.Final. Read on for the details or jump to the end to find the summary and the download links.
+
+<!--more-->
+
+lettuce 3.3 introduces a variety of changes: It features changes to cluster support, new Geo commands for the upcoming Redis 3.2 release and allows batching, an extension to pipelining.
+
+The documentation within the lettuce wiki was overhauled. +
+Meet the very new wiki at https://github.com/mp911de/lettuce/wiki
+
+The test stability issue was addressed by running infinite testing jobs. Instabilities were caused due to missing synchronization and relying too much on timing. However, the real life teaches us, not to rely on time, rather on hard facts whether a cluster node is available, or a command is written out to the transport. The tests are improved and fail less often.
+
+== Redis Cluster: Node connections
+
+lettuce's cluster support is enhanced by a couple of features. Users can obtain a connection to the particular cluster nodes by specifying either the nodeId or host and port. The new methods are available on two new interfaces:
+
+* RedisAdvancedClusterConnection
+* RedisAdvancedClusterAsyncConnection
+
+Example code:
+
+[source,java]
+----
+RedisAdvancedClusterAsyncConnection<String, String> connection = clusterClient.connectClusterAsync();
+RedisClusterAsyncConnection nodeConnection = connection
+                           .getConnection("adf7f86efa42d903bcd93c5bce72397fe52e91bb");
+
+...
+
+RedisClusterAsyncConnection nodeConnection = connection.getConnection("localhost", 7379);
+----
+
+You are free to operate on these connections. Connections can be bound to specific hosts or nodeId's. Connections bound to a nodeId will always stick to the nodeId, even if the nodeId is handled by a different host. Requests to unknown nodeId's or host/ports that are not part of the cluster are rejected. +
+Do not close the connections. Otherwise, unpredictable behavior will occur. Keep also in mind, that the node connections are used by the cluster connection itself to perform cluster operations: If you block one connection all other users of the cluster connection might be affected.
+
+The cluster client handles `ASK` redirection the same way as `MOVED` redirection. It is transparent to the client. Dispatching the commands between the particular cluster connections was optimized, and the performance was improved.
+
+== Cluster topology view refreshing
+
+Another cluster-related feature is the cluster topology view refresh. Reloading the partitions was possible since lettuce 3.0. Version 3.3 enabled the reloading on a regular basis in the background. The background update will close connections to nodeId's/hosts that are no longer part of the cluster. You can enable the refresh job (disabled by default) and specify the interval (defaults to 60 seconds). The refresh can be configured in the ClusterClientOptions.
+
+Example code:
+
+[source,java]
+----
+clusterClient.setOptions(new ClusterClientOptions.Builder()
+                                 .refreshClusterView(true)
+                                 .refreshPeriod(5, TimeUnit.SECONDS)
+                                 .build());
+
+RedisAdvancedClusterAsyncConnection<String, String> clusterConnection =
+                                        clusterClient.connectClusterAsync();
+----
+
+== Pipelining/Batching
+
+Lettuce operates using pipelining described in http://redis.io/topics/pipelining.
+
+What is different now? lettuce performs a flush after each command invocation on the transport. This is fine for the most use cases, but flushing can become a limiting factor when bulk loading, or you need batching.
+
+Asynchronous connections allow you to disable the auto-flush behavior and give control over flushing the queued commands:
+
+Example code:
+
+[source,java]
+----
+RedisAsyncConnection<String, String> connection = client.connectAsync();
+connection.setAutoFlushCommands(false);
+
+connection.set("key", "value");
+connection.set("key2", "value2");
+
+connection.flushCommands(); // send the two SET commands out to the transport
+
+connection.setAutoFlushCommands(true);
+----
+
+Why on the asynchronous connections only? The asynchronous connections return already a handle to the result, the synchronous API does not. Adding another API would require to duplicate all interfaces and increase complexity. Pipelining/Batching can improve your throughput. Pipelining also works with Redis Cluster and is not available on pooled connections.
+
+Read more: https://github.com/mp911de/lettuce/wiki/Pipelining-and-command-flushing
+
+== Codecs
+
+lettuce 3.3 uses a dedicated String codec instance for each String-encoded connection (Standalone) instead of sharing one String codec for all connections. Cluster connections share a String codec between the internal connections.
+
+A new `ByteArrayCodec` ships with lettuce 3.3 that allows byte array connections +
+without the need to create an own codec.
+
+== Geo commands
+
+This release supports the Geo-commands of the upcoming Redis 3.2 release. The Geo-API allows to maintain a set (backed by a Redis sorted set) of Geo locations described by WGS84 coordinates. You can add and query set members using the new Geo-API. Use `ZREM` to remove members from the Geo set until https://github.com/antirez/redis/issues/2674[antirez/redis++#++2674] is resolved.
+
+The design of the Geo-API within lettuce, differs from other APIs in lettuce. The response structures of `GEORADIUS` depend on the command input, and there are other languages that fit better into the Redis response structure patterns. The static type checking within Java would only allow a `List++<++Object++>++` (or `Object`) +
+which contains nested Lists and Maps carrying the data. You would have to cast the elements to maps or lists and access then again the nested elements. Working with Lists and Maps in Java is less convenient compared to JavaScript or Ruby.
+
+The Geo-API provides `GeoCoordinates` and `GeoWithin` types that allow direct access to the response values such as distance or the coordinate points.
+
+Example code:
+
+[source,java]
+----
+redis.geoadd(key, 8.6638775, 49.5282537, "Weinheim",
+                  8.3796281, 48.9978127, "Office tower",
+                  8.665351, 49.553302, "Train station");
+
+Set<String> georadius = redis.georadius(key, 8.6582861, 49.5285695,
+                                               5, GeoArgs.Unit.km);
+
+// georadius contains "Weinheim" and "Train station"
+
+Double distance = redis.geodist(key, "Weinheim", "Train station", GeoArgs.Unit.km);
+
+// distance ≈ 2.78km
+
+GeoArgs geoArgs = new GeoArgs().withHash()
+                               .withCoordinates()
+                               .withDistance()
+                               .withCount(1)
+                               .desc();
+
+List<GeoWithin<String>> georadiusWithArgs = redis.georadius(key,
+                                               8.665351, 49.553302,
+                                               5, GeoArgs.Unit.km,
+                                               geoArgs);
+
+// georadiusWithArgs contains "Weinheim" and "Train station"
+// ordered descending by distance and containing distance/coordinates
+----
+
+== Command execution reliability
+
+A new document describes Command execution reliability in the context of lettuce and reconnects. In general, lettuce supports at-least-once and at-most-once semantics. The mode of operations is bound to the auto-reconnect flag in the client options.
+
+If auto-reconnect is enabled, at-least-once semantics applies, at-most-once if auto-reconnect is disabled.
+
+At-least-once and at-most-once are not new to lettuce. The documentation just explains how these semantics apply to lettuce.
+
+Read more: https://github.com/mp911de/lettuce/wiki/Command-execution-reliability
+
+== Enhancements
+
+* Provide access to cluster connection using the advanced cluster API https://github.com/mp911de/lettuce/issues/71[++#++71]
+* Cluster connection failover when cluster topology changes https://github.com/mp911de/lettuce/issues/97[++#++97]
+* NodeId-bound cluster connections enhancement https://github.com/mp911de/lettuce/issues/104[++#++104]
+* Implement at-least-once for cluster connections https://github.com/mp911de/lettuce/issues/105[++#++105]
+* Pipelining for lettuce (or: flush after n commands) https://github.com/mp911de/lettuce/issues/92[++#++92]
+* Decouple ConnectionWatchdog reconnect from timer thread https://github.com/mp911de/lettuce/issues/100[++#++100]
+* Improve performance in 3.3 https://github.com/mp911de/lettuce/issues/90[++#++90]
+* Add checks for arguments https://github.com/mp911de/lettuce/issues/69[++#++69]
+* Use dedicated string codecs on String connections and add ByteArrayCodec https://github.com/mp911de/lettuce/issues/70[++#++70]
+* Tests for command reliability docs https://github.com/mp911de/lettuce/issues/98[++#++98]
+* Expose RedisClient.connect(RedisCodec, RedisURI) and RedisClient.connectAsync(RedisCodec, RedisURI) https://github.com/mp911de/lettuce/issues/108[++#++108]
+* Add close stale connections and strict cluster member check flags to ClusterClientOptions https://github.com/mp911de/lettuce/issues/109[++#++109]
+
+== Commands
+
+* Adopt variadic EXISTS and DEBUG HTSTATS https://github.com/mp911de/lettuce/issues/103[++#++103]
+* Support geo commands in lettuce 3.3 https://github.com/mp911de/lettuce/issues/86[++#++86]
+* Support NX++|++XX++|++CH++|++INCR options in ZADD https://github.com/mp911de/lettuce/issues/74[++#++74]
+* Add support for COUNTKEYSINSLOT https://github.com/mp911de/lettuce/issues/107[++#++107]
+* Add support for HSTRLEN https://github.com/mp911de/lettuce/issues/117[++#++117]
+
+== Fixes
+
+* Synchronization/cross thread visibility of variables https://github.com/mp911de/lettuce/issues/94[++#++94]
+* Check channel state before calling Channel.close.syncUninterruptibly https://github.com/mp911de/lettuce/issues/113[++#++113]
+* Stop the HashedWheelTimer before shutting down EventLoopGroups https://github.com/mp911de/lettuce/issues/123[++#++123]
+
+== Other
+
+* Rework of the wiki
+
+lettuce requires a minimum of Java 8 to build and Java 6 run. It is tested continuously against Redis 3.0.
+
+For complete information on lettuce see the websites:
+
+* https://github.com/mp911de/lettuce[http://github.com/mp911de/lettuce]
+* http://redis.paluch.biz.
+
+== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/3.3.Final[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.redis%22%20AND%20a%3A%22lettuce%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/redis/lettuce/3.3.Final/lettuce-3.3.Final.jar[Download lettuce 3.3.Final]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+* http://redis.paluch.biz/docs/api/releases/3.3.Final/[Javadoc]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.3.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.3.Final</version>
+    <classifier>shaded</classifier>
+</dependency>
+----
+
+Any feedback is appreciated or file an https://github.com/mp911de/lettuce/issues[issue on GitHub].

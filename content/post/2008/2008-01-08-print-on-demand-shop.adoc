@@ -1,0 +1,22 @@
++++
+title = "Print on Demand - Shop"
+date = "2008-01-08T18:33:50"
+draft = false
+slug = "print-on-demand-shop"
+wordpress_id = "9"
+url = "/2008/01/08/print-on-demand-shop/"
+categories = ["Referenzen"]
++++
+image:/images/2008/01/pod.png[/images/2008/01/pod]
+
+== Print on Demand: Wenn die Bestellung am nächsten morgen da ist.
+
+Durch Kombination der neuen Technologien des Internet und des Fortschritts bei den Druckereien wird Print on Demand immer einfacher. Keine teuren Filmkosten mehr, kein langwieriger Druckprozess, sondern bestellen, drucken, fertig!
+
+<!--more-->
+
+Im Rahmen von Print on Demand entstand so ein einzigartiger Notenshop. In diesem Shop kann jeder seine gedruckten Noten bestellen. Aber müssen Noten sein? Nein! In dem Print on Demand-Shop können z. B. wissenschaftliche Publikationen, eigene Romane und und und...bestellt werden.
+
+Für weitere Details zum Notenshop gibt es eine detaillierte Bescheibung im PDF-Format.
+
+link:/wp-content/uploads/2008/01/Notenshop.pdf[Beschreibung Notenshop mit Print on Demand]

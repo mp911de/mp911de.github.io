@@ -1,0 +1,15 @@
++++
+title = "A pirate's riddle"
+date = "2012-03-10T19:02:16"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "a-pirates-riddle"
+wordpress_id = "51"
+url = "/2012/03/10/a-pirates-riddle/"
+categories = ["Blog"]
++++
+Can you tell me this pirate's riddle solution? These pirates are used to live in the indian/pacific ocean. If you find the answer, post how long it took you, which tools you used and how many steps it were on https://plus.google.com/111207231555898182335/posts/i7eokpbfS1m[Google plus].
+
+<!--more-->
+
+image:/images/2012/03/pirate-riddle.png[/images/2012/03/pirate-riddle]

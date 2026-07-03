@@ -1,0 +1,25 @@
++++
+title = "Automating Integration tests"
+date = "2013-06-26T06:32:27"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "automating-integration-tests"
+wordpress_id = "86"
+url = "/2013/06/26/automating-integration-tests/"
+categories = ["Blog"]
++++
+== _Integration Testing describes every test, which integrates more than one component that is tested._
+
+Lots of developers are writing test using JUnit, PHPUnit, NUnit and so on. These tests invoke some piece of code, that do something. This „something“ can be a in-memory calculation, access to databases or even accessing remote services. Unit tests are tests which test a single unit, a method, a class. As soon as this method or class tries to access something, which is outside of your working memory, it's most likely an integration test. Integration tests are very valuable, but in most cases you perform integration testing without knowing it. In most cases you'll notice it, as soon as you run your tests without network or somebody kills the database. And then you might be screwed. This example gives some impression what the difficulties are: External systems, services you can't contol (yet), shared databases. Because of these and sometimes because the benefit is not seen integration tests are not automated.
+
+<!--more-->
+
+Attempts to automate integration tests often fail because heavy discussions up-front. How do we ...? Can we get machines/databases for ...? Sometimes it's only a budget discussion. Sometimes it's fear because of the complexity.
+
+I've learned, that discussions are the worst problem hereby. Endless talks and meetings can kill every attempt for integration tests and test automation. My answer is: Just start! All you need is a CI Machine and a second, integration platform machine (database/web service server or what ever you need). You see, the technical barrier is minimal to start off. You can even use your ++*++Unit-Framework for bootstrapping and running your tests, but keep your integration tests separated (marker, naming, etc.), you don't want them to run on each build.
+
+I'm aware of very complex environments with lots of clusters, nodes and zones. For integration tests: Start small, scale later. If you have multiple database servers in production, one fits for integration. You don't want to have TB's of data within your integration. If you have HA clusters, just use one machine for integration. You rely on 100's of web-services? No problem, mock'em (link:index.php?option=com_content&view=article&id=70;testdriven-integration-remote-mocking-for-integration-tests&catid=8;blog&Itemid=108[Remote Mocking]).
+
+The later, real problems will face you too. Some people start to rely on your integration platform, because it's running anyway. Or you have to parallelize tests for different branches. These are the real challenges which require a consolidation. At this level, you should have at least management attention, this makes it easy to get time/budget for new/altered setups. But don't do too much planning up front, it'll bust your head.
+
+Sneak peak also at http://www.objektspektrum.de[OBJEKTspektrum], there's a new article about http://www.sigs-datacom.de/fachzeitschriften/objektspektrum/archiv/artikelansicht.html?tx_mwjournals_pi1%5Bpointer%5D=0&tx_mwjournals_pi1%5Bmode%5D=1&tx_mwjournals_pi1%5BshowUid%5D=7422[Test automation and Continuous Integration].

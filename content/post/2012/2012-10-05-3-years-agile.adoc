@@ -1,0 +1,75 @@
++++
+title = "3 years agile: A look back"
+date = "2012-10-05T19:47:15"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "3-years-agile"
+wordpress_id = "63"
+url = "/2012/10/05/3-years-agile/"
+categories = ["Blog"]
++++
+I'm working for 3 years now with an agile approach. Before that, it was either sort of waterfall or a complete mess. The first agile steps were as well sort of agile but not the real one.
+
+My experience is, that the way my current team is working, is real agile for about a year now. Before that, it was a try and error from which we learned a lot.
+
+<!--more-->
+
+So let me explain some key points, which are in my opinion the most important:
+
+* Common Sense
+* Having one Product Owner
+* Daily/Planning/Retrospective/Continuous Improvement
+* Iterative approach
+* Time boxing
+* Prevent the agile religion
+
+Beside these points, we evolved as team. See, lots of scrum masters or whatever's stick very tight to the process (that's what they call agile in a lot of cases) therefore evolution is hard to achieve. Our evolution made up also following aspects a base of our daily work:
+
+* Continuous Integration (Test Coverage ++>++ 70%, Sonar Rules)
+* Continuous Code-Reviews (Review of every commit)
+* Clean Code
+* Acting as a team
+* Continuous Delivery
+* Being Dev-Op, Consultant, Coder & Architect
+
+But let's come back to agile.
+
+== Common Sense
+
+Agile raised from horror scenarios: Isolated developers, hacking code all day, committing to impossible schedules, not talking to anyone. Waterfall methodologies brought BDUF and BCUF (Big Design/Concept up front). Some hundreds of requirement documents, descriptions and so on. So principles like Scrum were formed.
+
+For sure, its more effective to talk to each other than doing your work for weeks, collecting stuff afterwards and passing it per mail or written down to your contact. Then you would wait some days or even weeks until you can proceed. Would you know in time, what you did weeks ago? Fast Feedback and working in small chunks help to stay within the context.
+
+Sorry, software is currently broken. How often did I hear that? Way too often. Having software always in a functional state is one of the highest and most important values. A broken software is useless, it has no value. But software is built to produce value. Common sense is, having always a working software.
+
+Hey, software gets way to complex when you have more then 10 lines of code at once. I met people, which need hours to understand things, that are explained sometimes in a sentence. So what makes you think, that a concept of 100 pages, written within a month states something, that describes software in a sane state? What makes you think, that this thing might be final? No changes necessary? I never met such a concept. Mankind is made to evolve. Software as well. Common sense is building something in small, understandable chunks.
+
+== Having one Product Owner
+
+Were you ever in the situation, that two people wanted two different things to be ready at the same time? And both are important (somehow)? As soon as you get more than one task it competes against the other. In the worse cases you have three. Therefore i have the opinion, having one channel (in agile spheres so-called Product Owner), which builds the backlog and gives it the right priorities. It's not possible to satisfy multiple stakeholder demanding large changes. Especially when all the tasks are due yesterday.
+
+Developer are not made for dealing over and over with due-dates, priorities and planning. Sure, it will work out for a certain time. Having a Product Owner, which fulfills this role is the much better approach. You do not have to take care of every piece of work.
+
+== Daily/Planning/Retrospective
+
+Regular meetings are the real good thing on agile principles. They were mostly established, because the majority of developers do not talk with each other. The short standup demands attendance of the whole team. It's very effective to talk about, what was done, what's next and the impediments. I remember myself times, where impediments came up, but no one was there to listen. So I looked myself for other things to do. Not very effective for the project.
+
+Plannings give the whole team an overview of "What's next". It spreads also knowledge and does not limit things to individuals. So is Retrospective. It allows to talk about the last iteration. My personal opinion is, not limiting the retrospective to the used agile principle, but talking about the last two weeks (for example). Looking at every aspect, to improve continuously. Only that way you identify things, which can be improved in the next iteration.
+
+== Iterative Approach
+
+BDUF is very static, but guess what: Everything is subject to change. How often did you move between offices/cubicles? How often the companies strategy changed? How often new products are released? For sure, more than once. So why do you should create something, which is statically defined?
+
+The much better approach is iterative. You build a chunk, then you see, how it fits. In case it's good, then follow that direct. Not good? Then revise and proceed with a better solution in the next iteration. This applies not only to code, but to concepts, stages, tooling and much more. Prevent also the other extreme situation, building every iteration something new from scratch. This indicates, you have a severe problem with either concepts or skills.
+
+== Time boxing
+
+Time boxing is very nice. If you cannot estimate something, then wrap it within a time box. Give it some 2, 4 or 8 hours at max. Using this approach enables others to create plans. If you don't limit things, you cannot estimate, it'll end, that you spend days, weeks in doing something, which turns sometimes out, not being the right thing. Time boxes are an aspect within iterations. Give it this iteration a day, learn from it, then you can handle it much better.
+
+== Prevent the agile religion
+
+Lots of people, using agile principles stick very much to the theories. They do not allow any deviance at any point. They get rude, if you violate any of their meeting, if unplanned things come in your running development iteration.
+
+This is for sure not the right approach. True, in the phase, you implement agile principles you have to stick to the 100%. After you recognize, these patterns are accepted and work out for the team, it's time for adoption. It's very important, to get strict in the areas, where it has to be strict (iteration forecast/due dates/stability) and give flexibility, where it is important. In case it's very important to be competitive and the management wants a release/feature NOW, else the customers are gone, it is absolutely wrong to stick: No unplanned within my iteration. Guess, this would happen only once with the agile principle evangelist. Or in case you run into an incident and your software gets unusable for its users. Which value your principle has, when the business value is not given anymore? Business value is the reasoning for software development.
+
+Switch on your brain, agile is common sense and over-common sensing is not common sense anymore.

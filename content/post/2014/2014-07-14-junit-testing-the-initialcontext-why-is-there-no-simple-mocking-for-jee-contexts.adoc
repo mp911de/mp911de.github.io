@@ -1,0 +1,109 @@
++++
+title = "JUnit testing the InitialContext: Why is there no simple mocking for JEE contexts?"
+date = "2014-07-14T11:37:24"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "junit-testing-the-initialcontext-why-is-there-no-simple-mocking-for-jee-contexts"
+wordpress_id = "123"
+url = "/2014/07/14/junit-testing-the-initialcontext-why-is-there-no-simple-mocking-for-jee-contexts/"
+categories = ["Blog"]
++++
+Every then and when, a Java Enterprise project starts. JEE is great. Java Enterprise projects enforce in many cases the usage of the InitialContext and sometimes CDI with using the BeanManager interface. Both are hard to enable within tests.
+
+<!--more-->
+
+Before Java Enterprise Edition 5 came into place, testing and mocking of JEE applications was mostly a pain. Every project I contributed to, had to lookup EJB’s, DataSources and many more from the InitialContext. There was no dependency injection. Developers tend to use the ServiceLocator-Pattern. Nowaydays, in JEE5 and JEE6 we use dependency injection (@EJB and @Resource). Way less InitialContext lookups. But still it’s there. For remote EJB and some other contextual resources.
+
+Now, how do you test classes using the InitialContext? I did not know it myself until I got to spring-test.
+
+[source,java]
+----
+MyEjbFacade myMock = Mockito.mock(MyEjbFacade.class);
+SimpleNamingContextBuilder contextBuilder = SimpleNamingContextBuilder.emptyActivatedContextBuilder();
+contextBuilder.bind("java:ejb/MyMock", myMock);
+
+// ...
+MyEjbFacade ejb = InitialContext.doLookup("java:ejb/MyMock");
+
+// ejb == myMock
+
+// ...
+contextBuilder.clear();
+----
+
+Now, let’s take a look at CDI’s BeanManager. The BeanManager offers an API to deal with InjectionPoints, queries for Annotations and bean lookup. This is the most used case, when using the BeanManager. These lines are necessary in order to perform a programatic bean lookup.
+
+[source,java]
+----
+public <T> List<T> lookupBeans(BeanManager source, Class<T> beanClass) {
+    Iterator<Bean<?>> iter = source.getBeans(beanClass).iterator();
+    List<T> beans = new ArrayList<T>();
+
+    while (iter.hasNext()) \{
+        Bean<T> bean = (Bean<T>) iter.next();
+        CreationalContext<T> ctx = source.createCreationalContext(bean);
+        T beanInstance = (T) source.getReference(bean, bean.getBeanClass(), ctx);
+        beans.add(beanInstance);
+    }
+    return beans;
+}
+----
+
+Ever tried to mock it? Don’t struggle yourself, use jee-commons and jee-commons-test!
+
+[source,java]
+----
+public class JndiTest {
+
+    @Mock(name = "java:global/app/MyRemoteBean")
+    private MyRemoteBeanInterface myRemoteBeanMock;
+
+    @Mock
+    private MyCdiDependency mockedDependency;
+
+    @Rule
+    public LookupMockingRule lookupMocking = new LookupMockingRule(this);
+
+    @Test
+    public void testInitialContext() throws Exception {
+        // run your test
+        // it does probably 
+        // MyRemoteBeanInterface ejb = InitialContext.doLookup("java:global/app/MyRemoteBean")
+        // ejb.callABusinessMethod()
+    }
+
+    @Test
+    public void testCdi() throws Exception {
+        // MyCdiDependency dependency = BeanLookup.lookup(MyCdiDependency.class):
+        // dependency.callABusinessMethod()
+    }
+}
+----
+
+Since all EJB projects I’ve worked on ran into similar issues, I’ve decided to provide two libraries: jee-commons and jee-commons-test. Both are available as snapshots at Sonatype’s OSS repository.
+
+They provide the necessary infrastructure to perform JNDI and CDI Bean lookups and the corresponding mocking. The test part need spring-test and Mockito.
+
+== How to get
+
+You’ll find the code and additional docs at Github: https://github.com/mp911de/jee-commons
+
+The packages are available as Maven artifacts:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.jee.commons</groupId>
+    <artifactId>jee-commons</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+
+<dependency>
+    <groupId>biz.paluch.jee.commons</groupId>
+    <artifactId>jee-commons-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+----
+
+See https://oss.sonatype.org/content/repositories/snapshots/

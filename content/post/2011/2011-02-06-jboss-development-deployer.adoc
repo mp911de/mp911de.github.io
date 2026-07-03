@@ -1,0 +1,19 @@
++++
+title = "JBoss Development Deployer"
+date = "2011-02-06T13:36:32"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "jboss-development-deployer"
+wordpress_id = "33"
+url = "/2011/02/06/jboss-development-deployer/"
+categories = ["Blog"]
++++
+Entwickler in Multi-Modul-Projekten haben viele Aufgaben. Während der Entwicklung wirkt sich besonders das Deployment/Re-Deployment einer Anwendung negativ auf die Effizienz aus. Es gibt zwar kostenpflichtige Tools (z. B. http://www.zeroturnaround.com/jrebel/[JRebel]), die Abhilfe schaffen, jedoch noch kein Open Source Tool.
+
+Dies habe ich zum Anlass genommen und einen http://jb-dev-deploy.sourceforge.net/[Development Deployer] für JBoss AS entwickelt. Mit diesem Deployer können J2EE Multi-Modul-Projekte während der Entwicklung in der IDE bleiben, das lästige JAR's bauen/deployen entfällt. So können beispielsweise in einer Web-Anwendung (WAR-Deployment) mehrere Klassenpfade (z. B. classes- und/oder lib-Verzeichnisse) konfiguriert werden.
+
+Das Projekt wird bei SourceForge gehostet und ist unter http://jb-dev-deploy.sourceforge.net/ erreichbar.
+
+Derzeit wird ein Web-Deployment (WAR) unterstützt (getestet mit BouncyCastle/JSF-Komponenten). Geplant ist die komplette Unterstützung von J2EE Projekten (EAR/SAR/HAR).
+
+Ich freue mich auf Feedback.

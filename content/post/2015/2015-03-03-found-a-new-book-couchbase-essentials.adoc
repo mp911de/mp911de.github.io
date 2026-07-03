@@ -1,0 +1,11 @@
++++
+title = "Found a new Book: Couchbase Essentials"
+date = "2015-03-03T07:22:47"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "found-a-new-book-couchbase-essentials"
+wordpress_id = "206"
+url = "/2015/03/03/found-a-new-book-couchbase-essentials/"
+categories = ["Blog"]
++++
+I got in touch with Couchbase a year ago. I attended a presentation of the Couchbase guys and learned that Memcached became a part of Couchbase. Until now I never had a chance to use Couchbase for more than just a play around. Recently I stumbled upon a new Book about Couchbase: https://bit.ly/1wtEbwl[Couchbase Essentials] written by https://about.me/johnzablocki[John Zablocki]. I will let you know what I think about it and post my review here. Stay tuned.

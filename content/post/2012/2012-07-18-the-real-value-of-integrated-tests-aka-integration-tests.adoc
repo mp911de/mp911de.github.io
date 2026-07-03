@@ -1,0 +1,29 @@
++++
+title = "The real value of integrated Tests (aka. Integration Tests)"
+date = "2012-07-18T17:35:08"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "the-real-value-of-integrated-tests-aka-integration-tests"
+wordpress_id = "61"
+url = "/2012/07/18/the-real-value-of-integrated-tests-aka-integration-tests/"
+categories = ["Blog"]
++++
+A couple months ago, the team, I work on, introduced integration tests. Before that, we had only regular Unit tests, which ran in a very isolated environment. You do not have a control, how your modules behave when they interact in a real environment. You cannot test a lifecycle with persistence to be confident, because you need much more than mocks.
+
+<!--more-->
+
+That was one of the reasons, why we decided to build up an integration test stage. This stage provides tons mocked remote services, all necessary components to run and it behaves almost like production (beside the performance and a few other issues). This is pretty cool, because we are able to run tests without harming anyone. So we built a huge suite of integration tests. These tests reset the stage to a baseline, perform tests, provide their own test data and ask the remote mocks for a call verification. This sounds for sure a bit distant to you: So what's the big deal about integrated tests?
+
+Let me give you three examples:
+
+[arabic]
+. *Instabilities* +
+We had a messaging component to process calls asynchronously. At a certain point this messaging component began to drop messages. Sometimes the tests ran and sometimes they failed. Well, we began to see this as a specialty of our stage. Then came a day, where these instabilities occurred as well in production and we had to deal with an incident. If we've heard earlier on our integration tests, we've been able to prevent that, but no-one of us wanted to believe. We had not the belief that our tests state the truth. We built a different messaging component and the instabilities were gone. More over, the tests lead to the state, that we had only one bug to fix when we took this component to production.
+. *Find bugs where no other test could find them* +
+An other set of strange behavior hit us after we created a new services, running on its own server. Right after startup it was running perfectly, also some hours after that, it was ok. But at a certain time, the component stopped its work. We discovered this behavior a couple of weeks after we put the component to our integration stage. At the first tries, that component worked perfectly, but after a certain time, sometimes our tests ran, sometimes they crashed. Imagine what would happen if we would had put this component to production. When it suddenly stops, the next incident is guaranteed. It turned out, that pooled database connections lost their connections after a certain time and there was no validation whether the connection is working or not nor reconnect.
+. *Nearly-zero problems when going live* +
+We were in middle of a migration from one system to an other. It should be a replacement for a set of features. We put that system to QA and we had nearly zero effort on bug fixing. Although it was that easy, we had several problems with a certain SOAP service in QA. The reason was, that our mock used a different technology, the real service didn't support several HTTP features. That was the reason, why we spent 6 hours with chasing the reason.
+
+For sure, maintenance of automated tests does not come for free, you‘ve to invest in them, every time you build features, every time the tests fail. On the other side, I‘m pretty confident, that our tests saved us more than twice on effort as we invested to build them.
+
+To summarize, I'd say, these integration tests are a sort of life saver. Automated tests, which are Unit tests are quite good, but these other tests, are really cost saver, life insurance and create trust in your software. Therefore it's important to take care of the tests, fix 'em when they're broken and extend the tests with every feature you implement.

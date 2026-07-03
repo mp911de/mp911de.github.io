@@ -1,0 +1,34 @@
++++
+title = "Xtreme Feedback Device"
+date = "2012-06-28T06:08:54"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "xfd"
+wordpress_id = "59"
+url = "/2012/06/28/xfd/"
+categories = ["Blog"]
++++
+All the developers I know, recieve a mass of Mail - JIRA updates, Commit-Mails, daily mails and sometimes a notification from your Build system about broken builds. This notification mails could easily be overseen. However overseeing or disregarding the notification about broken builds is very detrimental because the notification helps to prevent bugs and increase quality. And could you imagine, what happens, when a broken build has to be released? For sure, it will cause lots of effort.
+
+<!--more-->
+
+link:/images/2012/06/IMG_0665.jpg[image:/images/2012/06/IMG_0665.jpg[IMG 0665]]So what do we do? Enter XFD into the game. An XFD, eXtreme Feedback Device, helps to create the appropriate attention for situations like broken builds. Usually, XFDs notify by visualization or sound. Configured the wrong way, the XFD could be extremely provoking, with the consequence that, somebody tears it off and throws it out of the window. An XFD must remind, annoy a bit and motivate, but must not keep others off their work. One popular example is a Lava Lamp. But this isn't cool enough. I thought in the beginning on something like the fire alert, but this might lead others to wrong conclusions.
+
+So some of my collegues and I created a XFD on our own. We also had the same problem: Fixing Builds took a long time - or was even forgotten. Sure, we have Mail and Jabber notifications for broken builds, but this was not enough. So we picked a set of four colored flares, connected them to a USB relay and the party rocks as soon as a build is broken. In addition to that, we set up a sound notification, which helps to notify in case a build is broken. A nice effect is also to use this notification right before our daily meeting.
+
+== Details
+
+Our appliances consists of an http://www.robot-electronics.co.uk/htm/usb_rly08tech.htm for controlling the external hardware such as the PowerFlares or the sound module (http://www.elv.de/Musik-im-Mini-Format-MP3-Soundmodul-MSM-2/x.aspx/cid_726/detail_30753). Beside the PowerFlares, everything is USB powered, only the PowerFlares have rechargeable battery packs. This eliminates the need for external power supplies. +
+We have this way 4 channels for the lights and 4 channels for sound effects. Currently one channel is really used for broken builds, but we plan to setup as well notifications for operative alerting (Incident prevention) and a incoming Bug-Notification. This helps us really, to ignore most of the 100's JIRA and Bugzilla mails and to focus on the really important things.
+
+== Controller
+
+link:/images/2012/06/IMG_0660.jpg[image:/images/2012/06/IMG_0660.jpg[/images/2012/06/IMG++_++0660]] You can bet, there is still a detail missing: We're using Jenkins so far to handle our build process. Jenkins is therefore our data source. But we created two more things:
+
+[arabic]
+. A tiny Java based Web Server (powerflare-server), which accepts commands via HTTP and sends these to the USB relay
+. CRON based scripts to fetch the Jenkins build status and send the details then to our Java based Web Server.
+
+These two components act as control layer. The coolest thing on the powerflare-server is, that it is really multi-threaded and thread-safe. Even if we would have thousands of channels, all the complex control commands come in the right order, even parallel multi-channel communication is possible.
+
+Interested in the code? https://github.com/mp911de/Public/tree/master/powerflare-server

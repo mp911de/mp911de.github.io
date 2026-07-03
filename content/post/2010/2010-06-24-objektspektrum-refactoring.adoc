@@ -1,0 +1,11 @@
++++
+title = "OBJEKTspektrum: Refactoring"
+date = "2010-06-24T06:08:44"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "objektspektrum-refactoring"
+wordpress_id = "31"
+url = "/2010/06/24/objektspektrum-refactoring/"
+categories = ["Blog"]
++++
+Seit dem 25.06.2010 ist es soweit: Mein Artikel http://www.sigs-datacom.de/fachzeitschriften/objektspektrum/archiv/artikelansicht.html?tx_mwjournals_pi1%5Bpointer%5D=0&tx_mwjournals_pi1%5Bmode%5D=1&tx_mwjournals_pi1%5BshowUid%5D=6635[Code-Recycling: Refaktorisierung einer Alt-Anwendung in der Praxis] (http://de.wikipedia.org/wiki/Refactoring[Refactoring]) wurde in der http://www.sigs-datacom.de/fachzeitschriften/objektspektrum.html[OBJEKTSpektrum] veröffentlicht. Ich bin auf Feedback gespannt und freue mich über andere Erfahrungsberichte mit Refactoring.

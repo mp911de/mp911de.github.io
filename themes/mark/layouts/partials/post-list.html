@@ -1,0 +1,13 @@
+{{- range .GroupByDate "2006" }}
+  <h2 class="year">{{ .Key }}</h2>
+  <ul class="post-list">
+    {{- range .Pages }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <time datetime="{{ .Date.Format `2006-01-02` }}"
+          >{{ .Date.Format "Jan 2" }}{{ partial "moon-phase.html" .Date }}</time
+        >
+      </li>
+    {{- end }}
+  </ul>
+{{- end }}

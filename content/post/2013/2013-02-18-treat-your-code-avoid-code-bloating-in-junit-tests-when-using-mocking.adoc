@@ -1,0 +1,109 @@
++++
+title = "Treat your code: Avoid code bloating in JUnit Tests when using Mocking"
+date = "2013-02-18T15:05:45"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "treat-your-code-avoid-code-bloating-in-junit-tests-when-using-mocking"
+wordpress_id = "74"
+url = "/2013/02/18/treat-your-code-avoid-code-bloating-in-junit-tests-when-using-mocking/"
+categories = ["Blog"]
++++
+JUnit test are inherent to almost every professional Java project. Some utilize JUnit more than others, some use it for integration tests. But nearly all of them have similar issues. As soon as they reach the testing boundaries, they have either to take care of expensive test setups or rely on some infrastructure stuff such as databases or remote services. One way is truly keep going on with the known procedure. A different approach is the usage of test dummies. Either as stubs (i.e. sub classing to simulate the desired behavior) or mocking. Mocks are instances of your classes or interfaces which can be told how to behave in a certain scenario.
+
+<!--more-->
+
+You can tell a mock for example, what to return in case a certain method is called with appropriate parameters. Usually you would mock a database access object (DAO), a client to a remote service or whatever you do not want to initialize but your system under test depends on. An other possibility is, in case you really test your Unit, to create a mock for every dependency you use within your class. This is the highest isolation level. Mocking consists of three parts:
+
+* Mock-Definition (specifying the class/interface type you want to mock)
+* Expectations (define the calls you expect and how they should behave, return values, throw exceptions)
+* Verifications (define, which calls you want to have verified, how often and which parameters should have been passed)
+
+I've take three frameworks to illustrate the same functionality. These are: JMockit, Mockito and EasyMock. Now see yourself:
+
+== JMockit
+
+* Last release: 2012-12-20
+* 1 active contributor, 54kLOC
+* Website: http://code.google.com/p/jmockit/
+
+JMockit uses anonymous classes to define expectations and verifications. The mocks itself and the system under test can be injected using annotations. For every expectation you need at least two lines (the call and a result). In addition to that, you define lots of blurry code in order to use the anonymous class. Lines of code (w/o comments) needed: 9
+
+[source,java]
+----
+   
+   @Tested ServiceAbc tested;
+   // Declare the mocks you need through mock fields or parameters.
+   public void testDoSomething(@Injectable final DependencyXyz mock) {
+      // Record the desired results for method invocations, *if* any are needed.
+      new NonStrictExpectations() {{
+            // Simply invoke a mocked method/constructor to record an expectation.
+            mock.doSomething("test");
+            result = 123; // assign results (values to return, exceptions to throw)
+         }};
+      // Exercise the code under test.
+      tested.doOperation("some data");
+      // Verify expected invocations, if any.
+      new Verifications() {{
+         // Use argument matchers (anyXyz, etc.) for any subset of parameters.
+         mock.complexOperation(true, anyInt, null);
+         times = 1; // specify invocation count constraints if/as needed
+      }};
+   }
+----
+
+== Mockito
+
+* Last release: 2012-10-06
+* 13 active contributors, 3kLOC
+* Website: http://code.google.com/p/mockito/
+
+Mockito is also annotation-driven. You have to specify a system under test and one or more mocks which are injected then. Your expectation and verification are always one-liner (thanks to static imports). Omitting all that comments you need only three lines. Lines of code (w/o comments) needed: 3
+
+[source,java]
+----
+   
+   @InjectMocks ServiceAbc tested = new ServiceAbc();
+   @Mock final DependencyXyz mock
+   // Declare the mocks you need through mock fields or parameters.
+   public void testDoSomething() {
+      // Record the desired results for method invocations, *if* any are needed.
+      // Simply invoke a mocked method/constructor to record an expectation.
+      when(mock.doSomething("test")).thenReturn(123);
+      // Exercise the code under test.
+      tested.doOperation("some data");
+      
+      verify(mock).complexOperation(eq(true), anyInt(), null());
+   }
+----
+
+== Mockito
+
+* Last release: 2011-11-08
+* 2 active contributors, 28kLOC
+* Website: http://code.google.com/p/mockito/
+
+EasyMock does not use any annotations at all. You have to create and inject the mock by your own. After that you go with the expectations, trigger the replay mode and after the invocations you trigger the verification mode. Currently every expectation is bound to a verification. So you can't split them from each other. Lines of code (w/o comments) needed: 6
+
+[source,java]
+----
+      
+   ServiceAbc tested = new ServiceAbc();
+   // Declare the mocks you need through mock fields or parameters.
+   public void testDoSomething() {
+       DependencyXyz mock = createMock(DependencyXyz.class);
+       tested.setDependency(mock);
+   
+      // Record the desired results for method invocations, *if* any are needed.
+      // Simply invoke a mocked method/constructor to record an expectation.
+      expect(mock.doSomething("test")).andReturn(123);
+      replay(mock);
+      // Exercise the code under test.
+      tested.doOperation("some data");
+      
+      verify(mock);
+   }
+----
+
+== Conclusion
+
+Mock code can be hard to read, especially in frameworks where you have to do tricks for the mocking. The most plain and easy to read code is produced using Mockito. You do not have to bloat your code with any magic, you don't need. Sure, every framework has it's advantages or things which are not supported.

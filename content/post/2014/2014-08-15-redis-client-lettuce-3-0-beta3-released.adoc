@@ -1,0 +1,64 @@
++++
+title = "Redis Client lettuce 3.0.Beta3 released"
+date = "2014-08-15T18:10:19"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "redis-client-lettuce-3-0-beta3-released"
+wordpress_id = "133"
+url = "/2014/08/15/redis-client-lettuce-3-0-beta3-released/"
+categories = ["Blog"]
++++
+lettuce 3.0.Beta 3 is out now. The new redis commands provide in addition to the basic support also data structures and parsers. This is to support common implementation tasks and to ease adoption.
+
+The Beta 3t is a surprise, because I wanted to release the final after Beta 2. Meanwhile, redis added lots of features and in fact, lettuce was not ready for a final yet. I'll state more about the details in a further, final announcement post. For now enjoy the Beta 3.
+
+<!--more-->
+
+== Fixes
+
+* Fixed Connections.closem, Exception was thrown even if right connection object was supplied (https://github.com/mp911de/lettuce/commit/036d1ea0c8b4c453642df89aeaa4066a75acb13d[`036d1ea`])
+* Support for qualified clients in case there are unqualified instances (https://github.com/mp911de/lettuce/commit/5b49c8441ba84b8c4496828ba1df9309397db97f[`5b49c84`])
+* Fixed NPE on sync cluster connections (https://github.com/mp911de/lettuce/commit/bbba78343e410f06e4b814c70e248ccd745a3f4a[`bbba783`])
+* Changed channel handling to aviod NPE (https://github.com/mp911de/lettuce/commit/707b231593455113a1d29c915969e258b2d33d0f[`707b231`])
+* Fixed CDI/Spring support and added tests for CDI/Spring (https://github.com/mp911de/lettuce/commit/b5832f946e940ea926ab4bdff01d5c890b326a28[`b5832f9`])
+
+== Enhancements
+
+* Add support and parser for ROLE command https://github.com/mp911de/lettuce/issues/6[++#++6]
+* Add support for CLUSTER SLOTS command https://github.com/mp911de/lettuce/issues/7[++#++7]
+* Add support for COMMAND command https://github.com/mp911de/lettuce/issues/8[++#++8]
+* Add support for COMMAND COUNT https://github.com/mp911de/lettuce/issues/9[++#++9]
+* Add support for COMMAND INFO https://github.com/mp911de/lettuce/issues/11[++#++11]
+* Add support for extended CLIENT KILL https://github.com/mp911de/lettuce/issues/12[++#++12]
+* Relaxed data models for external use, moved ClusterPartitionParser and models to own package (https://github.com/mp911de/lettuce/commit/534ed599ce6f5d5f2c412db2bacbc8bf8e03f77a[`534ed59`])
+* Added shutdown with timeout, used minimal timeout for shutdown (https://github.com/mp911de/lettuce/commit/1ac42af79aec46457295c2a9d88e52bd977f153b[`1ac42af`])
+* Minor API improvements (connect with URI), tons of docs and argument checks (https://github.com/mp911de/lettuce/commit/063e20a73c3c423d608e639f7058745f3c395af6[`063e20a`])
+* Use AssertJ for assertions https://github.com/mp911de/lettuce/issues/13[++#++13]
+* Additional cluster tests (new suite) https://github.com/mp911de/lettuce/issues/5[++#++5]
+* Updated documentation
+* Add tests for untested code https://github.com/mp911de/lettuce/issues/4[++#++4]
+* Switched coverage provider to jacoco (https://github.com/mp911de/lettuce/commit/ab0821d292a0c81f46173cced69e71a3f3e044ec[`ab0821d`], https://github.com/mp911de/lettuce/commit/bc14a7976979d8870fb0ba2f08e67aafb166be60[`bc14a79`])
+* Switched from gihub site plugin to maven-scm-publish plugin (https://github.com/mp911de/lettuce/commit/54d0c36896b318f1f338911d3732d96ca9332b77[`54d0c36`])
+
+https://coveralls.io/r/mp911de/lettuce?branch=master[image:/images/external/img/lettuce.svg[Coverage Status]]
+
+== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/3.0.Beta3[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.redis%22%20AND%20a%3A%22lettuce%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/redis/lettuce/3.0.Beta3/lettuce-3.0.Beta3.jar[Download lettuce-3.0.Beta2]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+* http://redis.paluch.biz[Maven Site/Javadoc]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.Beta3</version>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/lettuce/issues[issues on GitHub].

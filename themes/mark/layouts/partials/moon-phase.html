@@ -1,0 +1,20 @@
+{{- /* renders the lunar phase for a given time.Time using moon-phases.png:
+     8 frames of 50px in lunar order (new, waxing crescent, first quarter,
+     waxing gibbous, full, waning gibbous, last quarter, waning crescent),
+     scaled to 13px. reference new moon: 2000-01-06 18:14 UTC; synodic
+     month 29.53 days */ -}}
+{{- $epoch := 947182440 -}}
+{{- $syn := 2551443 -}}
+{{- $age := mod (sub .Unix $epoch) $syn -}}
+{{- $idx := mod (int (math.Round (mul (div (float $age) (float $syn)) 8.0))) 8 -}}
+{{- /* the emoji doubles as a free localization layer: screen readers
+     announce moon-phase emoji with their CLDR names in the user's own
+     language - no translations shipped, no JavaScript */ -}}
+{{- $emoji := slice "🌑" "🌒" "🌓" "🌔" "🌕" "🌖" "🌗" "🌘" -}}
+<span
+  class="moon-phase"
+  role="img"
+  aria-label="{{ index $emoji $idx }}"
+  title="{{ index $emoji $idx }}"
+  style="background-image: url('{{ `moon-phases.png` | absURL }}'); background-position: {{ mul $idx -13 }}px 0"
+></span>

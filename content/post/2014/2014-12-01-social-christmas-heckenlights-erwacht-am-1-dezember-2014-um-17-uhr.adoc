@@ -1,0 +1,24 @@
++++
+title = "Social Christmas: Heckenlights erwacht am 1. Dezember 2014 um 17 Uhr"
+date = "2014-12-01T08:44:29"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "social-christmas-heckenlights-erwacht-am-1-dezember-2014-um-17-uhr"
+wordpress_id = "197"
+url = "/2014/12/01/social-christmas-heckenlights-erwacht-am-1-dezember-2014-um-17-uhr/"
+categories = ["Blog"]
++++
+image:/images/2014/12/heckenlights-logo.png[heckenlights-logo]Weihnachten ist das Fest der Liebe, Freude und des Lichts. Weihnachtsdekorationen rund um die Welt zieren Häuser, Straßen und Bäume.
+
+Der Christmas Spirit Tree hat im Internet der Dinge den Start gemacht und das Online-Unvisersum (Tweets und Blogs) auf einen Weihnachtsbaum gebracht. Im Heckenpfad in Weinheim erwachen ab dem 1. Dezember die Lichter der interaktiven Weihnacht mit einer Show, deren Programm in der Hand des Zuschauers liegt.
+
+<!--more-->
+
+Heckenlights ist eine interaktive Weihnachtsbeleuchtung und viel mehr als nur eine einfache Lichtershow. Die Lichterketten spielen im Takt der Weihnachtsmusik und die Show wird im Livestream übertragen. Zuschauer aus der ganzen Welt können die Lichter hören und sehen. Der Stream enthält neben der Video-Spur auch den Ton des aktuell gespielten Titels. Die Playlist, die von Heckenlights gespielt wird, ist dynamisch. Websiten-Besucher können ihre eigenen Weihnachtstitel hochladen und das Programm gestalten. Die Installation besteht aus mehreren Lichterketten. Jeder Lichterkreislauf ist einer Musiknote zugeordnet. Mit Heckenlights können beliebige Titel wiedergegeben werden, aufwendige choreographierte Lichtshows sind nicht erforderlich. Die Steuerung erfolgt über MIDI. MIDI ist ein Computer-Musikschnittstelle zur Steuerung von Musikinstrumenten. Neben hochgeladenen Titeln kann Heckenlights auch direkt, über ein MIDI Keyboard bespielt werden um so beispielsweise Live-Events zu veranstalten. Die MIDI Signale werden in Schaltbefehle für Steuer-Relais umgewandelt, die wiederum Lichterketten ein- oder ausschalten. So entsteht die Begleitung des Lichts zur Musik.
+
+Heckenlights kann sowohl online als auch vor Ort besichtigt werden. Titelinformationen sowie Tweets zu https://twitter.com/search?q=%23heckenlights[++#++Heckenlights] werden auf einem LED Schriftlaufband dargestellt.
+
+Heckenlights wird von durch Open Source Komponenten, wie Spring, TokuMX, Akka und PHP unterstützt. +
+Der gesamte Programmcode für Heckenlights ist auf Github (https://github.com/mp911de/midi-relay, https://github.com/mp911de/heckenlights) inklusive Beschreibung verfügbar. Mit dem Code und einigen Hardwarekomponenten kann Heckenlights nachgebaut werden.
+
+Heckenlights spielt ab dem 1. Dezember 2014 täglich sobald es dunkel wird. Der Livestream und die Website finden sich unter http://heckenlights.org. Bis zum 6. Januar 2015 kann Heckenlights weltweit gesehen, bedient und gehört werden.

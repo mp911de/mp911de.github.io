@@ -1,0 +1,28 @@
+{{ define "main" }}
+  {{- $main := site.Params.mainSections | default (slice "post") }}
+  {{- $pages := where site.RegularPages "Section" "in" $main }}
+
+  {{- with index $pages 0 }}
+    <article class="teaser">
+      <h2 class="teaser-title">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </h2>
+      <p class="post-meta">
+        <time datetime="{{ .Date.Format `2006-01-02` }}"
+          >{{ .Date.Format "January 2, 2006" }}</time
+        >
+      </p>
+      <div class="teaser-summary">{{ .Summary }}</div>
+      <p>
+        <a class="read-more" href="{{ .RelPermalink }}"
+          >Continue reading…</a
+        >
+      </p>
+    </article>
+  {{- end }}
+
+  {{- partial "post-list.html" (first 15 $pages) }}
+  <p>
+    <a class="archive-link" href="{{ `archive/` | absURL }}">Archive</a>
+  </p>
+{{ end }}

@@ -1,0 +1,386 @@
++++
+title = "Redis Client Lettuce 5 GA released"
+date = "2017-09-28T13:23:48"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "redis-client-lettuce-5-ga-released"
+wordpress_id = "266"
+url = "/2017/09/28/redis-client-lettuce-5-ga-released/"
+categories = ["Blog"]
++++
+After a 13 months development phase and 208 solved tickets, it is my pleasure to announce general availability of Lettuce 5.0. This is a major release coming with several breaking changes and new interesting features and Java 9 compatibility.
+
+Get the release from Maven Central
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.lettuce</groupId>
+    <artifactId>lettuce-core</artifactId>
+    <version>5.0.0.RELEASE</version>
+</dependency>
+----
+
+or download the https://github.com/lettuce-io/lettuce-core/releases/tag/5.0.0.RELEASE[release bundle from GitHub].
+
+<!--more-->
+
+Lettuce 5 introduces the dynamic Redis Commands API. This programming model enables you to declare command methods and invoke commands to your needs and support Redis Modules without waiting for Lettuce to support new commands.
+
+Lettuce defaults to native transport (epoll, kqueue) on Linux respective macOS systems if the native dependency is available. +
+Lettuce 5 comes with breaking changes; it removes deprecated interfaces RedisConnection and RedisAsyncConnection and their segregated interfaces in favor of StatefulRedisConnection and RedisCommands et al.
+
+Major breaking changes:
+
+[arabic]
+. We moved the artifact coordinates from biz.paluch.redis:lettuce to io.lettuce:lettuce-core
+. We relocated packages from biz.paluch.redis to io.lettuce.core. The migration path is straight-forward by replacing the old package name in your imports with the new package name.
+. The documentation has moved from http://redis.paluch.biz to https://lettuce.io.
+. Removed Guava.
+. We removed some deprecated methods, see below for full details.
+
+Lettuce requires only https://github.com/netty/netty[netty 4.1] (netty 4.0 is no longer supported) and https://projectreactor.io[Project Reactor 3.1] which brings us to the next change:
+
+The reactive API is based on Reactive Streams by using https://projectreactor.io[Project Reactor] types `Mono` and `Flux` instead of RxJava 1 and `Observable`. +
+If you require RxJava’s `Single` and `Observable` in your code, then use publisher adapters in `rxjava-reactive-streams` to adapt `Mono` and `Flux`.
+
+This release introduces a new reference guide that is shipped along the regular artifacts. +
+The reference guide is bound to a particular version and does not change over time, such as the Wiki.
+
+* Reference documentation: https://lettuce.io/core/release/reference/.
+* JavaDoc documentation: https://lettuce.io/core/release/api/.
+
+[source,xml]
+----
+<dependency>
+  <groupId>io.lettuce</groupId>
+  <artifactId>lettuce-core</artifactId>
+  <version>5.0.0.RELEASE</version>
+</dependency>
+----
+
+You can find the full change log, containing all changes since the first 5.0 milestone release, +
+on https://github.com/lettuce-io/lettuce-core/releases/tag/5.0.0.RELEASE[GitHub]. Watch out for BREAKING changes.
+
+Thanks to all contributors that made Lettuce 5 possible. Any feedback is appreciated or file an https://github.com/lettuce-io/lettuce-core/issues[issue on GitHub].
+
+== Dynamic Redis Commands API
+
+The Redis Command Interface abstraction provides a dynamic way for typesafe Redis command invocation. It allows you to declare an interface with command methods to significantly reduce boilerplate code required to invoke a Redis command.
+
+Redis is a data store supporting over 190 documented commands and over 450 command permutations. Command growth and keeping track with upcoming modules are challenging for client developers and Redis user as there is no full command coverage for each module in a single Redis client.
+
+Invoking a custom command with Lettuce requires several lines of code to define command structures pass in arguments and specify the return type.
+
+[source,java]
+----
+RedisCodec<String, String> codec = StringCodec.UTF8;
+RedisCommands<String, String> commands = ...
+
+String response = redis.dispatch(CommandType.SET, new StatusOutput<>(codec),
+                new CommandArgs<>(codec)
+                       .addKey(key)
+                       .addValue(value));
+----
+
+The central interface in Lettuce Command Interface abstraction is `Commands`.
+
+This interface acts primarily as a marker interface to help you to discover interfaces that extend this one. You can declare your own command interfaces and argument sequences where the command name is derived from the method name or provided with `@Command`. Introduction of new commands does not require you to wait for a new Lettuce release but they can invoke commands through own declaration. +
+That interface could be also supporting different key and value types, depending on the use-case.
+
+Commands are executed synchronously, asynchronous or with a reactive execution model, depending on the method declaration.
+
+[source,java]
+----
+public interface MyRedisCommands extends Commands {
+
+    String get(String key); // Synchronous Execution of GET
+
+    @Command("GET")
+    byte[] getAsBytes(String key); // Synchronous Execution of GET returning data as byte array
+
+    @Command("SET") // synchronous execution applying a Timeout
+    String setSync(String key, String value, Timeout timeout);
+
+    Future<String> set(String key, String value); // asynchronous SET execution
+
+    @Command("SET")
+    Mono<String> setReactive(String key, String value); // reactive SET execution using SetArgs
+
+    @CommandNaming(split = DOT) // support for Redis Module command notation -> NR.RUN
+    double nrRun(String key, int... indexes);
+}
+
+RedisCommandFactory factory = new RedisCommandFactory(connection);
+
+MyRedisCommands commands = factory.getCommands(MyRedisCommands.class);
+
+String value = commands.get("key");
+----
+
+You get a whole lot new possibilities with Redis Command Interfaces. One of them is transparent reactive type adoption. Lettuce’s reactive API is based on Reactive Streams, however with command interfaces you can declare a RxJava 1 or RxJava 2 return type and Lettuce will handle the adoption for you. RxJava 1 users have a migration path that allows using native types without +
+further conversion.
+
+See also: https://lettuce.io/core/5.0.0.RELEASE/reference/#redis-command-interfaces
+
+== Command Interface Batching
+
+Command interfaces support command batching to collect multiple commands in a batch queue and flush the batch in a single write to the transport. Command batching executes commands in a deferred nature. This means that at the time of invocation no result is available. Batching can be only used with synchronous methods without a return value (void) or asynchronous methods returning a RedisFuture.
+
+Command batching can be enabled on two levels:
+
+* On class level by annotating the command interface with `@BatchSize`. All methods participate in command batching.
+* On method level by adding `CommandBatching` to the arguments. Method participates selectively in command batching.
+
+[source,java]
+----
+@BatchSize(50)
+interface StringCommands extends Commands {
+
+    void set(String key, String value);
+
+    RedisFuture<String> get(String key);
+
+    RedisFuture<String> get(String key, CommandBatching batching);
+}
+
+StringCommands commands = …
+
+commands.set("key", "value"); // queued until 50 command invocations reached.
+                              // The 50th invocation flushes the queue.
+
+commands.get("key", CommandBatching.queue()); // invocation-level queueing control
+commands.get("key", CommandBatching.flush()); // invocation-level queueing control,
+                                              // flushes all queued commands
+----
+
+Read more: https://lettuce.io/core/5.0.0.RELEASE/reference/#command-interfaces.batch
+
+== Migration to Reactive Streams
+
+Lettuce 4.0 introduced a reactive API based on RxJava 1 and `Observable`. This was the beginning of reactive Redis support. Lettuce used `Observable` all over the place as other reactive types like `Single` and `Completable` were still beta or in development.
+
+Since that time, a lot changed in the reactive space. RxJava 2 is the successor of RxJava 1 which has now reached end of life. RxJava 2 is not entirely based on Reactive Streams and baselines to Java 6 while other composition libraries can benefit from a Java 8.
+
+This also means, no `null` values and usage of dedicated value types to express value multiplicity (`0++|++1` and `0++|++1++|++N`) on the API.
+
+With Lettuce 5.0, the reactive API uses https://projectreactor.io[Project Reactor] with its `Mono` and `Flux` types.
+
+*Lettuce 4*
+
+[source,java]
+----
+Observable<Long> del(K... keys);
+
+Observable<K> keys(K pattern);
+
+Observable<V> mget(K... keys);
+----
+
+*Lettuce 5*
+
+[source,java]
+----
+Mono<Long> del(K... keys);
+
+Flux<K> keys(K pattern);
+
+Flux<KeyValue<K, V>> mget(K... keys);
+----
+
+Switching from RxJava 1 to https://projectreactor.io[Project Reactor] use requires switching the library. Most operators use similar or even same names. If you’re required to stick to RxJava 1, the use `rxjava-reactive-streams` to adopt reactive types (RxJava 1 ++<++-++>++ Reactive Streams).
+
+Migrating to Reactive Streams requires value wrapping to indicate absence of values. You will find differences in comparison to the previous API and to the sync/async API in cases where commands can return `null` values. Lettuce 5.0 comes with new `Value` types that are monads encapsulating a value (or their absence).
+
+See also: https://lettuce.io/core/5.0.0.RELEASE/reference/#reactive-api
+
+== Value, KeyValue, and other value types
+
+The reactive story facilitates immutable types so this release enhances existing value types and introduces new types to reduce `null` usage and facilitate functional programming.
+
+Value types are based on `Value` and `KeyValue`/`ScoredValue` extend from there. Value is a wrapper type encapsulating a value or its absence. A `Value` can be created in different ways:
+
+[source,java]
+----
+Value<String> value = Value.from(Optional.of("hello"));
+
+Value<String> value = Value.fromNullable(null);
+
+Value<String> value = Value.just("hello");
+
+KeyValue<Long, String> value = KeyValue.from(1L, Optional.of("hello"));
+ 
+KeyValue<String, String> value = KeyValue.just("key", "hello");
+----
+
+It transforms to `Optional` and `Stream` to integrate with other functional uses and allows value mapping.
+
+[source,java]
+----
+Value.just("hello").stream().filter(…).count();
+
+KeyValue.just("hello").optional().isPresent();
+
+Value.from(Optional.of("hello")).map(s -> s + "-world").getValue();
+
+ScoredValue.just(42, "hello").mapScore(number -> number.doubleValue() * 3.14d).getScore();
+----
+
+You will also find that all public fields of value types are encapsulated with getters and these fields are no longer accessible.
+
+== Backoff/Delay strategies
+
+_Thanks to @jongyeol_
+
+When running cloud-based services with a multitude of services that use Redis, then network partitions impact Redis server connection heavily once the partition ends. A network partition impacts all disconnected applications at the same time and all nodes start reconnecting more or less at the same time.
+
+As soon as the partition ends, the majority of applications reconnect at the same time. Jitter backoff strategies leverage the impact as the time of reconnecting is randomized.
+
+Lettuce comes with various backoff implementations:
+
+* Equal Jitter
+* Full Jitter
+* Decorrelated Jitter
+
+These are configured in `ClientResources`:
+
+[source,java]
+----
+DefaultClientResources.builder()
+        .reconnectDelay(Delay.decorrelatedJitter())
+        .build();
+
+DefaultClientResources.builder()
+        .reconnectDelay(Delay.equalJitter())
+        .build();
+----
+
+See also: https://www.awsarchitectureblog.com/2015/03/backoff.html and +
+https://lettuce.io/core/5.0.0.RELEASE/reference/#clientresources.advanced-settings
+
+== New API for Z…RANGE commands
+
+Sorted Sets range commands come with a streamlined API regarding method overloads. Commands like `ZRANGEBYSCORE`, `ZRANGEBYLEX`, `ZREMRANGEBYLEX` and several others now declare methods accepting `Range` and `Limit` objects instead of an growing parameter list. The new `Range` allows score and value types applying the proper binary encoding.
+
+*4.2 and earlier*
+
+[source,java]
+----
+commands.zcount(key, 1.0, 3.0)
+
+commands.zrangebyscore(key, "-inf", "+inf")
+
+commands.zrangebyscoreWithScores(key, "[1.0", "(4.0")
+
+commands.zrangebyscoreWithScores(key, "-inf", "+inf", 2, 2)
+----
+
+*Since 5.0*
+
+[source,java]
+----
+commands.zcount(key, Range.create(1.0, 3.0));
+
+commands.zrangebyscore(key, Range.unbounded());
+
+commands.zrangebyscoreWithScores(key, Range.from(Boundary.including(1.0), Boundary.excluding(4.0));
+
+commands.zrangebyscoreWithScores(key, Range.unbounded(), Limit.create(2, 2));
+----
+
+== Good bye, Guava
+
+Lettuce 5.0 no longer uses Google’s Guava library. Guava was a good friend back in the Java 6-compatible days where `Future` synchronization and callbacks were no fun to use. That changed with Java 8 and `CompletableFuture`.
+
+Other uses like `HostAndPort` or `LoadingCache` could be either inlined or replaced by Java 8’s Collection framework.
+
+== Removal of deprecated interfaces and methods
+
+This release removes deprecated interfaces `RedisConnection` and `RedisAsyncConnection` and their segregated interfaces in favor of `StatefulRedisConnection` and `RedisCommands`.
+
+You will notice slight differences when using that API. Transactional commands and database selection are no longer available through the Redis Cluster API as the old API was derived from the standalone API. `RedisCommands` and `RedisAsyncCommands` are no longer `Closeable`. Please use `commands.getStatefulConnection().close()` to close a connection. This change removes ambiguity over closing the commands interface over closing the connection.
+
+== Connection pooling replacement
+
+It took quite a while but 4.3 deprecated Lettuce’s existing connection pooling support. That are in particular `RedisClient.pool(…)` and `RedisClient.asyncPool(…)`. These methods are removed with Lettuce 5.0.
+
+Connection pooling had very limited support and would require additional overloads that clutter the API to expose pooling for all supported connections. This release brings a replacement, that is customizable and does not pollute the API. `ConnectionPoolSupport` provides methods to create a connection pool accepting a factory method and pool configuration.
+
+Returned connection objects are proxies that return the connection to its pool when calling `close()`. `StatefulConnection` implement `Closeable` to allow usage of try-with-resources.
+
+[source,java]
+----
+GenericObjectPool<StatefulRedisConnection<String, String>> pool = ConnectionPoolSupport
+        .createGenericObjectPool(() -> client.connect(), new GenericObjectPoolConfig());
+
+try(StatefulRedisConnection<String, String> connection = pool.borrowObject()) {
+    // Work
+}
+
+pool.close();
+----
+
+== Redis Cluster topology refresh consensus
+
+Cluster topology refreshing can lead in some cases (dynamic topology sources) to orphaning. This can happen if a cluster node is removed from the cluster and lettuce decides to accept the topology view of that removed node. Lettuce gets stuck with that node and is not able to use the remaining cluster.
+
+This release introduces `PartitionsConsensus` strategies to determine the most appropriate topology view if multiple views are acquired. The strategy can be customized by overriding `RedisClusterClient.determinePartitions(Partitions, Map++<++RedisURI, Partitions++>++)`.
+
+Lettuce defaults choosing the topology view with the majority of previously known cluster nodes. This helps Lettuce to stick with the cluster that consists of the most nodes.
+
+See also: https://github.com/lettuce-io/lettuce-core/issues/355
+
+== Asynchronous Connections in Redis Cluster
+
+RedisClusterClient now connects asynchronously without intermediate blocking to cluster nodes. The connection progress is shared between +
+multiple threads that request a cluster node connection for the first time. Previously, connection was sequential-synchronous. Each connection attempt blocked subsequent attempts from other threads. If a cluster node connection ran into a timeout, threads were penalized with a growing wait time. If, say, 10 threads waited for a connection, the last thread had to wait up to 10 times the connection timeout.
+
+Asynchronous connection initiates the connection once using internally a `Future` so multiple concurrent connection attempts share the resulting `Future`. Errors fail now faster and cluster node usage is fully asynchronous without synchronization and without the danger to run into a threading deadlock.
+
+== Redis Cluster Pub/Sub on Node-Selections
+
+`RedisClusterClient.connectPubSub()` now returns a `StatefulRedisClusterPubSubConnection` that allows registration of `RedisClusterPubSubListener`s and subscription on particular cluster nodes.
+
+Cluster node-specific subscriptions allow usage of keyspace notifications. Keyspace notifications are different from userspace Pub/Sub since keyspace notifications don’t broadcast to the entire cluster but are published only on the node the notification happens. A common usecase is when a key expires in the cluster.
+
+....
+StatefulRedisClusterPubSubConnection connection = client.connectPubSub();
+
+connection.addListener(…);
+
+connection.setNodeMessagePropagation(true);
+
+RedisClusterPubSubCommands<String, String> sync = connection.sync();
+sync.slaves().commands().psubscribe("__key*__:expire");
+....
+
+== Native Transports
+
+Lettuce now uses native transports by default, if the operating system is qualified and dependencies are available. Lettuce supports epoll (on Linux-based systems) since 4.0 and since this version kqueue (BSD-based systems, like macOS).
+
+Epoll usage can be disabled with system properties by setting `io.lettuce.core.epoll=false`. In a similar way, kqueue can be disabled +
+with `io.lettuce.core.kqueue=false`.
+
+Epoll dependency:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.netty</groupId>
+    <artifactId>netty-transport-native-epoll</artifactId>
+    <version>${netty-version}</version>
+    <classifier>linux-x86_64</classifier>
+</dependency>
+----
+
+Kqueue dependency:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.netty</groupId>
+    <artifactId>netty-transport-native-kqueue</artifactId>
+    <version>${netty-version}</version>
+    <classifier>osx-x86_64</classifier>
+</dependency>
+----

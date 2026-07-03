@@ -1,0 +1,51 @@
++++
+title = "Exception Handling"
+date = "2011-10-26T06:43:08"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "exception-handling"
+wordpress_id = "47"
+url = "/2011/10/26/exception-handling/"
+categories = ["Blog"]
++++
+Exceptions, yes, what are exceptions? Exceptions are situations, where the planned flow cannot be completed anymore. So they are exactly the same as dealing with business logic. Exceptions are only a more elegant mechanism. They allows us to provide in an emergency case (unexpected parameters, errors in file access) an adequate response.
+
+<!--more-->
+
+In business logic we use rather a return code than throwing an exception. Exceptions are used rather in a senseless try/catch/printStackTrace than following a specific exception-handling strategy. Understanding exceptions and the treatment, the construction turns out as something wonderful that every developer is going to love.
+
+The principle of an exception is to send a interrupting message. This message indicates that an unexpected event has occurred. A case that no longer allows the planned flow. When I use the example on the real life, I would like the following example, which also reflects the common assumptions and misconceptions:
+
+I want to ride the train by 10 clock. My train leaves on time for now, everything is fine.
+
+How would I react to it if the train is not coming? This would be an exception to my planned procedure. One option, that is often used, is a Retry. Transferred to real life: it makes no sense, when I would try again to enter into a non-existent train, because there is no train there.
+
+If would I now know that the train has only a delay, so I can react with two different actions:
+
+* I wait until the train is there and then try to enter (with Retry Delay) it or
+* I drive by another train (exception handling, I agree to the exception and deal with it)
+
+Other possibilities would be:
+
+* Do nothing, which leads eventually to the fact that I (would correspond to a printStackTrace, without reason no one is looking at log files ... unfortunately) will not reach my goal.
+* Get on another train, which takes me to an other place, but not there, where i wanted to go (sort of useless, isn‘t it?)
+
+If I knew that the train is late and someone else is waiting for me (for example, because I need to go to work) so I could call at work, and tell them, that I am going to be late. With this information, my colleagues can continue to work without me and shift the things that require me. +
+This corresponds to the code: server method is invoked by a client. It‘s similar to rethrowing exceptions (by wrapping) to the caller. The caller can now react to this exception.
+
+A vexed issue in client-server exceptions are the stack traces. Normally, the client does not need the server stack trace, but this information can be very useful in tracing problems. When i now reflect on my example, I would tell my boss that I'm late because the train (and not because I partying too long or do not want to work :-). This saved me at least for a while of a termination.
+
+Similar applies to the logging of exceptions. I do not need it, because what do I care a week later that I was too late times. Delays occur, however, when they happen more often, so I can complain to the railway company. Thus, a logging of exceptions, at least on the client-server boundary very beneficial. In my opinion, only technical exceptions (no network, disk full, etc.) should logged. Business exceptions not, since a business exception is a well-defined case and the caller must ensure a valid state. Next time he won‘t receive a exception (because if he does it the right way).
+
+But let us come back to the delayed train: If don‘tknow what's going on with the train, whether it comes or not, I have to actually think about what I can do. Do I go by the car? Should I stay still waiting? Do I have to go back home? This all depends on what situation I find myself. The situation is similar to the code. If I get a generic exception, I have to decide on the basis of the context, what do I do with this exception, how I react to it. And above all things, what makes sense. In real life I would not jump off the bridge, when my train is not coming.
+
+== Special Cases
+
+While I'm waiting for my train and the train is not coming, because I've been looking for the wrong train, so the problem is not the train. The problem is, that I mada a miskate, not the train. With this example I want to point on programming errors, especially on NullPointerException's. It makes no sense to think about how dealing with the exception, because there is no exception: it is a programing error or „brain bug“.
+
+Another special case is when the world comes suddenly to an end. Apocalypse now! In this case I would run around screaming in circles, but it would not change my situation. Yet it would be good if I would give my boss a call that the world is coming to an end (maybe he can at least say goodbye to someone, if he didn‘t know that today is world‘s end day). +
+The example may be very far-fetched, but I want to point out exceptions that are beyond the reach of the developer. By that I mean real errors (or ClassNotFoundError OutOfMemoryError). For systems without UI logging is very useful, but these exceptions or errors cannot be handled. In this case, it even makes sense to retire back fully from exception handling. Therefore is a catch (Throwable) strictly prohibited, unless you really know what you are doing. And it turns out, that only very few are *really* aware of that, what they do.
+
+== Conclusion
+
+I have shown more than just delayed trains. The message is: Think about your exceptional situations, because you can do always something. Real errors or exceptions that can not be handled and should not be caught at all. In all other situations, it is worth thinking about what you would to tell your caller. Screaming "AAArrrgkg! Error!" (Throw new Exception) is not effective.

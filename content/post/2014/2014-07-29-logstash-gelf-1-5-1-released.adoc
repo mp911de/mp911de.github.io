@@ -1,0 +1,40 @@
++++
+title = "logstash-gelf 1.5.1 released"
+date = "2014-07-29T15:02:35"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "logstash-gelf-1-5-1-released"
+wordpress_id = "130"
+url = "/2014/07/29/logstash-gelf-1-5-1-released/"
+categories = ["Blog"]
++++
+I've released today logstash-gelf 1.5.1. This is a bugfix release for JBoss AS7/Wildfly users who use the NDC/MDC.
+
+<!--more-->
+
+This release contains following changes:
+
+== Fixes
+
+* https://github.com/mp911de/logstash-gelf/pull/29[++#++29] JBoss 7 Logging Modification for Async support (thanks to https://github.com/Batigoal[@Batigoal])
+
+== Links
+
+* https://github.com/mp911de/logstash-gelf/releases/tag/logstash-gelf-1.5.1[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.logging%22%20AND%20a%3A%22logstash-gelf%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.5.1/logstash-gelf-1.5.1.jar[Download logstash-gelf 1.5.1]
+* http://logging.paluch.biz[Documentation]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+          <groupId>biz.paluch.logging</groupId>
+          <artifactId>logstash-gelf</artifactId>
+          <version>1.5.1</version>
+      </dependency>
+      
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/logstash-gelf/issues?state=closed[issues on GitHub].

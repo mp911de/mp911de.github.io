@@ -1,0 +1,59 @@
++++
+title = "logstash-gelf 1.11.1 released"
+date = "2017-03-23T08:22:39"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "logstash-gelf-1-11-1-released"
+wordpress_id = "264"
+url = "/2017/03/23/logstash-gelf-1-11-1-released/"
+categories = ["Blog"]
++++
+I released today logstash-gelf 1.11.1. This release fixes a bunch of bugs and brings minor enhancements.
+
+<!--more-->
+
+This release contains following changes:
+
+== Enhancements
+
+* Allow configuration of log message parameter inclusion https://github.com/mp911de/logstash-gelf/issues/87[++#++87]
+* Allow selective stack trace extraction with filtering on Java-default representation https://github.com/mp911de/logstash-gelf/issues/99[++#++99] (Thanks to https://github.com/mrmanc[@mrmanc])
+* Introduce PoolHolder for ThreadLocal-pooled objects https://github.com/mp911de/logstash-gelf/issues/104[++#++104] (Thanks to https://github.com/artemy-osipov[@artemy-osipov])
+* Consider 2xx HTTP status codes as success https://github.com/mp911de/logstash-gelf/issues/114[++#++114] (Thanks to https://github.com/madmuffin1[@madmuffin1])
+
+== Bugfixes
+
+* Missing type info in the stacktrace https://github.com/mp911de/logstash-gelf/issues/97[++#++97] (Thanks to https://github.com/mrmanc[@mrmanc])
+* Close channel in GelfTCPSender.connect() https://github.com/mp911de/logstash-gelf/issues/107[++#++107] (Thanks to https://github.com/chainkite[@chainkite])
+* Guard GelfTCPSSLSender.closeSocketChannel against uninitialized SSLEngine https://github.com/mp911de/logstash-gelf/issues/111[++#++111] (Thanks to https://github.com/badreddine16[@badreddine16])
+
+== Other
+
+* Upgrade to Mockito 2.3 https://github.com/mp911de/logstash-gelf/issues/100[++#++100]
+* Remove fest-assert usage https://github.com/mp911de/logstash-gelf/issues/100[++#++100]
+* Migrate tests to AssertJ https://github.com/mp911de/logstash-gelf/issues/100[++#++100]
+* Migrate tests to JUnit 5 https://github.com/mp911de/logstash-gelf/issues/101[++#++101]
+* Drop Java 7 build profile https://github.com/mp911de/logstash-gelf/issues/102[++#++102]
+* Upgrade Mockito to 2.7.17 https://github.com/mp911de/logstash-gelf/issues/113[++#++113]
+
+Thanks to all who contributed.
+
+== Links
+
+* https://github.com/mp911de/logstash-gelf/releases/tag/logstash-gelf-1.11.1[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.logging%22%20AND%20a%3A%22logstash-gelf%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.11.1/logstash-gelf-1.11.1.jar[Download logstash-gelf 1.11.1]
+* http://logging.paluch.biz[Documentation]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.logging</groupId>
+    <artifactId>logstash-gelf</artifactId>
+    <version>1.11.1</version>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/logstash-gelf/issues[issues on GitHub].

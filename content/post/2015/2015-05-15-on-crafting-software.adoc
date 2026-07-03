@@ -1,0 +1,136 @@
++++
+title = "On Crafting Software"
+date = "2015-05-15T14:09:29"
+lastmod = "2025-01-03T22:49:03"
+draft = false
+slug = "on-crafting-software"
+wordpress_id = "212"
+url = "/2015/05/15/on-crafting-software/"
+categories = ["Blog"]
++++
+It has been over a year ago the project started that I’m currently working on. This project had the goal to create an archiving service for grocery point of sales receipts. We ended up with creating an outstanding system that might become the new blueprint for software applications within the customers’ software development departments.
+
+I’m now on a Java/JBoss/AngularJS project, that is heading towards it end. A triumphal end, since we created an outstanding software system in many various ways. The most impressive, the application has the potential to be the blueprint for future applications. It will influence how applications will be developed and operated in this particular customers’ software development teams. Here is the story.
+
+== TL;DR;
+
+Focus on the important things. Choose your architecture style according to your needs. Functional requirements are by far not everything that make a successful software development venture. Postpone major decisions. Always be aware of the things you do, be lean, do TDD and automated integration/acceptance tests, use Continuous Delivery, make yourself a comfortable life with always delivering a bit more than required.
+
+<!--more-->
+
+This software venture started in early 2014 whereas the company I’m working for had to fulfill a government law requirement. All receipts (point of sale within a grocery company) have to be archived for a couple of years.
+
+The data needs to be available for the query (index) and export in a little time frame. We started with just a bit more than these requirements, but that was all we had.
+
+We had no idea, how a font-end could look like, how to store the data and how the final system would look like. We knew, that there were way more than *1B{plus} (over 1.000.000.000)* receipts every year and the data should be retained for at least 11 years (*some 170TB*).
+
+== Starting with a proof of concept
+
+The day we heard, there are between 1B and 2B receipts every year, we nearly got mad in our heads. There were only these figures that made us forget, what we’ve learned while doing software projects. We were just blind to these dimensions and dreamed about big data and so on. We started therefore evaluating Hadoop, building a small project to load the data and create at this moment the index we needed. We learned our first lesson:
+
+„You have to tune your software for performance with the right measures.“
+
+This does not mean „Do not create unnecessary instances“ or „Having data mappers over and over kills performance“, no. It just means things like Resource pooling, multithreaded access to I/O, decoupling I/O procedures from non-I/O procedures.
+
+Our use case for storing and indexing data became more evident these days: Lots of small XML files had to be parsed into multiple transaction records and stored in the index. We were pretty confident, that an in-sequence and single-threaded process would not be sufficient to suit our ideas of performance. We had still no performance requirements at that point. In the first place, we took Akka and had some 20 Threads for reading from disk and another 20 for parsing and writing the index data. Boy, the performance was worse.
+
+„Common knowledge will bring you only to a certain point. To get beyond, get in touch with the basics and details of what you’re doing.“
+
+After learning about read-ahead, random access and I/O limits on spinning disks we changed our parameters to single-threaded disk I/O and achieved a massive boost of performance.
+
+At the proof of concept stage, we started with test-driven development and organized our code by following the onion architecture. We could test then already all functionality which was necessary for running the index use case. Most of these parts were already that good, so they made it almost unchanged in the final system.
+
+== Test, test and then test again
+
+Meanwhile it turned out, that the decision of the data store containing the index data will be the major decision for various reasons. We were no longer allowed to use Hadoop for company reasons, we had to use something different. One point in finding the right data store was performance, another the handling of our models and queries. We were quite confident to head towards NoSQL since every other solution would either not be possible or cause horrible costs. We started to look from an eagle-eye perspective on various NoSQL data stores and identified a couple to give those a try. We found quickly that data models and query patterns matter a whole lot.
+
+It is quite hard to judge on a NoSQL data store by just listening to marketing. Marketing says that this particular database is just the right one for you because of scalability, TCO and ease of use. Replace „this“ by the name of your favorite data store. The truth is: You have to think for yourself. You need to make up your mind, on how your use cases will look like. You need an imagination what the keys are and how you want to design your data model. Then you can proceed to test various systems and see how implementing of the use case feels like. You get a feeling for performance. Sure, every data store has its own philosophy, but they tell you rather late how data models should look like. You will get closer to it by experiencing how not to do it.
+
+In our architecture, all data access was behind a particular repository service that contained just the persistence parts, nothing else. It was quite simple to switch the persistence implementation. We had up to four systems running in parallel, just switchable by an easy to change config switch.
+
+„Put parts prone to change far away from your use cases, so you can change the part to a different backend.“
+
+By running tests, over and over we really learned, at which costs some systems provided what level of service. One system is very dynamic but locks the whole database when writing. The other one is very fast in particular, but requires a denormalization level that eats up all the performance benefit. One system has flexible indexes whereas the other system needs a fixed query structure to query data; Any other way of querying data would require creating data duplicates.
+
+We learned the costs and benefits of these systems but still we did not get stuck to one system at all. In the end, we decided to go with MongoDB. Other systems under test were Apache Cassandra, Couchbase, TokuMX.
+
+== Architecture and values upfront, everything else comes afterward
+
+There is no right point in time to start with coding. There is only a point where not to start, and this is when you do not have the slightest idea of how to structure your applications. In 2001, I wrote once an application, with significant code parts in the view (scriptlets within of JSP) containing data access in the font-end. Well, it worked until a certain point, but when the functionality should be extended or ported to a different delivery mechanism, it all failed then. The business rules were mostly in the font-end. In 2001, I had not the slightest clue, how to organize code.
+
+To create a sustainable value, a system that endures for years, you need a strategy how to deal with extensibility, where to put specific code parts and how to handle cross-cutting concerns. Again, marketing phrases won’t help. OSGi for all or AOP is not the answer to all problems. We had a vast impression of what we wanted to achieve. We knew, we had defined use cases and constraints:
+
+* Import of data
+* Accessing file data over the network
+* High-performance indexing and reindexing the data
+* Having some data store containing the index data
+* Scalability in terms of scale out by adding more machines
+* Clustering/HA
+* Some font-end
+
+We learned from prior projects that we do want to split off the front-end from the application itself. In previous projects, the font-end and the application were quite in the same module and once in a while someone just crossed the boundaries and added business rules to the font-end which then screw up the application. We also wanted to use REST services. They are not the answer to all problems but still a pretty good catch in terms of load balancing, authentication, cross-platform and style of organizing data.
+
+We decided to go for an onion architecture. There are plenty ways (domain-driven, functional, ...) how to develop. Onion architecture has the issue of dividing the code into four parts:
+
+* Business specific rules (in our case mostly data models)
+* Application specific rules (use cases and validations)
+* Boundaries (the interface into the use case and out of if)
+* Everything else
+
+Up to now, there is no front-end because front-ends tend to change. Today JSF, tomorrow rich client and after that a mobile application. Again REST could help us to supply the front-end with data without being impacted by the front-end technology.
+
+Our value set, we established was:
+
+* Lean and agile approach, minimize waste
+* Expect changes
+* Open minded
+* Deliver highest possible quality and ensure quality for future
+* Have principles and do not let others create damage on these principles
+* Deliver always more than required: Performance, stability, flexibility
+* Take time, do not let others dictate how to work
+* Stay comfortable by addressing the uncomfortable first
+* Team, not individuals
+
+The whole values chapter could fill a couple of blog posts. But let me tackle some of these points. We started with a minimum of requirements. There were no upfront requirements engineering and the product owner had no idea what to expect from the system. Only some fundamental requirements (data storage, query, retention and some font-end to find data) were clear. This means a sort of iterative approach could help us to deal with the situation. We had to expect changes and we had to be prepared for these. With every version we presented, we received more clarifications on the particular topics. We were pretty clear about the fact that the way towards the goal is part of the goal.
+
+We also wanted to prove us as software development team. The management wanted to dictate how the application should be written and organized. Luckily we could loose the terms and gain some trust in advance so we could follow our own way. We had to prepare our code infrastructure, the building blocks of our application. That took a while without creating a font-end yet. We worked for weeks with very little visible output. The management got worried every time we had a review. Under the hood, we created lots of loosely-coupled building blocks, lots of tests and evaluated our architecture. At a certain point, we could confirm our architecture was the right choice and all the components formed a system that could be used by some font-end.
+
+Every part of the software was crafted sorely, ensuring the capability to act fault tolerant and with a certain expected performance. Test first and peer reviews helped us to create a common understanding within the team about code style, architectural constraints, and functionality. There were no single points of failure in case someone got ill or went to holidays. The whole team was able to fulfill every requirement. There were times where management tries to tell individuals: You do X. In that situation, we managed to engage the whole team to spread knowledge and avoid knowledge silos.
+
+Another critical point of the early development phase was the deployment. We did continuous delivery to the test stages as soon as possible. Continuous delivery at that phase took again its time but allowed us to focus later on development. Every commit gets built and the artifacts are deployed after the successful build to a test stage. We omitted the questions of „What version was deployed when?“ or „Can you deploy please?“ by building a deployment pipeline with self-service. The product owner can deploy at any time and trace the version on his own. No further work for the dev team and a surprised product owner by getting control over things he had to engage devs in prior projects.
+
+== Choosing a font-end
+
+We knew that we would need some front-end for the application. Up to that time, the company policy told us to use an outdated UI framework that tend to be integrated very tight with application code. We took a look on various approaches and frameworks, which could address our requirements and our own expectations. We also wanted to build something new, to again deliver more value to the product owner and the application’s users. We decided to head a rich internet application tooling. We were quite new to the topic but wanted to give it a try. All the new tooling, the new way of dealing with font-end code and patterns within AngularJS. We struggled a lot and there was a time we all hated AngularJS. But it was our own fault. We did not read how to deal with it, we just were flashed by the shiny and new JavaScript-based tools. We took at least three approaches until we had something to show. We ran into issues with our application servers that were not intended for cross-origin usage integrated with enterprise authentication patterns. We struggled with session replication and load balancing, we had to compensate these issues and found bugs in the platform we used.
+
+Once we got over the hard parts, the further development went on like a charm. We earned super-fast response times, a minimum of latency and a great user experience. The application users were amazed by the font-end. Until then they had much slower user interfaces and our project showed them something fast and flexible.
+
+== Behind the scenes
+
+Frontend and data in the font-end are the parts which are visible to the users and product owners. Everything else is somehow behind the scenes. At a certain point, when we ran into issues, that unit tests do not reflect real application behavior we started to create integration tests. These issues were not discovered by QA guys, they were identified by our team. We created tests and found on progressing with the tests more and more bugs - we found bugs before our product owner/QA found them. This does not mean, that no bugs were found by QA, but way less than without integration tests. After having the integration tests done, we built acceptance tests for testing the UI. We setup a whole bunch of tools behind the scenes, SonarQube for code quality monitoring, a status dashboard to monitor our test stages up to that time. We had even a deployment dashboard to track the particular deployments. We used Puppet for stage provisioning and the ELK stack to consolidate log events in a central repository.
+
+None of these things above was requested at any time from our product owner or corporate software architects. We knew, if we do these things, we will have a lower output with the requirements but on the other side we will create a buffer, a comfort zone for operating and reproducibility. We actively take control over things, that are not under control. We will get confidence in our deployment process and we build up trust in the infrastructure by doing these things early. We do not want to search for log files in a distributed environment, we want to have it all in one place.
+
+Our managers and product owners were astonished at the moment we presented our work to them. We prepared the release months before with fulfilling non-functional requirements. We gained trust in our toolchain since it was in use for months. I estimate all the infrastructure work (Sonar, Jenkins, Continuous Delivery, Puppet and many more) took the same time as the development of features.
+
+== Release day and performance
+
+Our targeted release date came at a certain point of time. We had to release the initial version of our software system. We had already good training in deploying and getting the software to run. The release date should be a Sunday. We prepared our software system on a Thursday and keep it running until the first data chunks were imported.
+
+„Flawless Victory.“
+
+It was the first release in my project history we did not need any hotfixes, manual intervention or any other things to get the system into the desired operational state. Everything ran just smoothly. Only the team in front of our application had to fix their system a couple of times. Our system just worked. A couple days after we discovered, that we ran into some exceptions because the input data did not match the data we tested with. So yes, we had a bug but it was not a critical one.
+
+Let’s have a couple of figures just before the post ends. We ran a lot of test series with finding out what our performance was. We ran tests in QA, on virtual machines and on production hardware. We hit on every test some limits, but none of these limits were within our Java application. We ran either on the MongoDB 2.6 limits - with MongoDB 3.0 the data store is no longer a limit - or on network limits (1GbE) or the storage system cannot provide more data.
+
+We were not happy with the performance tests since we did not hit the limits of our application or at least the application server limits. We pushed a bunch of data into RAM drive (/dev/shm) and ran our tests without the need of waiting for disk or network I/O, we simulated the data store. This last test told us the truth: 18 GB of XML data per Minute and per application server. We maxed out the load to 95% to 98% of CPU load on a 2 processor/6 cores each machine. The JVM did not die, no bottlenecks but the machine could not handle more than that. We did not achieve this by reducing inner classes or skipping levels of data mapping. We achieved this by just applying simple common rules and decoupling I/O by using multiple threads.
+
+The system currently processes 100MB per 5-minute time window and runs far below 1% of system load.
+
+== The future
+
+Our current challenge is to ensure the way, how we develop software and keep up the good style. We created a whole eco-system to support our efforts. New devs will join the team and the remaining team has to follow its values and principles. A level of governance is needed. It is still too easy for management to require a particular feature and force a developer to leave his path by just hacking on a feature without retaining principles to deliver an outstanding software system. We head for becoming the blueprint for future software development ventures by talking about values and principles.
+
+„One fits it all is dead.“
+
+Every software development venture has to find it’s way how to deal with code, functionality, and the tools that support the project. Shiny new tools and frameworks cause confusion if you do not dig into the details. Developing a software system is pretty much about managing the detail level of complexity. For me, it is also ensuring, that things you build, never break (or you’ll get noticed at least before anyone that uses it gets notified). Having operations as smoothly as possible and always delivering a bit more.

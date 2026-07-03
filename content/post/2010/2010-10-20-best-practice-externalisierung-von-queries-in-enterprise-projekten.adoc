@@ -1,0 +1,127 @@
++++
+title = "Best Practice: Externalisierung von Queries in Enterprise-Projekten"
+date = "2010-10-20T10:29:55"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "best-practice-externalisierung-von-queries-in-enterprise-projekten"
+wordpress_id = "32"
+url = "/2010/10/20/best-practice-externalisierung-von-queries-in-enterprise-projekten/"
+categories = ["Blog"]
++++
+In nahezu allen Enterprise-Projekten sind Zugriffe auf Datenbestände in Datenbanken erforderlich. Manchmal direkt über JDBC oder, in den besser organisierten Projekten, über objektrelationale Mapper wie JPA, Hibernate oder ähnliche.
+
+<!--more-->
+
+ +
+Bei kleineren Projekten reichen codierte SQL, HQL oder JPA-QL Abfragen aus, um die Daten abfragen zu können. In größeren Projekten ist diese einfache Praxis jedoch hinderlich und sorgt für erhöhten Wartungsaufwand. Die initiale Entwicklung einer Software ist oftmals nur der Beginn eines langen Software-Lebenszyklus. Die Praxis zeigt, dass die meisten Kosten erst nach der Auslieferung einer Software, also in der Wartung und Weiterentwicklung entstehen. +
+Aus diesem Hintergrund heraus, berichte ich heute über die Best Practices zur Queryorganisation. Es sind Methoden und Lösungswege, die Wartungskosten senken und die wartungsfreundlichkeit einer Software enorm positiv beeinflussen.
+
+== Was sind Queries?
+
+Queries sind ein Mittel zur Abfrage von Daten. In Queries stecken Einschränkungen (WHERE-Klausel), Verknüpfungen (JOIN-Klausel), Sortierungen (ORDER BY-Klausel). Bei SQL-Queries werden zudem alle benötigten Felder definiert, in allen Fällen die Datenquelle - eine Tabelle oder Sicht (View). +
+Je nach Implementierung und Nutzung der Daten werden manche Dinge in die Abfrage verlagert und manchmal im Code abgefragt. Daher können Queries auch ganz schön komplex werden.
+
+== Queries im Code - Evil Code
+
+Gerade bei komplexen Abfragen vermischen sich schnell der reine Programm-Code mit dem Datenabfrage-Code. Die Verwendung der Abfragen als String (andere Nutzung ist kaum möglich) erschwert die Lesbarkeit. Dadurch benötigen Entwickler mehr Zeit, um den Code zu Lesen und zu Verstehen. Je länger die Abfrage, desto länger auch die Einarbeitungszeit - die Entwicklung wird teurer. Untersuchungen haben gezeigt, dass mit steigender Komplexität auch die Fehleranfälligkeit steigt. Um die Komplexität für Abfragen herausnehmen zu können, sind im Folgenden Beispiele und Best Practices aufgezeigt. Diese können mit den unterschiedlichsten Zugriffsmethoden genutzt werden, egal ob Hibernate, JPA oder plain JDBC.
+
+== Named Queries
+
+http://www.javalobby.org/java/forums/m91885316.html[Javalobby] beschreibt in einem Artikel, wie Hibernate Named Queries funktionieren. +
+In der Mapping-File (XML) oder im Data-Modell (per Annotation) werden Queries definiert und können über die Session zugegriffen werden. +
+Beispiel:
+
+[source,xml]
+----
+<hibernate-mapping package="com.javalobby.tnt.hibernate">
+ ...
+ <query name="all.owners">from Owner</query>
+ <query name="owner.by.pet.name">select pet.owner from Pet as pet where pet.name=?</query>
+ <query name="owners.with.multiple.pets">from Owner as owner where size(owner.pets) > 0</query>
+
+ <!-- alternativ: -->
+ <query name="owners.with.multiple.pets.2"><![CDATA[
+    from Owner as owner where size(owner.pets) > 0
+] ]></query>
+</hibernate-mapping>
+----
+
+ 
+
+Durch XML-Konventionen müssen Sonderzeichen wie größer/kleiner als Escape-Sequenz dargestellt werden. Vielleicht auch nicht die beste Wahl in puncto Lesbarkeit.
+
+[source,java]
+----
+ Query q = s.getNamedQuery("all.owners");
+ List<Owner> list1 = q.list();
+   
+ Query q2 = s.getNamedQuery("owner.by.pet.name");
+ q2.setString(0, "Satchel"); // set parameters like usual
+ List<Owner> list2 = q2.list();
+   
+ Query q3 = s.getNamedQuery("owners.with.multiple.pets");
+ List<Owner> list3 = q3.list();
+----
+
+ 
+
+Für reine Hibernate oder JPA-Umgebungen ist dies eine sehr feine Sache. Jedoch funktioniert das Auslagern der Abfragen noch ein Stück einfacher, sofern im Projekt die Bereitschaft zu einer Einführung einer Abstraktionsschicht (Wrapper) besteht.
+
+== Query-Management (Ein eigener Wrapper)
+
+Warum als nicht einen eigenen Wrapper um die Query-API herumlegen und damit die eigene Software-Architektur stärken. Die Named Queries aus Hibernate haben zwei Stellen für Verbesserungen:
+
+[arabic]
+. Type Safety
+. Parameter
+
+Für beide Argumente liefert Java ab 1.5 Möglichkeiten, dies in den Griff zu bekommen - Generics und die variable Anzahl von Parametern.
+
+Mit diesen technischen Gegebenheiten ist es ein Leichtes, seine eigene Query-API zu erzeugen. Zudem stellt sich auch die Frage, wie die Queries organisiert sind. Ob in externen Dateien, ähnlich Hibernate Named Queries, oder in eigenen Query-Facades. Durch ein eigenes Wrapping der ORM-Provider lassen sich auch viele interessante Features einbauen, die sowohl für Performance als auch Code-Organisation positive Aspekte mitbringen.
+
+[source,java]
+----
+public interface IQueryService
+{ 
+ public <T> List<T> list(Class< ? extends T> beanClass, String queryID, Serializable... args); 
+ public <T> List<T> list(Class< ? extends T> beanClass, Query query);
+ public List list(String queryID, Serializable... args);
+ public List list(Class beanClass, Query query);
+}
+----
+
+ +
+Das Interface IQueryService bietet vier Beispielmethoden für Auflistungen:
+
+[arabic]
+. Typesafe List für eine bestimmte Objekt-Klasse, Query-ID und sofortige Möglichkeit der Parameterübergabe
+. Typesafe List für eine bestimmte Objekt-Klasse und Nutzung einer Query-Facade
+. Generische List für eine Query-ID und sofortige Möglichkeit der Parameterübergabe
+. Generische List für eine Query-ID und Nutzung einer Query-Facade
+
+Vorbedingung für das letzte Beispiel (4.) ist, dass eine eigene Query-Klasse implementiert wird und dort die Datenherkunft definiert wird.
+
+[source,java]
+----
+ List<Owner> list11 = queryService.list(Owner.class, "all.owners"); 
+ List<Owner> list12 = queryService.list(Owner.class, "owner.by.pet.name", "Satchel");
+ 
+ List<Owner> list21 = queryService.list(Owner.class, OwnerQueries.allOwners()); 
+ List<Owner> list22 = queryService.list(Owner.class, OwnerQueries.byPetName("Satchel")); 
+  
+ List<Owner> list31 = queryService.list("all.owners"); 
+ List<Owner> list32 = queryService.list("owner.by.pet.name", "Satchel");
+ 
+ List<Owner> list41 = queryService.list(OwnerQueries.allOwners()); 
+ List<Owner> list42 = queryService.list(OwnerQueries.byPetName("Satchel")); 
+----
+
+ 
+
+== Externalisierte Queries
+
+Die Hibernate-Lösung mit XML-Dateien ist ein sehr ausgereifter Ansatz, jedoch fehlen lediglich Typsicherheit und ein Code-Assistant. Mit einer steigenden Anzahl von Queries steigt auch die Gefahr, dass IDs doppelt belegt werden, besonders wenn kein Naming-Konzept im Vorfeld festgelegt wurde. Auch sind die möglichen Parameter der Query nicht sofort im Code sichtbar, sondern müssen der Query-Definition entnommen werden.
+
+Verbesserungen in Puncto doppelte IDs und Typsicherheit können dadurch erreicht werden, dass Queries, wo es möglich ist, pro Objektklasse (oder Tabelle) definiert werden. So könnte sich beispielsweise pro Objektklasse jeweils eine Datei mit Querydefinitionen ergeben. Die Generics in der Methodensignatur erlauben auch eine Typprüfung schon zur Compile-Zeit und für den Aufruf, sogar mit Parametern, ist nur noch ein Einzeiler erforderlich.
+
+Durch Auslagerung von Queries in eigene Query-Facades unterstützt die IDE durch Code-Completion oder Code-Assistants bei der Auswahl und Benennung der Parameter. Jetzt stellt sich nur noch die Frage: Welche Lösung ist die Richtige für mein Projekt. Diese Frage muss sich das Team gemeinsam mit seinen Software-Architekten stellen und für sich beantworten, ob die native Unterstützung von JPA/Hibernate ausreicht oder doch ein eigener Wrapper die bessere Lösung ist.

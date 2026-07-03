@@ -1,0 +1,23 @@
++++
+title = "IT Security and SOA-Governance: The Service-Authority"
+date = "2012-10-22T18:13:30"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "service-authority"
+wordpress_id = "65"
+url = "/2012/10/22/service-authority/"
+categories = ["Blog"]
++++
+Do you SOA? In case you do, how do you manage IT Security within a massively distributed landscape? In one of my recent projects we met lots of services and the challenge of IT security: Authentication and Authorization.
+
+<!--more-->
+
+In one of my recent projects, we maintained some 6 service providers, providing each a couple of different services via REST, SOAP, Sprint HTTP Exporter and so on. These services were distributed over more than 65 cluster nodes in a very heterogenous landscape. It's not that easy, that every service was available on every node. Some 25 nodes having two services, some other nodes other services. Tomcats and JBosses. Sometimes using an Apacht HTTPd, sometimes not.
+
+So, how can we manage authentication and authorization with having all the systems in sync? In addition, there was no security before at all.
+
+We found our answer in building a Service-Authority. A system, providing centralized management of roles, URL patterns and consumers. This fail-safe component provides a central identity-management for technical users. Somehow a LDAP for the machines but not beeing a LDAP. Beeing more.
+
+The basic idea was: We have to have something simple. Security isn't always that simple, still we want to keep is simple. We want to allow efficent management and avoiding the operations team to deploy new credentials to some 30's nodes, sometimes forgetting one. And one more thing: We want flexibility, using BASIC Auth and OAuth! Impossible? No!image:/images/2012/10/sa.png[/images/2012/10/sa]
+
+So, how is it done? At first, we have a server-component, which serves and manages the credentials (identities) together with the authorizations. It's some sort of generic access control list (ACL). This data is exposed via an interface, preferred REST. This interface is consumed by a servlet-filter. And here comes the magic. The servlet filter is included in your web app, therefore it's decoupled from the server (JBoss, Tomcat, ...). This freedom enables you, to manage the identities, tokens and what ever within the Service-Authority itself. The servlet filter then takes the requests authentication data, checks it using the remote autority and either grants or denies the access. That's it.

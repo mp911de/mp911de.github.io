@@ -1,0 +1,25 @@
++++
+title = "It's a joy to debug Selenium Tests with Selenide and JBehave"
+date = "2015-01-27T11:15:56"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "it-s-a-joy-to-debug-selenium-tests-with-selenide-and-jbehave"
+wordpress_id = "201"
+url = "/2015/01/27/it-s-a-joy-to-debug-selenium-tests-with-selenide-and-jbehave/"
+categories = ["Blog"]
++++
+Debugging tests is always tricky. Debugging Selenium Tests executed with JBehave is harder. The JBehave tests are executed and stack traces are written to logs. In many cases, you can't reproduce the case or you need to fiddle around, where to set your breakpoint. This is not effective. This is annoying. I want to present you a slightly different and improved approach for debugging Selenium/Selenide tests. You will need either CDI, a Spring Context or Google Guice as prerequisite.
+
+<!--more-->
+
+JBehave is a modular framework allowing multiple integrations. One on the key concepts is the bean factory (InjectableStepsFactory) which allows using a dependency injection framework such as Spring, CDI or Google Guice. Every step object is obtained from the StepsFactory. DI frameworks can wire dependent objects for you, which is very handy. Another aspect is, that most DI frameworks allow interception around calls.
+
+Failed assertions throw exceptions (`AssertionErrors`). So do Selenium calls to findElement (`NoSuchElementException`). Both are signals which can be handled within an interceptor. If you use an interceptor around the invocations, you're able to catch these errors and decide within the interceptor what to do with them. You could either retry, continue without error or cancel the test. For a better understanding, I created a tiny GUI that asks the tester now, how to proceed. It displays the error message and allows further inspections. The browser window won't close and you can inspect the page in your browser, what went wrong.
+
+link:/images/external/debuggable-selenide/debug-screen.png[image:/images/external/debuggable-selenide/debug-screen.png[/images/external/debuggable-selenide/debug-screen]]
+
+The interceptor and the GUI allow interaction as soon as anything goes wrong. Sometimes you need to execute some API calls when you're debugging. Java supports since JDK 1.6 a JavaScript scripting engine. Adding a possibility to invoke/evaluate JavaScript within the dialog gives some flexibility. Handy functions are `$("...")` or `$$("...")` or even `html()` to perform calls to the Selenide API. You can invoke the API without messing around in your debugger, without restarting the tests and without affecting your test flow.
+
+link:/images/external/debuggable-selenide/debug-evaluate.png[image:/images/external/debuggable-selenide/debug-evaluate.png[/images/external/debuggable-selenide/debug-evaluate]] link:/images/external/debuggable-selenide/debug-evaluate-jquery-style.png[image:/images/external/debuggable-selenide/debug-evaluate-jquery-style.png[/images/external/debuggable-selenide/debug-evaluate-jquery-style]]
+
+The project code is available at https://github.com/mp911de/debuggable-selenide. You can clone and copy it, use parts in your own projects or use it as some sort of library. The code is open source and licensed under the MIT license.

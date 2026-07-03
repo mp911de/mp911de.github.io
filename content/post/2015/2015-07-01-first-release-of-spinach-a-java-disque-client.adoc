@@ -1,0 +1,57 @@
++++
+title = "First release of spinach, a Java Disque client"
+date = "2015-07-01T07:28:35"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "first-release-of-spinach-a-java-disque-client"
+wordpress_id = "216"
+url = "/2015/07/01/first-release-of-spinach-a-java-disque-client/"
+categories = ["Blog"]
++++
+I released the first version of https://github.com/mp911de/spinach[spinach], a scalable Java https://github.com/antirez/disque[Disque] client based on http://netty.io[netty]. spinach is built on top of the https://github.com/mp911de/lettuce[lettuce] client which provides SSL and Unix domain connections in addition to plaintext connections.
+
+== *Basic* usage
+
+[source,java]
+----
+DisqueClient client = new DisqueClient("host");
+DisqueConnection<String, String> connection = client.connect().sync();
+DisqueCommands<String, String> sync = connection.sync();
+String jobId = sync.addjob("queue", "body", 1, TimeUnit.MINUTES);
+
+Job<String, String> job = sync.getjob("queue");
+connection.ackjob(job.getId());
+----
+
+== *Features*
+
+* Works with Java 6, 7 and 8
+* https://github.com/mp911de/spinach/wiki/Basic-usage[synchronous] and https://github.com/mp911de/spinach/wiki/Asynchronous-Connections[asynchronous] APIs
+* https://github.com/mp911de/spinach/wiki/SSL-Connections[SSL] and https://github.com/mp911de/spinach/wiki/Unix-Domain-Sockets[Unix Domain Socket] connections
+* https://github.com/mp911de/lettuce/wiki/Codecs[Codecs] (for UTF8/bit/JSON etc. representation of your data)
+
+For complete information on spinach see the websites:
+
+* https://github.com/mp911de/spinach[http://github.com/mp911de/spinach]
+* http://spinach.paluch.biz.
+
+== Links
+
+* https://github.com/mp911de/spinach/releases/tag/0.1[Release on Github]
+* link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.redis%22%20AND%20a%3A%spinach%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/redis/spinach/0.1/spinach-0.1.jar[Download spinach 0.1]
+* https://github.com/mp911de/spinach/wiki[Wiki]
+* http://spinach.paluch.biz[Maven Site (Javadoc)]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>spinach</artifactId>
+    <version>0.1</version>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/spinach/issues[issues on GitHub].

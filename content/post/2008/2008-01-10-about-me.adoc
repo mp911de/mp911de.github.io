@@ -1,0 +1,40 @@
++++
+title = "About me"
+date = "2008-01-10T08:00:00"
+draft = false
+slug = "about-me"
+wordpress_id = "240"
+url = "/2008/01/10/about-me/"
+categories = ["Uncategorised"]
++++
+I'm a http://manifesto.softwarecraftsmanship.org[Software Craftsman]. I strongly believe in continous improvement and change, lean methods and a sharp focus on the things I do. My main area of work is:
+
+== Software Engineering
+
+* Architecture design
+* Working in software projects
+* Development of frameworks
+* Software development of business applications
+* Centralized log management and integration of Logstash
+* Integration of Redis
+* Build management/Continuous Integration/Continuous Delivery
+* Training in the fields of agile methods (Scrum, Kanban)
+* Testautomation
+* Performance analysis and optimization
+
+== Trainings
+
+* Clean Code
+* Clean Architecture
+* Continuous Delivery
+* Redis
+
+== CV
+
+* link:/wp-content/uploads/2008/01/Mark-Paluch-Short-EN.pdf[Download short version (Last update: 22.12.2015)]
+* link:/wp-content/uploads/2008/01/Profil-Mark-Paluch.pdf[Download long version (German&#44; last update: 22.12.2015)]
+
+== Publications (German)
+
+* link:/wp-content/uploads/2008/01/paluch_OS_04_13.pdf[Publikation: OBJEKTspektrum 04/2013: Testautomatisierung mit Continuous Integration: Ist manuelles Testen noch sinnvoll?]
+* link:/wp-content/uploads/2008/01/paluch_OS_04_10.pdf[Publikation: OBJEKTspektrum 04/2010: Code-Recycling (Refactoring)]

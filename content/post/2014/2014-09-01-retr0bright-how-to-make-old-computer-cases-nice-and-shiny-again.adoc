@@ -1,0 +1,52 @@
++++
+title = "Retr0bright, how to make old computer cases nice and shiny again"
+date = "2014-09-01T12:48:32"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "retr0bright-how-to-make-old-computer-cases-nice-and-shiny-again"
+wordpress_id = "143"
+url = "/2014/09/01/retr0bright-how-to-make-old-computer-cases-nice-and-shiny-again/"
+categories = ["Blog"]
++++
+I'm progressing on my RaspiBoy project. So I'm getting in touch with a couple of yellowish Gameboy cases and game cartridges.
+
+Older game console cases, such as Gameboy, Nintendo NES, Commodore 64 and so on, start yellowing. The more sun they get the more yellow they become. There is finally a solution (beside sand paper and overpaint) to de-yellowize them. It's called Retr0bright.
+
+<!--more-->
+
+== Before
+
+link:/images/2014/09/before.jpg[image:/images/2014/09/before.jpg[/images/2014/09/before]]
+
+== After
+
+link:/images/2014/09/after.jpg[image:/images/2014/09/after.jpg[/images/2014/09/after]]
+
+ +
+
+Retr0bright is a recipe to get rid most of the yellowish something. This yellowish something is http://en.wikipedia.org/wiki/Bromine[Bromine]. It's not possible to remove it by any scrubbing, detergent or soap. Only Retro0bright could help. I started my own cleansing by using a Gameboy and a game cardtridge. Until today I cleaned the cartridge successfully. The Gameboy case is next.
+
+== Steps
+
+[arabic]
+. Obtain a yellowish case +
+link:/images/2014/09/IMG_2201.jpg[image:/images/2014/09/IMG_2201.jpg[/images/2014/09/IMG++_++2201]]
+. Get some Hydrogen peroxide solution (about 12%). Handle with care, use eye and hand protectives. Get some TAED-based laundry (like OxiClean or Vanish Oxi Action) and a UV source (using the Sun or an UV lamp)
+. Place the parts in a bowl or bucket. I took a glass bowl +
+link:/images/2014/09/IMG_2203.jpg[image:/images/2014/09/IMG_2203.jpg[/images/2014/09/IMG++_++2203]]
+. Pour Hydrogen peroxide into the bowl and add some (a tea spoon for 250ml) TAED. Mix it. +
+link:/images/2014/09/IMG_2204.jpg[image:/images/2014/09/IMG_2204.jpg[/images/2014/09/IMG++_++2204]]
+. Place the UV source over the bowl and come back in some hours. +
+link:/images/2014/09/IMG_2205.jpg[image:/images/2014/09/IMG_2205.jpg[/images/2014/09/IMG++_++2205]]
++
+Whoa! Looks spooky. +
+ +
+link:/images/2014/09/IMG_2207.jpg[image:/images/2014/09/IMG_2207.jpg[/images/2014/09/IMG++_++2207]]
+. Enjoy!
+
+I wanted to reuse the solution after cleansing the cartridge. I used put a Gameboy cover into it and repeated the steps but it did not work. It seems to me that the solution is for one-time usage only. I'll retry with fresh Hydrogen peroxide. It was also interesting, as soon as the UV light is switched on, bubbles start to appear.
+
+== References
+
+* http://en.wikipedia.org/wiki/Retr0bright[Wikipedia]
+* http://retr0bright.wikispaces.com/[Wikispaces]

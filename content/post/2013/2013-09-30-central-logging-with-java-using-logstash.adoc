@@ -1,0 +1,128 @@
++++
+title = "Central logging with Java using logstash"
+date = "2013-09-30T07:09:38"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "central-logging-with-java-using-logstash"
+wordpress_id = "95"
+url = "/2013/09/30/central-logging-with-java-using-logstash/"
+categories = ["Blog"]
++++
+Recently I gave logstash a try. logstash is a log management tool (processing, storing). It can push log messages also into elastic search. This setup is ideal for central logging. The easiest way to push log data into logstash seems to me to be gelf (Graylog Extended Log Format). It is a JSON-style format which can be GZIPed using UDP connections. There are a few implementations for GELF using Java (gelfj, gelf4j) which work nicely with Graylog itself. If you try to use them with logstash you’ll run into a few problems, which are caused mainly due the chunk size. gelfj has a fixed chunk size of 1420 bytes. Maven Central contains none of them (only some reassembled artifacts).
+
+<!--more-->
+
+Therefore I've provided my adoption for logstash, which has an increased stability when it comes to longer messages. logstash-gelf provides implementations for:
+
+* log4j (1.2.xx)
+* Java Util Logging
+* JBoss7 Logging
+
+and is available from Maven Central. You can either use it in your Maven/Ivy/Gradle-enabled projects, download it as Jar or download it as JBoss7 module. Find the code at https://github.com/mp911de/logstash-gelf.
+
+== Maven
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.logging</groupId>
+    <artifactId>logstash-gelf</artifactId>
+    <version>1.0.0</version>
+</dependency>
+----
+
+=== jar
+
+http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.0.0/logstash-gelf-1.0.0.jar
+
+You need json-simple in order to use the jar: http://search.maven.org/remotecontent?filepath=com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar
+
+=== JBoss 7 Module
+
+http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.0.0/logstash-gelf-1.0.0-logging-module.zip
+
+== Ivy
+
+[source,xml]
+----
+<dependency org="biz.paluch.logging" name="logstash-gelf" rev="1.0.0" />
+----
+
+== Gradle
+
+[source,javascript]
+----
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile group: 'biz.paluch.logging', name: 'logstash-gelf', version: '1.0.0'
+}
+----
+
+== logstash setup
+
+Setting up logstash is straight forward and short. Create a config file, named _logstash.conf_ with following content:
+
+[source,json]
+----
+input { 
+    gelf {
+        port => 12201
+    }
+}
+
+output { 
+    elasticsearch {
+        embedded => true 
+    }
+}
+----
+
+Now start your logstash
+
+....
+java -jar /opt/logstash/logstash-1.2.1-flatjar.jar agent -f logstash.conf
+....
+
+And your logstash server is up and running
+
+== log4j setup
+
+Now let's go for log4j (you'll find more documentation at http://maven.paluch.biz/logstash-gelf/). All you need is to include the gelf appender into your log4j config. You can do it either using _log4j.properties_ or _log4j.xml_. Below you'll find the xml code.
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <appender name="sysout" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="gelf" class="biz.paluch.logging.gelf.log4j.GelfLogAppender">
+        <param name="GraylogHost" value="udp:localhost" />
+        <param name="GraylogPort" value="12201" />
+        <param name="Facility" value="java-test" />
+        <param name="ExtractStackTrace" value="true" />
+        <param name="FilterStackTrace" value="true" />
+        <param name="MdcProfiling" value="true" />
+        <param name="TimestampPattern" value="yyyy-MM-dd HH:mm:ss,SSSS" />
+        <param name="MaximumMessageSize" value="8192" />
+        <param name="AdditionalFields" value="fieldName1=fieldValue1,fieldName2=fieldValue2" />
+        <param name="MdcFields" value="mdcField1,mdcField2" />
+        <param name="Threshold" value="INFO" />
+    </appender>
+
+    <root>
+        <priority value="INFO" />
+        <appender-ref ref="sysout" />
+        <appender-ref ref="gelf" />
+    </root>
+</log4j:configuration>
+----
+
+And now have fun with your logger. Support for log4j2 is already in the GitHub repo https://github.com/mp911de/logstash-gelf but not yet released.

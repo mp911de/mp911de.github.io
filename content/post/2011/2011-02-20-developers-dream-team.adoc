@@ -1,0 +1,37 @@
++++
+title = "Developer's Dream-Team"
+date = "2011-02-20T14:54:32"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "developers-dream-team"
+wordpress_id = "35"
+url = "/2011/02/20/developers-dream-team/"
+categories = ["Blog"]
++++
+Viele Entwickler, denen ihre Software wichtig ist, haben eine Idealvorstellung vom Prozess der Entwicklung.
+
+<!--more-->
+
+Dieser beginnt bei der Anforderungsanalyse. Oftmals wird der Kunde von einem Analysten-Team, den Requirements Engieers, durch seine Anforderungen begleitet. In agilen Arbeitsweisen steht zunächst der grobe Plan, im Wasserfall-Vorgehen entstehen lange Dokumentationen darüber, was entwickelt werden soll.
+
+Zurecht wird daher behauptet, dass der Teufel den Analysten Textverarbeitung und Tabellenkalkulationen gegeben hat. Nicht nur aus meiner Sicht gehören Anforderungen in ein RM-Tool. Darin können einzelne Feature-, Change-Requests und Test-Cases bestens verwaltet werden. Alle beteiligten können zudem die unterschiedlichen Stände der Features und Beschreibungen einsehen.
+
+Für mich persönlich sehe ich zwei Kombinationen: http://www.gebit.de/loesungen/re_tool.php[TREND/Analyst] oder http://www.jamasoftware.com/[Jama Contour] in Verbindung mit http://www.sparxsystems.de/[Enterprise Architect]. Ich habe bereits mit allen dieser Tools gearbeitet und mit Contour/EA die besten Erfahrungen gemacht.
+
+Der nächste Schritt in der Prozesskette der Entwicklung ist die IT-Konzeption und Entwicklung. Üblicherweise kamen die Entwickler zum Konzept hinzu und verwalteten Ihre ToDo's durch _Konzepte-Zusammenstreichen_ oder in Tabellen. Da wären schon wieder die Dinge, die Kopfschmerzen bereiten.
+
+Dank Atlassian, die den reinen Bugtracker zu einem Issue-System gewandelt haben, sollten die Entwicklungsaufgaben in solch einem System verwaltet werden. Etwas besseres als http://www.atlassian.com/software/jira/[Jira] habe ich für diese Aufgabe nicht gesehen.
+
+Mittlerweile ist http://www.eclipse.org/[Eclipse] in der Entwicklung von Java-Software nicht mehr wegzudenken. Besonders die gut umgesetzte Refactoring-Unterstützung hilft bei alltäglichen Aufgaben.
+
+Der Quellcode muss in Projekten ebenfalls auf eine vernünftige Art und Weise verwaltet werden. Lange Zeit erfolgte dies mit CVS, jedoch sind in der Zwischenzeit die Anforderungen an Source-Code-Management gestiegen. Derzeit sind die Key-Player http://subversion.tigris.org/[SVN], http://git-scm.com/[Git], http://mercurial.selenic.com/[Mercurial] (Hg) oder http://www.perforce.com/[Perforce], wobei Perforce mein persönlicher Favorit ist (schnell, Sharing von Changelisten, gute Eclipse-Integration...). Neben dem SCM ist eine Einsicht ins Code-Repository manchmal Gold wert. Dabei helfen die History-Tools von Eclipse oder ein ViewVC nicht so weiter, wie sie sollten. Dafür gibt es ebenfalls ein wunderbares Tool: http://www.atlassian.com/software/fisheye/[Fisheye] von Atlassian. Fisheye ist ein Code-Repository-Browser für unterschiedliche SCM-Systeme. Auf einen Blick alle Änderungen.
+
+Während der Entwicklung ist auch die kontinuierliche Integration zu einem immer wichtiger werdendem Baustein geworden. In Multi-Team-Entwicklungen können gegenseitige Schnittstellen zusammengeführt werden, Code-Analysen werden durchgeführt und Unit-Tests ausgeführt. Dies übernimmt üblicherweise ein Build-Server wie http://cruisecontrol.sourceforge.net/[CruiseControl], http://java.net/projects/hudson/[Hudson] (http://jenkins-ci.org/[Jenkins]) oder http://www.atlassian.com/software/bamboo/[Bamboo]. Da uns Entwicklern die Arbeit Spaß machen soll, gewinnt Bamboo unter dem Aspekt Usability. Von den Features her geben sich die Build-Server nicht viel.
+
+Während oder nach der Entwicklung beginnen die Tests. Anhand der Testfälle im Requirements Management und neu gewonnener Testfälle während der Entwicklung werden die Ergebnisse im Bugtracker festgehalten. Anfangs gab es selbstgestrickte Anwendungen oder Tabellen. Dann kamen Bugzilla, Trac und Jira (und noch viele mehr, aber die http://en.wikipedia.org/wiki/Comparison_of_issue-tracking_systems[Liste] wäre an dieser Stelle zu lang). Auch hier finde ich Jira am passendsten.
+
+Sobald es in die Richtung des Releases geht, werden automatisierte und wiederkehrende Prozesse immer wichtiger. Es gibt viele Anhänger von http://ant.apache.org/[Ant], http://maven.apache.org/[Maven] & Co., aber jedes Projekt muss sein passendes Tool finden.
+
+Nur was nützen die Idealvorstellungen vom Entwicklungsprozess mit seinen Tools, wenn täglich neue Change-Requests zu Change-Requests eintreffen, die Stakeholder hinter dem Entwickler stehen und fragen, ob der Fix im nächsten Build in 5 Minuten enthalten ist und Blocker-Bugs im Test zeigen, dass die Konzeptphase hätte länger sein sollen?
+
+Mehr zu erfolgreichen Projekten und zerstörten Illusionen im nächsten Beitrag: Projekterfolge: Wann ist ein Projekt gescheitert?

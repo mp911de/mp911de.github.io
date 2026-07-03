@@ -1,0 +1,132 @@
++++
+title = "Unit-Testing of Web-Services with JUnit - REST Services"
+date = "2012-06-22T08:49:27"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "unit-testing-of-web-services-with-junit-rest-services"
+wordpress_id = "56"
+url = "/2012/06/22/unit-testing-of-web-services-with-junit-rest-services/"
+categories = ["Blog"]
++++
+In my last post, Unit-Testing of Web-Services with JUnit - SOAP Services, I've demonstrated how you can test local SOAP Services with remoting in a local Unit-Test. But since SOAP service become more and more unpopular, there might be a different technique. Currently REST becomes the name of the game. So let's take a look at JUnit testing RESTful services with remoting.
+
+<!--more-->
+
+In the very early beginning of JSR 311 REST and JUnit were plain testing. JSR 311 provides Annotations to describe the needed REST resource bahavior on class or interface level.
+
+[source,java]
+----
+@Path("/test")
+public interface ITestRESTResource {
+
+    /**
+     * @return "hello world"
+     */
+    @Produces(MediaType.APPLICATION_XML)
+    @GET
+    String getExample();
+
+    /**
+     * add a plus b and return it.
+     * 
+     * @param a
+     * @param b
+     * @return TestModel
+     */
+    @Produces(MediaType.APPLICATION_XML)
+    @POST
+    TestModel postAdd(@FormParam("a") int a, @FormParam("b") int b);
+}
+----
+
+This particular interface can be implemented direcly by a class. This class can then be tested directly without using the REST stack. But did you know, that the REST stack can avoid functionality? Indeed, forgotten annotations, wrong result types cannot be tested without integrating your REST framework. Usually you would see any errors when you either start the application or event only when you really invoke the desired method.
+
+[source,java]
+----
+@RunWith(MockitoJUnitRunner.class)
+public class RESTResourceTest {
+
+    @InjectMocks
+    private final TestRESTResource sut = new TestRESTResource();
+
+    @Mock
+    private ICalculator calc;
+
+    @Test
+    public void testAddNoMockSetup() {
+        TestModel result = sut.postAdd(1, 2);
+        assertEquals(0, result.getResult());
+    }
+
+    @Test
+    public void testAdd() {
+        when(calc.add(1, 2)).thenReturn(3);
+        TestModel result = sut.postAdd(1, 2);
+        assertEquals(3, result.getResult());
+    }
+}
+----
+
+Not really the way it should be. Personally, I prefer http://www.jboss.org/resteasy[RESTEasy] as implementation. RESTEasy ships something really cool with its package: TJWS - Tiny Java Web Server. It's a very lightweight implementation of a HTTP stack which uses RESTEasy functionality. And together with this, you're enabled to use local integrated HTTP remoting. Cool, isn't it?
+
+Let's take a look at the examples.
+
+[source,java]
+----
+@RunWith(MockitoJUnitRunner.class)
+public class RESTResourceRemoteTest {
+
+    private static int port;
+    private Static String baseUri;
+    private static TJWSEmbeddedJaxrsServer server;
+
+    @InjectMocks
+    private final static TestRESTResource sut = new TestRESTResource();
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+
+        port = RemoteUtil.findFreePort();
+
+        server = new TJWSEmbeddedJaxrsServer();
+        server.setPort(port);
+        server.getDeployment().setResources((List) Arrays.asList(sut));
+        server.start();
+        
+        baseUri = "http://localhost:" + port + "/test";
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        server.stop();
+    }
+
+    @Mock
+    private ICalculator calc;
+
+    @Test
+    public void testBasicGet() throws Exception {
+
+        ClientRequest request = new ClientRequest(baseUri);
+        ClientResponse<String> response = request.get(String.class);
+        assertEquals("hello world", response.getEntity());
+    }
+
+    @Test
+    public void testAdd() throws Exception {
+        when(calc.add(1, 2)).thenReturn(3);
+        ClientRequest request = new ClientRequest(baseUri);
+        request.formParameter("a", 1).formParameter("b", 2);
+
+        ClientResponse<TestModel> result = request.post(TestModel.class);
+
+        assertEquals(3, result.getEntity().getResult());
+    }
+}
+----
+
+In this case we have as well the System under Test setup. Mocks are injected as usual, but then the _BeforeClass_ and _AfterClass_ handle a part of the remoting Setup. Before even this class can run, the web server is setup and the resources are provided for it's runtime. In the real test methods you can see the ClientRequest class. This is used to access via remoting the Mock. Here starts the roundtrip to the resource and back. It's real and pure HTTP.
+
+This approach enables you not only to test the correctness of your code, you can even write local integration tests which use predefined HTTP requests to your REST resource. Then you can see, whether it worked out. I like that approach, it's more realistic and has some coolness in it.
+
+Now it's your turn. You can find my Sources at GitHub, see https://github.com/mp911de/Public/tree/master/webservice-test

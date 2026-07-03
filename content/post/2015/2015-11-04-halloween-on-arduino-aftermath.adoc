@@ -1,0 +1,69 @@
++++
+title = "Halloween on Arduino Aftermath"
+date = "2015-11-04T05:47:56"
+lastmod = "2025-01-03T22:48:49"
+draft = false
+slug = "halloween-on-arduino-aftermath"
+wordpress_id = "232"
+url = "/2015/11/04/halloween-on-arduino-aftermath/"
+categories = ["Blog"]
++++
+link:/images/2015/11/IMG_1056.jpg[image:/images/2015/11/IMG_1056.jpg[/images/2015/11/IMG++_++1056]] The plan for this year's Halloween: Built a scary thingy based on Arduino. Halloween is over now.
+
+I built an Arduino-backed jack-o'-lantern with LED matrix panel eyes, an ultrasonic ranging sensor for the nose and a sound module to play scary Halloweenish sounds. It is impressive to see the whole thing assembled. They eyes move around, the thing can go into sleep if no one is around and wake if someone comes close to the pumpkin.
+
+<!--more-->
+
+My intention was to build an interactive piece for the ultimate interactive scare experience :-) Let me tell you now the things I learned. +
+ +
+
+++++
+<iframe width="560" height="315" src="https://www.youtube.com/embed/2tzQdPVMrik" frameborder="0" allowfullscreen></iframe>
+++++
+
+++++
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nOI1ydRATm0" frameborder="0" allowfullscreen></iframe>
+++++
+
+++++
+<iframe width="420" height="315" src="https://www.youtube.com/embed/XqemNytx0CA" frameborder="0" allowfullscreen></iframe>
+++++
+
+== Development is not production
+
+I expected the ranging sensor to be the critical component of the setup. That was the component where the whole idea came from. As soon as someone comes close or movement is discovered, the pumpkin should come to life. I had to get used to the sensor from beginning on. There are certain characteristics that I did not expect and some of which I was not aware.
+
+[arabic]
+. *Ultrasonic distance measurement is based on time*: This means for a „single threaded“ device like the Arduino Mini Pro, you have to interleave the distance measurement with all the other activity.
++
+The eye movement is fully controlled by the Arduino device, there is no „program“ on the LED matrices which plays by itself. If the Arduino is busy with distance measurement, it cannot change the state on the LED matrices to play the animation. Because of this time dependency, nothing else may happen during the distance measurement. The distance is not predictable; The required time for measuring varies by distance, from 6 to 30 milliseconds.
+. *Time implications*: One can say: „That few milliseconds have only little impact.“ That's true if you go for short distances. 1 meter requires the time of 1/150th of a second. The sonic speed in air is about 330 meters per second. And why 1/150th on the previous example?
++
+The principle of ultrasonic distance measurement is the sound has to travel across the distance once, hit an object and has to come back the same distance. That said the sound is traveling twice the distance and hence requires twice the time of the distance between the sensor and the object. That's ok for short distance. But once you go for 10 meters you basically need 10x the time. Yuck! 0,06sec, which are 60 milliseconds. The more distant the objects are, the longer the measurement takes. And this again implies the animation because it takes longer until the measurement is done and longer until the animation can continue.
+. *Reliability*: From beginning on, the measurement returned outliers. At a constant distance, the sensor reported suddenly 50cm less or 1 meter greater. It seems that these sudden measurement errors are characteristic for ultrasonic ranging sensors. The only way for me to handle that issue recording a series of measurements and select the distance/average distance by the 80% quantile. Measuring once requires a certain time, measuring 5 times the distance requires 5x the time.
+. *Noise*: Operating the LED matrices causes electromagnetic interferences. These interferences affect the distance measurement.
++
+I had an amplifier running while playing with the electronics. As soon as the LED matrices started to light up I heard some noise/interference out of the speakers connected to my amplifier. The reason is that the LED matrices are not constantly on light but rather they flicker at high frequency. This feeds back into the electronics and causes some interference. Now how is that related to the ultrasonic ranging sensor? As soon as the full integration was in place the ranging sensor measurement reported a constant distance of 80cm, no matter how the real distance was. It took me some time to realize that adding a capacitor to stabilize the circuit would help. I'm sure that I fixed only the effect, not the cause but the capacitor did the trick.
+. *Sound funnel*: As soon as I went outdoors I realized that the accuracy is limited to a distance up to 2,5 meters. It was not possible to measure reliably distance of objects that were more distant. The signal distortion gets higher the more distant the object to measure is. That is the first part. The other part of this learning is: Come on, nobody comes straight towards the pumpkin.
+
+== Real interactive user experience is hard work.
+
+link:/images/2015/11/IMG_1051.jpg[image:/images/2015/11/IMG_1051.jpg[/images/2015/11/IMG++_++1051]] When I first came to the project idea, I had only a vision. It should be a cool thingy for Halloween. With a ranging sensor. The pumpkin device should interact with the human in some way. Object tracking would be great so the matrix eyes look into the direction of the person approaching the pumpkin.
+
+I had no idea of interaction with the thing. All I did was putting my hand in front of the ranging sensor to simulate near distance. That's not sufficient for a test. Perhaps for a basic does-it-run test, but not even close to an interaction test. I had to learn that the pumpkin is nice to see on dedicated photos and cool if you play it on YouTube, but the pumpkin is not the center of interaction when it boils down to Halloween. The center of interaction is the door and its doorbell. A biting doorbell would have caused a better, well, experience than a pumpkin. Pumpkins are spread all over the place, and why should someone notice the interactive one? Eyes are glowing like every other jack-o'-lantern.
+
+I did not consider the approaching vector as well. When someone approaches the pumpkin it's usually by accident or because he's walking towards the entrance. How people walk by the damn thing is almost always different. The second impact comes from the single-threaded nature. People walk by quite fast and the time where they are in the range of the sensor is just 1 to 2 sec. If an animation is running at that time someone comes close, it's not possible to notice that somebody was there.
+
+I learned from this that a preliminary analysis is essential to understand interaction patterns and the role of the interactive object.
+
+== Programming in the field
+
+After I assembled everything I had to verify the device using my MacBook. Fiddling with the USB connector is always painful but even more if the whole stuff is mounted inside a fruit that still spills some juice. Every move could rip out everything built into it. There is no place to take a seat, cables are too short, and once everything is in place, I couldn't put my notebook anywhere because it gets scratches from the outside environment.
+
+Holding the MacBook with one hand, trying to type in some code while it gets colder and the fingers freeze up. One-handed coding in the cold just sucks. Using gloves could help for the cold part but then I'd have hit multiple keys with one stroke because the fingers are larger with gloves. This again screams for pre-production :-) testing inside the house to leverage the missing notebook stand and the temperature issue.
+
+== Batteries rule!
+
+The device required some power and I didn't want to put cables all over the place. I used a bunch of AA batteries to power the Arduino (in fact, two Arduinos, one for the matrix eyes and sound, the other to randomly light up LEDs that illuminated the mouth of the jack-o'-lantern). The batteries worked for the whole night had still power when I switched the appliance off. That's a great takeaway from the project.
+
+The whole project was a great fun. Next time I could create a doorbell with teeth. Although the night was quite cold, the Arduino kept working and was stable at a low temperature.

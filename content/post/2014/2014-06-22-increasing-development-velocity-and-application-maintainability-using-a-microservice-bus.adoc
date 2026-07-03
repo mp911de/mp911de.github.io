@@ -1,0 +1,99 @@
++++
+title = "Increasing development velocity and application maintainability using a Microservice Bus"
+date = "2014-06-22T11:35:31"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "increasing-development-velocity-and-application-maintainability-using-a-microservice-bus"
+wordpress_id = "120"
+url = "/2014/06/22/increasing-development-velocity-and-application-maintainability-using-a-microservice-bus/"
+categories = ["Blog"]
++++
+Developing applications can be a fun. Developing applications can be also a big pain.
+
+It depends on a lot of factors. Let's focus today on maintainability/extensibility and a framework concept called Microservice Bus.
+
+<!--more-->
+
+I'm on middlewares since a couple of years. Since then, I've seen a lot of use cases which are covered by middlewares. They are somewhere between an simple entity-to-REST conversion, something which calls other systems with enriched data up to complex calculations and processes. A traditional approach is having an entry point, a whole bunch of business/technical logic and something, in what the call results. I've experienced mostly software written once and then changed a couple of times because of business needs. Adding support for a marketing promotion here, removing a feature by shifting it to somewhere else. So mostly the software did the same stuff in the inner core, but was changed here and there.
+
+*tl;dr*: A Microservice Bus de-clutters your inner application wiring. You can express the application flows like a process but much more lightweigt. You gain maintainability and development velocity.
+
+== The Microservice Bus (MSB)
+
+There are enterprise service buses out there, there are process and rule engines. A Microservice Bus takes advantage of the good parts without the need of a heavy product needing lots of resources and know-how to operate. It's a lightweight component, easy to integrate.
+
+The basic idea is to enable orchestration of micro service calls (mostly application logic or calls to services) on invocation level. It supports conditionals and a semi-shared data space.
+
+It's essential to have high performance, to be able to change the behavior in runtime. It's not important to have something like a persistent process instance (if yes, stop reading here and go, use a process engine) this a Microservice Bus is inspired of process engines. You've got there as well a bunch of service- and gateway-adapters which allow you to design your own flow.
+
+== What are Microservices/Microservice Architecture
+
+Microservices are, as currently observed, system decompositions by their domains. Microservices form a package of related functions within a specific domain. In contrast to monolithic applications, microservices are independent components. Every of them can be deployed and operated on their own. This does not mean that microservices do not depend on other services. Microservices consist of synchronous or asynchronous interfaces, have their own persistence, if necessary and support a specific set of use cases.
+
+While its true, to have some duplications and some overhead in comparison to a monolithic application it's true that you gain scalability and independence. Microservices are used to be deployed independently, spread over several nodes which reduces the amount of shared resources. Every microservice forms a cluster itself. This fact leads to higher availability.
+
+== Decoupling and decomposition
+
+Before you can start using a Microservice Bus, let's understand what is the difference to traditional systems and their style of development.
+
+Behavior and data have usually a high cohesion. When data structures change, the behavior changes in most cases. Different behaviors within a software system are coupled in order to provide the needed behavior for a specific use case. Different use cases require different behaviors within the code. This leads to a high coupling between particular components and sometimes duplicate functionality which reflects in duplicate code.
+
+The Microservice Bus supports decoupling through separation into small functional units. Have an uniform interface for the beginning. This interface is used to realize most of the functionality. The interface must provide execution of logic/calls, access to data/data structures and we need conditional flows.
+
+Every implementor of that interface within the flow is independent from each other. Let's call them adapters. The only contract within an adapter is the lives in data and behavior. You are no longer depending on a predecessor or successor. You are isolated. You test isolated. You build one logical domain case in an adapter and you have to test only this particular domain case. You do not depend on anything that is left or right from you. The only thing you share, is the data. As soon as you're integrating all parts together, you've to write one, integrative test to check the expected behavior.
+
+This approach proposes a implementation of small and independent components which are orchestrated in a separate development step. It allows also to reuse components on a low level for preventing duplicate code.
+
+== Using a MSB
+
+First, you design your flow. Lacking a graphical tooling I use XML here.
+
+[source,xml]
+----
+<service-bus>
+    <route id="CREATE_WEBSITE">
+        <input>
+            <variable name="customerId" type="long" mandatory="true" />
+            <variable name="firstName" type="string" default="" />
+        </input>
+        <output variable="websiteId" />
+        <flow>
+            <invoke class="msb.demo.CalculateWebsiteIdAdapter" />
+            <if class="msb.demo.WebsiteExistsGateway">
+                <flow id="true">
+                    <terminate />
+                </flow>
+                <flow id="false">
+                    <invoke class="msb.demo.SetupWebsiteUsingWebsiteIdAdapter" />
+                </flow>
+            </if>
+        </flow>
+    </route>
+</service-bus>
+----
+
+The program is a quite simple website creation: It defines two input variables and one output. First the websiteId is calculated, afterwards, if the websiteId exists already, the flow is terminated. If the websiteId does not exist, the website is set up, then the flow terminates as well.
+
+Let's express the same in Java code:
+
+[source,java]
+----
+public String createWebsite(long customerId, String firstName){
+    String websiteId = createWebsiteId(customerId, firstName);
+    if(!exists(websiteId) )     {
+        setupWebsite(websiteId);
+    }
+    return websiteId;
+}
+----
+
+So why should you use a Microservice Bus? Imagine now, the createWebsiteId method needs completely different parameters. And the setupWebsite method will need also an additional parameter which is calculated in between. You've got to change the whole call hierarchy and adjust all your tests. Using the MSB approach you've got to change the code as well. But every component can access all variables within the invocation. No nasty change of method signatures or extending data models.
+
+== Everything has a cost
+
+On the other side you have benefits that come out of such a approach. The availability of every microservice changes because these services are operated and deployed independent of each other. Using load balancing techniques provides high availability. The inner structure of your microservice application allows isolated change management and increased maintainability. You can change every step on its own. A Microservice Bus enables application introspection by its structure. You can see how many calls are processed with their particular data. Microservice applications strengthen the whole system landscape and can lead to a higher operational level and load distribution. The possibilities from this point on are amazing. Imagine adding an event-driven orchestration.
+
+== References:
+
+* http://martinfowler.com/articles/microservices.html
+* http://microservices.io/patterns/microservices.html

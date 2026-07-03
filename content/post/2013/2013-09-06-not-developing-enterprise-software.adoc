@@ -1,0 +1,71 @@
++++
+title = "Not developing enterprise software"
+date = "2013-09-06T07:21:19"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "not-developing-enterprise-software"
+wordpress_id = "94"
+url = "/2013/09/06/not-developing-enterprise-software/"
+categories = ["Blog"]
++++
+Lots of companies I know tend to work still in a plain old style. Top-down bosses, either water-fall, ad-hoc or chaos-driven development. Long term release cycles and inefficient, expensive style of development. Continuous Delivery: What’s that, do they ask, why do we need such fancy things?
+
+Many „something as a service“ companies are agile and deliver updates to their services seamless, without any down-time. As soon as they would go down for maintenance a lot of people would stop using it. Imagine Amazon or Google would go offline every day or week for a couple of hours.
+
+In contrast to that, the least other companies go for efficient development, Continuous Delivery and all that other „fancy“ stuff. Some sort of agile development is the most you can expect from german companies. If you’re lucky, they’re doing Test-Driven development or Clean Code, but that’s it. So I started to investigate why this is.
+
+<!--more-->
+
+== Known matter
+
+Software development experienced a lot of changes in the last 60 years: 1’s and 0’s, compilers, waterfall, modern languages and changes in thinking. Somewhere in the 90’s mainstream got onto the software development track: Companies doing software development as their primary business goal or regular companies, having an IT department, which is doing software development. They all got in touch what happens if you don’t do development the right way: Explosion of the project cost, not reaching any goals, delays and having issues with the software like operations problems or bugs.
+
+Most of them created a bunch of policies, project management guides, software development processes and so on in order to get software development in the right way. These policies where made once, based on some knowledge and never touched again. But software development is still subject to change. We did not reach a real stable state yet (and I'm curious if we ever do so). Best practices are estabilshed and are deprecated some time after that.
+
+Lets take a look at accounting/book keeping: There are expenses and incomes, a whole bunch of accounts and some rules, how particular expenses are booked on the right accounts. From time to time there are legal updates to these rules. There are no changes which make accounting/book keeping a completely new science, there are no things which would cause to overhaul the working style of accounting, because it’s final somehow.
+
+Another example is construction: Building houses, office buildings, churches are projects which involve lots of parties and people. It is always a costly project and takes a long time to construct a building. Over the years more and more tools came into play: First people started to dig holes using shovels, later they used excavators. First they moved heavy stuff by hand, later using cranes. The construction industry changes with its technology and requirements progress but the main things stay the same: You dig holes, put bricks on each other and lay a roof on top. The order and the process does not change much.
+
+You can get now the feeling, that policies and processes made once are designed for eternity. Policies, which were agreed in hard negotiations, which are even harder to change. That’s also my reception of IT approaches. But our world is still subject to change. Sure, not every trend needs to be adopted early, but it’s necessary to rethink and adjust to new knowledge and the progress.
+
+== Unknown matter
+
+Expensive and long-lasting development, long release cycles, quality issues: This all seems to be a standard procedure in most companies. An circumstance, that is granted. No clear timelines or due dates combined with no priorities cause the hell of a development endeavor.
+
+The opposite of that, agile development, clear requirements with due dates and priorities on them, clean code and test-driven development is todays’ minimum requirement for medium quality software. Having code reviews on a regular basis, internal team-trains-the-team events and continuous delivery make the difference to high quality software.
+
+There are lots of unmentioned disciplines which belong as well to the toolbox of efficient software development. These principles seem pretty much unknown or no one likes to hear that, because the known processes and policies would have to be changed. Cherry picking of some of these disciplines does not help. It addresses some point but does not help the whole endeavor. Sometimes even too many parties are involved, willed to talk and decide about something, they even do not understand.
+
+For me it’s not a problem, someone does not understand how a Git or JUnit works as long as they understand that the small percents of the benefit improve the whole development. Some of these changes cost more than they provide but when you see them integrated in each other, the benefits double.
+
+How do we get there
+
+It’s not easy to describe all the pro’s and con’s of the aspects of modern software development. When you sum it all up, the change is quite expensive but heads for a huge saving in costs. It can help to increase quality by a giant leap and reduce operations problems by at least the same amount.
+
+In my opinion, the first and most important milestone in improving software development is tolerance, some sort of freedom. Enough room for motivated development teams, to be able to establish their optimum. As development head you can dictate the way of working and the tooling as well, as long you really understand what you’re doing. When the team reaches it’s optimum, you can then see, how you could apply some of the changes to other teams. An exact copy does not work, reuse is limited. Every team needs it’s solution which fits the team requirements. It’s the same as developing software: A car workshop has only limited benefits in using construction site software.
+
+== And what is the matter?
+
+Well, after writing all that I came up to the point, where I want to state what modern software development looks like for me. It’s more about behavior than certain product knowledge. Learning a product is easy, changing behavior not. So look at my list of things which belongs to modern software development:
+
+* Being Agile (short development cycles, early feedback, clear requirements and priorities)
+* Test-driven development
+* Regular Code-Reviews (every commit has to be reviewed)
+* Automating repetitive tasks
+* Clean Code
+* Continuous Integration with static code analysis to ensure Clean Code
+* Self-responsibility („root“-permissions on production belong to that as well as long as you are not a Bank or the NSA :-)
+* No Late Check-In policy (don’t check in code before you leave)
+* Regular team trainings
+* Open and honest communication
+* Continuous Delivery at least to test-stages
+* Automation at most
+* Using modern frameworks
+* Doing architecture decisions within the team
+* Freedom to try things („Slack Time“)
+* Freedom for innovation
+* The right development environment (believe me, no one wants to code on Windows 95 using Pentium II)
+* Doing the right things using the right way and be able to decide on that
+* And for sure I missed something but this will come later
+
+Applying all that helped me in several projects to boost productivity by 30%, decrease quality issues by 80% and to increase fun@work by 99,5%

@@ -1,0 +1,46 @@
++++
+title = "Von erfolgreichen Projekten und verpufften Illusionen"
+date = "2011-04-12T23:00:00"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "von-erfolgreichen-projekten-und-verpufften-illusionen"
+wordpress_id = "34"
+url = "/2011/04/12/von-erfolgreichen-projekten-und-verpufften-illusionen/"
+categories = ["Blog"]
++++
+Wenn ich heute jemanden Frage, was er in der letzten Zeit so gemacht hat, so antworten über 90 % "Ein Projekt im Bereich ...". Dabei sind dies bei weitem nicht alles Projekte im IT Bereich. Ja die Projektarbeit dringt in immer weitere Bereiche von Unternehmen vor. So stellt sich mir immer wieder die Frage: Wann ist ein Projekt erfolgreich, wann ist es fehlgeschlagen?
+
+<!--more-->
+
+Um eine Idee auf eine mögliche Antwort zu finden, wären mehrere Projekte als Beispiel hilfreich:
+
+== Ein optimales Kunden-Projekt
+
+Dieses Projekt handelt von Auftrag und Auslieferung. Zu Beginn des Projekts findet ein Kunde seinen Lieferanten und klärt mit ihm die Anforderungen. Nach ein paar Verhandlungen bekommt der Kunde einen Termin, zu dem die Projektergebnisse ausgeliefert werden. Vielleicht sollte an dieser Stelle erwähnt werden, dass der Kunde gut wusste, was er möchte und der Projektleiter verstand dies auch voll und ganz. Es gab nur wenig Klärungsbedarf und das Projekt wurde Termingerecht ausgeliefert.
+
+Das Projekt hört sich ganz gut an und es war aus Sicht aller Beteiligten sicherlich erfolgreich.
+
+== Das Projekt wächst mit seinen Aufgaben (Anforderungen)
+
+Nicht immer wissen alle Beteiligte von Anfang an, was sie vom Projekt erwarten. Manchmal wird dies den Kunden während des Projekts bewusst, was diese Angefordert haben. Manchmal begreifen die Projektarbeiter während des Projekts, was diese mit dem Projekt schaffen. So auch in diesem Beispiel. Der Kunde gibt eine ziemlich Detaillierte Anforderung ab, der Projektleiter vermittelt diese seinem Team. Mit jedem Tag, an dem das Projekt fortschreitet tauchen unspezifizierte Details auf.
+
+_"Was machen wir in Fall X? Wie verhält sich Y?"_ sind die üblichen Fragen.
+
+Nun gibt es drei Möglichkeiten:
+
+[arabic]
+. Der Kunde gibt zeitnah eine Info, wie es weitergeht. Der Wunsch-Fall.
+. Der Kunde zieht sich zurück und weiss aufgrund der Termine, dass dieser möglichst schnell eine Antwort liefern sollte. Nach einiger Zeit kommen die Informationen. Manchmal an das Team, manchmal nur an einen ausgewählten Personenkreis. Und wenn's ganz blöd läuft, widerspricht sich der Kunde in einigen Dingen selbst. Der Standard-Fall.
+. Kunde und Projektteam versuchen eine oder mehrere mögliche Lösungen gemeinsam zu erarbeiten. Evtl. wird auch der Release-Termin aufgrund dessen verschoben. So etwas gibt es tatsächlich ab und zu.
+
+Je nach Termin und wie sich die Anforderungen entwickeln, verschiebt sich evtl. der Termin oder die Projektbeteiligten müssen länger arbeiten, um den Termin halten zu können. Wenn auch noch in der Abnahme Unstimmigkeiten auftreten, weil bei der Klärung von Fragen nur ein Teil des Gesamt-Teams die Informationen erhalten hat, so werden auch dort mehrere Iterationen durchgeführt. Korrekturen, Nacharbeiten, weitere Abstimmungen.
+
+Stellt sich nun die Frage: War dieses Projekt erfolgreich?
+
+== Die Management-Bremse
+
+Das IT-Projekt läuft seit geraumer Zeit. Die Anforderungen werden zeitgerecht umgesetzt, die Qualität stimmt und sogar die Doku ist aktuell. Es hört sich wie ein Projekt aus dem Lehrbuch an. Aber solche Projekte gibt es nicht nur in der Theorie. Das ganze Projektteam ist hoch motiviert, bis zum nächsten Management-Meeting. In diesem wurde nämlich beschlossen, das Projekt bis auf weiteres stillzulegen. Was ist passiert? Das Management hat aus bisher unbekannten Gründen das Projekt gestoppt. Ob es jemals weitergeht, steht in den Sternen. War dieses Projekt erfolgreich? Das Team behauptet ja, ob das Management dies auch behauptet, hängt von den Gründen ab, warum das Projekt gestoppt wurde.
+
+== Fazit
+
+Wann ist denn nun ein Projekt gescheitert? Wann ist es erfolgreich? Die meisten Projekte können als Erfolgreich angesehen können. Ein wirklicher Fehlschlag ist, wenn alle oder zumindest der größte Teil der Projektinvestitionen verloren ist, z. B. wenn das Team überdurchschnittlich häufig wechselt, das Projektergebnis überhaupt nicht zu gebrauchen ist oder wenn der Kunde plötzlich nicht mehr Kunde ist.

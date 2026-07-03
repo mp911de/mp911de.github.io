@@ -1,0 +1,124 @@
++++
+title = "Using log4j2 with Logstash/GELF (update)"
+date = "2013-10-15T11:31:46"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "using-log4j-v2-with-logstash-gelf"
+wordpress_id = "96"
+url = "/2013/10/15/using-log4j-v2-with-logstash-gelf/"
+categories = ["Blog"]
++++
+Since today logstash-gelf supports http://logging.apache.org/log4j/2.x/[log4j2]. The experimental support allows dynamic field since log4j2 provides a very flexible configuration.
+
+<!--more-->
+
+This yields in GELF messages like:
+
+[source,javascript]
+----
+{
+   "timestamp":"1381835989.381",
+   "level":"6",
+   "host":"my.host.name",
+   "facility":"logstash-gelf",
+   "full_message":"My Log Event",
+   "short_message":"My Log Event"
+}
+----
+
+A minimal configuration looks like this:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Gelf name="gelf" host="udp:localhost" port="12201">
+        </Gelf>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n" />
+        </Console>
+    </Appenders>
+    
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="CONSOLE" />
+            <AppenderRef ref="gelf" />
+        </Root>
+    </Loggers>
+</Configuration>
+----
+
+If you need more fields, you can add *Field* tags within the *Gelf* tag. Look at the example below. This GELF message contains more fields, which can be plugged in by configuration:
+
+[source,javascript]
+----
+{
+   "host":"my.host.name",
+   "_mdcField2":null,
+   "_mdcField1":"my mdc value",
+   "_className":"biz.paluch.logging.gelf.log4j2.GelfLogAppenderTest",
+   "_timestamp":"15 Okt 2013 13:26:51,323",
+   "full_message":"My Log Event",
+   "_server.simple":"my",
+   "short_message":"My Log Event",
+   "_server.fqdn":"my.host.name",
+   "_level":"INFO",
+   "timestamp":"1381836411.323",
+   "_fieldName1":"fieldValue1",
+   "_simpleClassName":"GelfLogAppenderTest",
+   "_server":"my.host.name",
+   "level":"6",
+   "facility":"logstash-gelf",
+   "_fieldName2":"fieldValue2",
+   "_profiling.requestEnd":"Tue Oct 15 13:26:51 CEST 2013",
+   "_profiling.requestDuration":"1ms",
+   "_server.addr":"fe80:0:0:0:affe:fcff:fe00:affe"
+}
+----
+
+And the config looks like:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Gelf name="gelf" host="udp:localhost" port="12201" extractStackTrace="true"
+              filterStackTrace="true" mdcProfiling="true">
+            <Field name="timestamp" pattern="%d{dd MMM yyyy HH:mm:ss,SSS}" />
+            <Field name="level" pattern="%level" />
+            <Field name="simpleClassName" pattern="%C{1}" />
+            <Field name="className" pattern="%C" />
+            <Field name="server" pattern="%host" />
+            <Field name="server.simple" pattern="%host{simple}" />
+            <Field name="server.fqdn" pattern="%host{fqdn}" />
+            <Field name="server.addr" pattern="%host{address}" />
+            <Field name="fieldName1" literal="fieldValue1" />
+            <Field name="fieldName2" literal="fieldValue2" />
+            <Field name="mdcField1" mdc="mdcField1" />
+            <Field name="mdcField2" mdc="mdcField2" />
+        </Gelf>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n" />
+        </Console>
+    </Appenders>
+    
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="CONSOLE" />
+            <AppenderRef ref="gelf" />
+        </Root>
+    </Loggers>
+</Configuration>
+----
+
+You can get the code at Github: https://github.com/mp911de/logstash-gelf and soon on Maven Central.
+
+== Update ++#++1 (2013-12-04):
+
+I've released version 1.2.0 of logstash-gelf to Maven Central. It contains now support for log4j2 2.0-beta9.
+
+== Update ++#++2 (2014-07-21):
+
+I've released version 1.5.0 of logstash-gelf to Maven Central. It contains now support for log4j2 2.0 (final).

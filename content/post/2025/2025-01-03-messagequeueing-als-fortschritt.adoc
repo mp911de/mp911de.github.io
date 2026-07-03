@@ -1,0 +1,22 @@
++++
+title = "MessageQueueing als Fortschritt?"
+date = "2025-01-03T22:49:35"
+draft = true
+slug = "messagequeueing-als-fortschritt"
+wordpress_id = "30"
+url = "/2025/01/03/messagequeueing-als-fortschritt/"
+categories = ["Blog"]
++++
+Eine MessageQueue bietet schon lange viele komfortable Möglichkeiten. Im Rahmen eines Projektes habe ich auch kürzlich die Erfahrung gemacht, wie langlaufende Transaktionen einen guten Fortschrittsbericht an den Client senden können.
+
+<!--more-->
+
+Auch in der JEE-Welt ist es so, dass ein EJB-Prozess nicht auf seinen Client zurückgreifen kann (Callback). So bleiben nicht viele Möglichkeiten, um den Fortschritt einer Verarbeitung zurückzumelden. Statusmeldungen via Datenbank sind bekanntlich uncool. Aber es gibt die MessageQueue oder Topic.
+
+Statt den Fortschritt über den traditionellen Weg zu überliefern, ist es doch viel trendiger, die Rückmeldungen über einen Topic zu behandeln. Ein Topic bietet, im Gegensatz zu einer Queue, eine One-to-Multi Kommunikation. Bei einem Topic werden die Consumer der Messages zu Subscribern, alle hören zu.
+
+Dabei ist es wichtig dem aktuellen Prozess eine eindeutige ID zu vergeben. Sonst landen die Nachrichten eventuell nicht da, wo diese hingehören. Wer bereits die Statusmeldungen über ein Progress Listener-Interface verteilt, für den ist es noch einfacher einen JMSProgressPublisher einzusetzen, der regelmäßig die Messages veröffentlich.
+
+Auf der anderen Seite verarbeiten die Clients die Statusmeldungen und stellen diese z.B. als Fortschrittsbalken dar. Auch eine Interaktion in Form von Abbruch oder Steuermeldungen ist darüber möglich. Der Server-Prozess muss sich lediglich ebenfalls eine eindeutige Prozess-ID verschaffen und die Messages eines Reponse-Topic verarbeiten. Schon ist die Remote-Brücke der Status-Steuerung errichtet. Die einzigen Herausforderungen bleiben das Transaktionsmanagement (Entkopplung der MessageQueue von der sonstigen Transaktion) und die Performance. Immerhin ist es nicht die beste Methode innerhalb von 60 Sekunden 1 Million Messages zu versenden. Da empfiehlt sich die Balance zwischen Performance und der Update.Frequenz (z.B. Update alle 1 - 2 Sekunden).
+
+Wie bei jedem Artikel freue ich mich auf ein link:index.php?option=com_contact&view=contact&catid=2&id=1;mark-paluch[Feedback] und werde die weiteren Erfahrungen demnächst publizieren.

@@ -1,0 +1,99 @@
++++
+title = "Redis Client lettuce 3.3.Beta1 and 4.0.Beta1 released"
+date = "2015-08-06T13:31:18"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "redis-client-lettuce-3-3-beta1-and-4-0-beta1-released"
+wordpress_id = "218"
+url = "/2015/08/06/redis-client-lettuce-3-3-beta1-and-4-0-beta1-released/"
+categories = ["Blog"]
++++
+I released today two betas of lettuce: 3.3.Beta1 and 4.0.Beta1. What is the difference between those versions? Both use netty and a very similar core to serve as Redis driver. The 4.0 branch introduces a Reactive API, stateful connections, improved API and command execution on multiple cluster nodes. 4.0 also introduces a set of breaking changes. The 3.x branch is supported for at least a year, new Redis commands will be supported in both branches. 4.0 is the next generation of lettuce.
+
+<!--more-->
+
+You can find the details of both releases on Github, here's the short version:
+
+== https://github.com/mp911de/lettuce/releases/tag/3.3.Beta1[lettuce 3.3.Beta1]
+
+=== Enhancements
+
+* Provide access to cluster connection using the advanced cluster API https://github.com/mp911de/lettuce/issues/71[++#++71]
+* Cluster connection failover when cluster topology changes https://github.com/mp911de/lettuce/issues/97[++#++97]
+* NodeId-bound cluster connections enhancement https://github.com/mp911de/lettuce/issues/104[++#++104]
+* Implement at-least-once for cluster connections https://github.com/mp911de/lettuce/issues/105[++#++105]
+* Pipelining for lettuce (or: flush after n commands) https://github.com/mp911de/lettuce/issues/92[++#++92]
+* Decouple ConnectionWatchdog reconnect from timer thread https://github.com/mp911de/lettuce/issues/100[++#++100]
+* Improve performance in 3.3 https://github.com/mp911de/lettuce/issues/90[++#++90]
+* Add checks for arguments https://github.com/mp911de/lettuce/issues/69[++#++69]
+* Use dedicated string codecs on String connections and add ByteArrayCodec https://github.com/mp911de/lettuce/issues/70[++#++70]
+* Tests for command reliability docs https://github.com/mp911de/lettuce/issues/98[++#++98]
+* Expose RedisClient.connect(RedisCodec, RedisURI) and RedisClient.connectAsync(RedisCodec, RedisURI) https://github.com/mp911de/lettuce/issues/108[++#++108]
+* Add close stale connections and strict cluster member check flags to ClusterClientOptions https://github.com/mp911de/lettuce/issues/109[++#++109]
+
+=== Commands
+
+* Adopt variadic EXISTS and DEBUG HTSTATS https://github.com/mp911de/lettuce/issues/103[++#++103]
+* Support geo commands in lettuce 3.3 https://github.com/mp911de/lettuce/issues/86[++#++86]
+* Support NX++|++XX++|++CH++|++INCR options in ZADD https://github.com/mp911de/lettuce/issues/74[++#++74]
+* Add support for COUNTKEYSINSLOT https://github.com/mp911de/lettuce/issues/107[++#++107]
+
+=== Fixes
+
+* Synchronization/cross thread visibility of variables https://github.com/mp911de/lettuce/issues/94[++#++94]
+* Check channel state before calling Channel.close.syncUninterruptibly https://github.com/mp911de/lettuce/issues/113[++#++113]
+
+=== Other
+
+* Rework of the wiki
+
+=== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/3.3.Beta1[Release 3.3.Beta1 on Github]
+* http://redis.paluch.biz/docs/api/snapshots/3.3.Beta1/[Javadocs for 3.3.Beta1]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/redis/lettuce/3.3.Beta1/lettuce-3.3.Beta1.jar[Download lettuce 3.3.Beta1]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.3.Beta1</version>
+</dependency>
+----
+
+== https://github.com/mp911de/lettuce/releases/tag/4.0.Beta1[lettuce 4.0.Beta1]
+
+=== Enhancements
+
+* Advanced Cluster API (async) https://github.com/mp911de/lettuce/issues/78[++#++78]
+* Improve HLL command interface https://github.com/mp911de/lettuce/issues/77[++#++77]
+* Move segregated API interfaces to own packages https://github.com/mp911de/lettuce/issues/76[++#++76]
+* Provide a stateful Redis connection and decouple sync/async API from connection resources https://github.com/mp911de/lettuce/issues/75[++#++75]
+* Reactive support https://github.com/mp911de/lettuce/issues/68[++#++68]
+* Pipelining for certain cluster commands https://github.com/mp911de/lettuce/issues/66[++#++66]
+* Drop support for Java 6 and Java 7 https://github.com/mp911de/lettuce/issues/50[++#++50]
+* Migrate RedisFuture to CompletionStage https://github.com/mp911de/lettuce/issues/48[++#++48]
+
+=== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/4.0.Beta1[Release 4.0.Beta1 on Github]
+* http://redis.paluch.biz/docs/api/snapshots/4.0.Beta1/[Javadocs for 4.0.Beta1]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/redis/lettuce/4.0.Beta1/lettuce-4.0.Beta1.jar[Download lettuce 4.0.Beta1]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>4.0.Beta1</version>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/lettuce/issues[issues on GitHub].

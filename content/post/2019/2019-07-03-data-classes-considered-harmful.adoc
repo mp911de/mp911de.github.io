@@ -1,0 +1,127 @@
++++
+title = "Data Classes Considered Harmful"
+date = "2019-07-03T12:34:58"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "data-classes-considered-harmful"
+wordpress_id = "274"
+url = "/2019/07/03/data-classes-considered-harmful/"
+categories = ["Blog"]
++++
+This blog post explains the motivation behind removing Project Lombok from one of the projects to which I contribute. It reflects my personal opinion and is not discouraging particular technologies.
+
+About three years ago, I got to know https://projectlombok.org/[Project Lombok], a library that spices up Java code. I liked it from the beginning as it contributes so much useful functionality. I work a lot with entities (data classes) and value objects, so it does not come as a surprise that `@Data` or Kotlins `data class` are very convenient. You get more bang for the buck – literally. +
+I’m mentioning Kotlin here because it shares some of the properties that we also get from Lombok.
+
+<!--more-->
+
+Adoption of such (language++|++code generation) features in a codebase typically starts slowly. The more the code evolves, the more components use such features because it’s convenient to use features you get for free**++*++** and that you’re already used to. With a single annotation or a single keyword, we opt into something that gives us property accessors, `equals`/`hashCode`, `toString`, generated constructors and more.
+
+*++*++*: In reality, https://en.wikipedia.org/wiki/There_ain%27t_no_such_thing_as_a_free_lunch[there ain’t no such thing as a free lunch].
+
+Now, one could say, use only what you need and you’re totally right. Use `@Getters` and `@Setters` if you only want property accessors. If you wish to get `equals`/`hashCode`, then add the appropriate annotation. True. In many cases we believe that we need more functionality so why cluttering the code with multiple annotations when we get what we want (and more) with a single `@Data` annotation. Isn’t this about boilerplate? So reducing the number of annotations seems a good thing to do.
+
+*Well: No.*
+
+Here’s why:
+
+== Accidental Complexity
+
+By introducing code generation (that’s what Lombok and Kotlin `data classes` do), we get a lot of functionality, but the real question should be: Is it the functionality I want to be available? Or do we rather want to get explicit control over functionality? +
+In several cases, we used data classes out of convenience. With the removal of Lombok, we found that we implicitly used a lot of features we got for free**++*++**, such as equality checks. With the removal of generated code, lots of tests started to fail because these features weren’t available any longer. The missing features raised the question: Is this feature required?
+
+This question can be so easily overseen by just opting in for a data class. Opposed to that, with an explicit approach, we would have spent more time with the topic. Probably our tests would look like different, or we would have been more explicit about specific features.
+
+Explicitly controlling your code without generation utilities forces you into thinking whether the functionality is really required or whether it’s not.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">(Repeated) PSA: „Code generation, so that you can do the wrong thing faster…“ <a href="https://twitter.com/hashtag/GeeCon?src=hash&amp;ref_src=twsrc%5Etfw">#GeeCon</a></p>&mdash; Oliver Drotbohm ?&amp;?‍? (@odrotbohm) <a href="https://twitter.com/odrotbohm/status/525288149308964864?ref_src=twsrc%5Etfw">23. Oktober 2014</a></blockquote>
+++++
+
+++++
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+++++
+
+== What is Boilerplate?
+
+Boilerplate code is code that we repetitively need to write to expose a certain functionality instead of telling the code that we want this feature to work out of the box. Typical examples are property accessors (Getters, Setters) and equality checks (`equals`/`hashCode`). Sometimes also constructors. +
+Contrary to our previous belief, decomposing a Lombok annotation into its own components is not boilerplate. It’s being not precise, it’s convenience and being not responsible.
+
+== Working Around the Compiler
+
+This is a Lombok-specific aspect. Java compiler was never intended for things that Lombok does. Lombok maintainers did a spectacular job to make happen what Lombok does. This comes at the price of several workarounds in the Compiler targeting specific compilers. The things needed for `javac` are different to some degree to what needs to be done for Eclipse’s `ecj`.
+
+In a static arrangement, where JDKs and the Eclipse IDE never changes, everything is fine. However, the real world is different. Eclipse ships updates, the Java release cadence velocity increased as of Java 9. Project Lombok is not driven by a company but by a team of open source contributors whose time is limited.
+
+Java upgrades caused in the past Lombok being the component which prevented us from upgrading to newer Java versions: Compiler internals had changed, and Lombok had no chance yet to catch up. With Lombok usage spread all over the codebase, the only option is not to upgrade.
+
+But: Not upgrading is not an option in the long term. +
+Eventually, Lombok caught up which opens up the path to upgrade to newer versions again.
+
+== Plugin all the Things!
+
+An aspect of Lombok is that it needs to tell your IDE about generated class members. Although there is no e. g. Setter in your code, it is there in the compiled code, and your IDE needs to know about that to not give you errors. For IntelliJ and Netbeans, that’s not so much an issue, because you can enable annotation processing and use the optional IntelliJ plugin. For Eclipse, you need an agent that modifies Eclipse behavior. Without proper IDE setup, anyone that wants to work on the code, will get errors/warnings raising the question: How does that even work?
+
+== Cognitive Load
+
+Each non-obvious behavior contributes to complexity in the sense that it needs to be understood. Also, each non-default behavior leads down the same path. People to work with such a codebase for the first time need to understand what’s going to grasp the codebase. While this isn’t specific to Lombok, all auxiliary utilities that contribute additional functionality to your code (code generators, AOP, JVM agents, bytecode manipulation in general) bear some potential to be described as magic. Why magic? Because in the first moment it’s not obvious what happens. It may become apparent once someone explains the trick to you.
+
+== Someone Else Changes your (Compiled) Code
+
+With using code generation features, we rely on someone else to do the right job. We buy into them, so their tool is providing us with functionality that is useful for us. We no longer have to bother with the right implementation for e.g. `equals`/`hashCode`, adding a property becomes a no-brainer because the generation picks up the change for us. Extending manually `equals`/`hashCode` isn’t trivial. Some tools can do this for us, but as you might already anticipate, we’re exchanging `tool1` for `tool2` without substantially improving our situation. +
+Once in a while, tools change how they generate code or which bits they generate and which they stop generating. Finding out about these changes is no fun but we don’t have an option if we already bought into their programming model. The only option is to back off, and that comes at the cost of manual implementation.
+
+== Accidental Complexity 2: The Build
+
+Depending on the context, this might be only relevant to our project only. We ship a library with public API surface accompanied by a sources jar and Javadoc. By default, Lombok works with your `.class` Files only. This causes the source jar not to contain the generated methods and Javadoc does not list the generated members either. What started with eliminating boilerplate code continues with increasing build complexity. To get proper source jars and Javadoc, we need to add plugins to the build that delombok the code first and allow the source jar/Javadoc to run on top of the delomboked sources.
+
+Depending on your setup, the delomboked sources are used for the source jar and Javadoc only. This means you’re using one version of your code for documentation purposes. That code is different from the one you’re using for compiling. Lombok essentially leads to the same outcode. Making that aspect obvious leaves us with a bad feeling.
+
+Increase in complexity comes typically with a longer build time and we might ask ourselves whether that’s worth what we get.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">A good developer is like a werewolf: Afraid of silver bullets.</p>&mdash; ?Jochen Mader ?? (@codepitbull) <a href="https://twitter.com/codepitbull/status/784691906005635072?ref_src=twsrc%5Etfw">8. Oktober 2016</a></blockquote>
+++++
+
+++++
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+++++
+
+== Lombok is Polarizing the Community
+
+Even though the previous sections sound as if we’re dealing with severe issues, many of them are probably specific to our project context. Lombok promises to reduce boilerplate code. It does its job well. Working in a data-oriented environment where we need various constellations of objects for testing or even in the production code, requires a lot of code for a proper data object/value object. +
+Providing a good implementation for `hashCode` is non-trivial. There are a couple of CVE’s because of improper `hashCode` implementations. Forgetting to add a field in `equals`/`hashCode` is another common source of bugs. +
+We eliminate these sources of bugs when using code generation. Also, code that isn’t there does not impact our test coverage statistics. This does not mean it does not need testing.
+
+Looking at the stats of the Lombok removal commit we see:
+
+image:/images/2019/07/commit-stats.png[/images/2019/07/commit-stats]
+
+Removed: 300 lines +
+Added: 1200 lines
+
+This is a pretty good representation of what benefit we get out of using Lombok. Once Lombok is used in a single place, we typically continue using it in other places – because it’s already on the classpath. Looking at the removed 300 lines, we should instead see them as 150 lines removed because it’s typically an `import` statement and one annotation that leaves us roughly with a ratio of 1:8 between convenience code and manually maintained code.
+
+We aren’t paid by lines of code yet having more code results in a greater surface to maintain.
+
+Looking at my https://twitter.com/mp911de/status/1146054764733485056[tweet], there are very opposing opinions. These reactions are why there is no single answer when you should/should not use Project Lombok or Kotlin data classes as it always depends on your team, the context and what type of code you’re writing.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">I recently removed <a href="https://twitter.com/project_lombok?ref_src=twsrc%5Etfw">@project_lombok</a> from a project. A tweet is too short to summarize results. Will follow up with a blog post. <a href="https://t.co/wpS33nKScA">https://t.co/wpS33nKScA</a></p>&mdash; Mark Paluch ?‍?&amp;? (@mp911de) <a href="https://twitter.com/mp911de/status/1146054764733485056?ref_src=twsrc%5Etfw">2. Juli 2019</a></blockquote>
+++++
+
+++++
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+++++
+
+== Twofold Pain
+
+Not using code generation features makes code explicit. Explicit code always reveals what it does. Explicit code requires design. Getting into code generation features is tempting because of immediate results and initial simplicity. Once using these features, we go through different situations and learn about aspects that weren’t immediately obvious. Getting to a point to remove a quite beneficial feature is hard because of the associated cost. Remember the 1:8 LoC ratio?
+
+Just because we want to get rid of code generation it does not mean we can remove features that we received by the tool for free**++*++**. It rather means that we need to provide this functionality on our own.
+
+I’d put it this way: You have a house, you rent it out to some tenant because renting promisies profit. Eventually you figure out your tenant is messy and you start getting rid of your tenant. Once your tenant is out you realize the extent of the mess and you start cleaning up to not lose your house.
+
+The net effect is the same: You have put a lot of effort (and probably money) into that learning.
+
+If your tenant behaves properly, there’s no reason to change how things are.

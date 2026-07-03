@@ -1,0 +1,6 @@
+{{ define "main" }}
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+  {{- $main := site.Params.mainSections | default (slice "post") }}
+  {{- partial "post-list.html" (where site.RegularPages "Section" "in" $main) }}
+{{ end }}

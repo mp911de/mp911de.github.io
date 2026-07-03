@@ -1,0 +1,80 @@
++++
+title = "Performance Probleme und Optimierungen in Java/J2EE Umgebungen (Teil 1)"
+date = "2011-05-07T11:19:22"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "performance-probleme-und-optimierungen-in-javaj2ee-umgebungen-teil-1"
+wordpress_id = "36"
+url = "/2011/05/07/performance-probleme-und-optimierungen-in-javaj2ee-umgebungen-teil-1/"
+categories = ["Blog"]
++++
+Eine häufige Aussage von Anwendern ist: Schon wieder ist alles langsamer geworden. Oftmals nach neuen Releases, bei denen viele neue Features hinzugefügt und bestehende Funktionen erweitert wurden.
+
+<!--more-->
+
+Weiterentwicklung entspricht einem Aufmotzen nach allen Regeln der Kunst, aber auch während der Entwicklung können sich die Anforderungen ändern. Durch diese Umstände konzentrieren sich viele Entwickler auf die eigentliche Business-Logik, die Anforderungen, nichtfunktionale Anforderungen wie Performance oder Design Patterns geraten eher in den Hintergrund.
+
+Aber auch unbewusste Wiederverwendung kann zur allgemeinen Verlangsamung führen. Beispielsweise ist eine Komponente für das Versenden von Messages in eine Queue/Topic verantwortlich (InitiaContext, ConnectionFactory, Session initialisieren). Wird diese Komponente nun für den massenhaften Versand von Messages verwendet, so würde die Initialisierung zu Lasten der Performance gehen.
+
+In meinen Projekten sind mir häufig Performance-Bottlenecks begegnet, die Top 10 davon sind:
+
+[arabic]
+. Nested Loops (stark verschachtelte Schleifen)
+. Einzeldatensatz-Verarbeitung und Einzel-Datenlookups
+. String-Verkettungen von langen Texten/Strings
+. Redundante Initialisierung von Ressourcen
+. Fehlende Indizes auf Datenbank-Ebene bzw. zu komplexe Datenbankabfragen
+. Komplexe In-Memory Sortierung/Listenoperationen
+. Falsche Nutzung von Komponenten
+. Zu komplexe UI's (selbstgebaute Performanceprobleme)
+. Exzessive Speichernutzung (Out of Memory Errors)
+. Unnötige Funktionalität
+
+== Nested Loops
+
+Schleifen dienen dazu, Listen zu verarbeiten, irgendwelche Dinge zu Zählen und können sehr vielfältig eingesetzt werden. Hierarchisch aufgebaute Daten- und Programmstrukturen verleiten jedoch, Schleifen innerhalb von Schleifen zu verwenden. Die Iterationen innerhalb der Schleifen multiplizieren sich schnell in zeitraubende Prozeduren. Dabei muss oft nur ein kleiner Teil von Daten bearbeitet werden.
+
+Mögliche Lösungen sind:
+
+* Anzahl der Schleifen verringern (z. B. nicht alle Hierarchiestufen durchlaufen, sondern die benötigten Daten per Bulk-Load in weniger Hierarchiestufen verarbeiten)
+* Anzahl der Daten (Iterationen) verringern
+
+== Einzeldatensatz-Verarbeitung und Einzel-Datenlookups
+
+In der Regel werden einzelne Datenobjekte verarbeitet. Eine Verarbeitung in einer Schleife oder einen Batch kommt erst hinzu, wenn sich Anforderungen verändern. Aber auch Initial kann eine Programmstruktur entstehen, die z. B. für jeden Datensatz weitere Daten aus Ressourcen (meist Datenbank) abruft. Bei jedem Lookup entsteht ein Overhead, Queries müssen beispielsweise jedes mal von der Datenbank bearbeitet werden. Bei Datenbankabfragen dauert das Ermitteln der Daten oftmals länger als das Lesen (aus der Datendatei/Festplatte) und die Rückgabe der Daten.
+
+Daher empfiehlt es sich, die Eingangsdaten in Blöcken zu staffeln (die Blockgröße ist abhängig von Datenvolumen, Parallelität usw. und muss in jedem Fall individuell bestimmt werden). Für diesen Block werden in Bulk-Abfragen (z. B. Select-Abfrage mit where xyz in (Liste von ID's)) die erforderlichen Daten abgefragt und in einer Schleife zum passenden Datensatz in-memory sortiert. Besonders bei EJB Transaktionen macht sich diese Vorgehensweise bemerkbar. In einem meiner Projekte konnte ich allein durch die Blockgröße 10 eine Verarbeitung von 3 Stunden auf 10 Minuten reduzieren.
+
+== String-Verkettungen von langen Texten/Strings
+
+String-Operationen sind im Java-Umfeld eine Speicher- und Rechenintensive Angelegenheit. Java-Strings sind immutable, d. h. ein bestehendes String-Objekt kann nicht verändert werden. Werden zwei Strings zu einem dritten String verkettet, so erzeugt Java aus den zwei String-Objekten ein drittes Objekt und die zwei vorhergehenden Strings werden nicht mehr benötigt. Tritt dies häufiger auf und werden die Strings länger, wird immer mehr Speicher benötigt, immer größere Speicherbereiche werden allokiert und wieder freigegeben - der ganze Prozess zieht sich in die Länge.
+
+Mögliche Lösungen sind:
+
+* Nutzung von StringBuffer statt String (intern wird im StringBuffer ein wachsender Pufferbereich verwendet, der bei langen Verkettungen performanter arbeitet)
+* Nutzung von Streams/Writern, falls String-Daten direkt ausgegeben werden sollen
+* Nutzung von Template-Enginges (falls möglich)
+
+== Redundante Initialisierung von Ressourcen
+
+Connections, Sessions und andere Ressourcen benötigen häufig Speicher und Zeit zur Initialisierung. Daher werden im J2EE-Umfeld gerne Connections in einem Pool verwaltet, damit diese nicht ständig neu aufgebaut werden müssen. Aber auch ein InitialContext benötigt seine Zeit, bis dieser initialisiert ist. Nicht selten werden eigenständige Komponenten definiert, die gerade exotischere Ressourcen ansprechen oder verwenden. Dies geht auch Hand in Hand mit Einzel-/Massendatenverarbeitung. Wurde eine Komponente nur sporadisch aufgerufen und nun soll diese tausende von Aufrufen abwickeln, so entsteht gerne dieses Performance-Problem. Bei einem Refactoring-Projekt konnte die Laufzeit von über 5 Minuten auf nur 40 Sekunden umgestellt werden.
+
+Mögliche Lösungen sind:
+
+* Wiederverwendung von initialisierten Ressourcen (einmal initialisieren, mehrmals verwenden)
+* Ressourcen-Pooling (Freigeben von Ressourcen nicht vergessen!)
+
+== Fehlende Indizes auf Datenbank-Ebene bzw. zu komplexe Datenbankabfragen
+
+Fehlende Indizes auf Datenbank-Ebene machen sich ab ca. 1.000 oder 10.000 Datensätzen bemerkbar. Bei jeder Datenbank-Abfrage muss die Datenbank die in Frage kommenden Datensätze ermitteln. Entweder geschieht dies dadurch, dass alle Datensätze aus den Datendateien (z. B. von der Festplatte) gelesen und geprüft werden, was bei 10.000 Datensätzen schon mal dauern kann, oder die Datenbank nutzt einen oder mehrere Indizes. In der Regel sind Datenbank-Indizes in Form von Bäumen (B-Tree) aufgebaut. Diese haben eine bestimmte Höhe, die sich nach der Verteilung der einzelnen Datenwerte richtet. Es gibt noch weitere Index-Arten, aber bleiben wir erstmal beim B-Tree. Eine Index-Suche dauert platt gesprochen so lange, wie es Baum-Hierarchien gibt. Am Ende des Baumes liegen sind die Pointer (Adressen) auf die einzelnen Datenbankeinträge vermerkt.
+
+Mit dieser Technik werden also erst die zutreffenden Pointer und anschließend die Daten aus der Datenbank gelesen. Ein viel schnellerer Vorgang, als alle 10.000 Datensätze zu prüfen. Es gibt auch bei Indizes Fallstricke (z. B. falls das Indizierte Feld sehr viele gleiche oder viele null-Werte enthält) oder die IO's der Platten/RAID-Systeme reichen nicht aus, aber dies würde den Rahmen sprengen.
+
+Mögliche Lösungen sind:
+
+* Indizierung auf den Primary Key
+* Indizierung des fachlichen/natürlichen Schlüssels
+* Einzelindizes auf alle Foreign Keys
+* Analyse der Queries (z. B. welche Felder werden in der Where-, Group By, Order By-Klausel verwendet, diese könnten ebenfalls indiziert werden)
+
+Dies ist nun das Ende des 1. Teils meiner Performance-Reihe. Die weiteren Punkte 6 - 10 folgen demnächst. Wer hier etwas vermisst, der ist herzlich zu einem Feedback eingeladen.

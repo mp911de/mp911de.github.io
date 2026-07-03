@@ -1,0 +1,46 @@
++++
+title = "Music"
+date = "2025-01-03T21:51:20"
+lastmod = "2025-01-03T22:03:25"
+draft = false
+slug = "music"
+wordpress_id = "330"
+url = "/2025/01/03/music/"
+categories = ["Blog"]
++++
+link:++/about/#_arts_traits_hobbies_work++[Music 🎹 has been entangled with my existence] for as long as I can recall, though to say it has always been a harmonious relationship would be a lie. My earliest memory of it, a pivotal one, emerges from the fog of youth. A birthday, its precise date lost to me now, when my aunt gifted me an album - _https://www.amazon.com/-/en/Expedicion-Dune/dp/B000006X6M[Dune: Expedicion]_. This gift, innocuous in appearance, became a harbinger of something larger. It seeded a journey whose direction I could not foresee, though it loomed over me ever since.
+
+<!--more-->
+
+Fast forward a couple years within the 90s, I got hold of Magix Music Maker. It offered me an illusion of creation, a semblance of power through its prearranged loops and patterns. For a time, I was entranced, shaping fragments into something that felt like my own. Yet the act of gluing these loops together became tedious, the satisfaction fleeting. I abandoned it, and with it, a piece of myself.
+
+
+Later, as I stepped past my first job, I resolved to learn the piano. It was an idea born of some strange compulsion, but like many such impulses, it was short-lived. A year passed, and I moved on, leaving the piano behind. Yet the compulsion did not die - it mutated. I began acquiring machines, devices with buttons and dials: Access Virus, V-Synth, Roland Fantom, Moog, JP-8080. I twisted knobs and summoned sounds, but they mocked me with their incompleteness.
+
+I could not record anything. Anxiety held me prisoner. The act of creating felt monumental, insurmountable. Gratitude eventually unlocked the chains, and I began to learn music production. This process, slow and methodical, became a ritual. Through it, I discovered that music could siphon my emotions, shaping them into forms I could comprehend. Each completed track was a fragment of my life, crystallized and finite.
+
+== Silence
+
+In its presence, my thoughts grow restless, a cacophony I cannot not control. Trance music became my salvation, an exorcist banishing the demons that clawed at my mind. My playlist, a collection of my creations, soothed me in ways nothing else could.
+
+When I finished my first track, the experience was overwhelming, almost grotesque in its intensity. The emotions swirled, distorting my perception. I believed I had created something monumental, a masterpiece. But that belief was a lie, born of the brightness of the moment. Clearly, an illusion, fed by emotions being just too bright to see what it really way: A first glimpse peeking at a much longer journey.
+
+Years passed, and I accumulated knowledge. I learned the technical intricacies of music production, the precision and discipline it required. Yet this precision revealed a void - art is not born of technique alone. It emerges from something less tangible, something I struggled to grasp. I was unaccustomed to thinking this way. Who was I to create art?
+
+But music persisted. It revealed itself as a vessel for emotions, a means of expressing the inexpressible. I began to let go, to allow the notes and rhythms to emerge from within me without restraint. The experience was transformative, apocalyptic in its clarity.
+
+____
+I don't have the slightest idea of what I'm doing.
+
+Dog
+____
+
+Advancing from "I don't have the slightest idea of what I'm doing" into getting a "glimpse of understanding" resulting in music that better resonates with me. It all is part of the journey. There's no goal on the horizon. Following the trail of this adventure is an endless source of joy, running into limits and learning how to overcome these.
+
+I tried music with lyrics once. Back then I fell for the fallacy of having created something good. Well. No. Being written off as learning and never coming back I stopped creating vocal trance.
+
+During Winter holidays I was working on new music and wondered: How would vocals sound over the melody I came up with. Getting a recording with the first idea of lyrics sparked fireworks of creative powers. Arranging parts of vocals, fueling new ideas, slowly progressing to a point where I could not imagine to complete this piece of music without vocals anymore. link:++/about/#_flow_vs_cognitive_state++[Being in the zone] without impulsivity, without rushing and ending up with something better than before is utmost satisfactory.
+
+I publish my music on SoundCloud: https://soundcloud.com/rflktd
+
+Similar to being Open Source-minded while creating code, I contribute music back to everyone looking for something that resonates with them.

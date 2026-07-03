@@ -1,0 +1,47 @@
++++
+title = "logstash-gelf 1.5.0 released"
+date = "2014-07-21T18:21:44"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "logstash-gelf-1-5-0-released"
+wordpress_id = "129"
+url = "/2014/07/21/logstash-gelf-1-5-0-released/"
+categories = ["Blog"]
++++
+I've released today logstash-gelf 1.5.0. This is a major release. logstash-gelf 1.5.0 is the first GELF library which supports the final release of log4j 2.0. This release carries some library updates and internal refactorings to provide also a standalone usage of Gelf message submission.
+
+<!--more-->
+
+This release contains following changes:
+
+== Enhancements
+
+* https://github.com/mp911de/logstash-gelf/pull/22[++#++22] Enabled programmatic attachment of custom GelfSenderProvider (thanks to https://github.com/Batigoal[@Batigoal])
+* https://github.com/mp911de/logstash-gelf/issues/23[++#++23] Update to json-simple 1.1.1/log4j2 2.0/commons-pool2 2.2
+* https://github.com/mp911de/logstash-gelf/issues/24[++#++24] Allow submission of the full MDC (includeFullMdc)
+* Supports NDC on log4j 1.2.x and Markers (log4j2, logback)
+* Support for standalone submission of messages (`GelfMessageBuilder`)
+* Support for coveralls.io test coverage statistics
+* Added connect and socket timeouts to TCP and Redis senders
+* Refactoring/Code deduplication
+* Extended tests
+
+== Links
+
+* https://github.com/mp911de/logstash-gelf/releases/tag/logstash-gelf-1.5.0[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.logging%22%20AND%20a%3A%22logstash-gelf%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.5.0/logstash-gelf-1.5.0.jar[Download logstash-gelf 1.5.0]
+* http://logging.paluch.biz[Documentation]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.logging</groupId>
+    <artifactId>logstash-gelf</artifactId>
+    <version>1.5.0</version>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/logstash-gelf/issues?state=closed[issues on GitHub].

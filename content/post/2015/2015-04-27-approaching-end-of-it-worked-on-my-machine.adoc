@@ -1,0 +1,21 @@
++++
+title = "Approaching end of \"It worked on my machine!\""
+date = "2015-04-27T19:38:23"
+lastmod = "2025-01-03T22:49:03"
+draft = false
+slug = "approaching-end-of-it-worked-on-my-machine"
+wordpress_id = "211"
+url = "/2015/04/27/approaching-end-of-it-worked-on-my-machine/"
+categories = ["Blog"]
++++
+You might have noticed it if you are a developer. In rare occasions, there might be the case a particular artifact runs on your machine. But not anywhere else. This issue is known as the "It works on my machine" problem. As soon as this happens, ...
+
+There are several causes, why this might happen. Either a different build process is used, the build environment is different, the way how you deploy is slightly different, the runtime environment differs from the others, the config looks like different, ... or a thousand more reasons might have caused that the artifact runs just on one machine.
+
+<!--more-->
+
+Now, there are several ways how to tackle the "It works on my machine" problem. One extreme might be: Use Docker and automation everywhere. The other one could by a Hollywood scripted documentation containing steps for building, deploying and configuring an application. I guess, the solution is very individual and looks quite different for every case. The most important part for me is, to focus on the right things and find a balance between automation (control) and individuality (freedom).
+
+Things to put under control can be configuration, deployment automation, build environment and how the runtime is setup. There are for sure environments, you can't control at all or only small parts. Every part you can control yourself or create a standard way to set it up is a win. But be careful: Always ask yourself: Is it the right thing I want to control, does it add value or is it just because it's trendy and adds just complexity.
+
+If you want to know more how to tackle "It worked on my machine", visit this http://electric-cloud.com/blog/2015/04/continuous-discussions-c9d9-episode-15-recap-consistent-deployment-across-dev-test-prod/[blog post] or watch the discussion, hosted by http://electric-cloud.com/powering-continuous-delivery/[Electric Cloud].

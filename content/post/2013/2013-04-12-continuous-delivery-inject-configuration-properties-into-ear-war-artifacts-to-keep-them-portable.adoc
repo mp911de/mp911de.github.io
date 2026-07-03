@@ -1,0 +1,96 @@
++++
+title = "Continuous Delivery: Inject configuration properties into EAR/WAR-Artifacts to keep them portable"
+date = "2013-04-12T06:29:59"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "continuous-delivery-inject-configuration-properties-into-ear-war-artifacts-to-keep-them-portable"
+wordpress_id = "81"
+url = "/2013/04/12/continuous-delivery-inject-configuration-properties-into-ear-war-artifacts-to-keep-them-portable/"
+categories = ["Blog"]
++++
+As soon as you start Continuous Delivery you don't want to build artifacts for a specific environment. Once you've built and packaged, you want to reuse it in Dev, UAT, Production and so on.
+
+<!--more-->
+
+To do so, there are some approaches (Configuration Server, System Properties, Configuration in Database). But what if you don't want to rely on external services/infrastructure? You want to keep the configuration inside your artifact but it has to be portable. Paradoxon? No. Solution?
+
+So why don't you use templating? Because there's no such tooling? Now there is. In case you are using Maven you have a great base to start.
+
+But let's see how to start. The most convenient way to handle configuration data is by using property files/resource bundles which are on your class path. You know at coding time, there is a specific file and you know how it's named. See this snippet here. It uses a resource named config.properties to read the value for jdbc.url
+
+[source,java]
+----
+...
+String getJdbcUrl() {
+    Properties properties = new Properties();
+    properties.load(getClass().getResourceAsStream("/config.properties"));
+    return properties.getProperty("jdbc.url");
+}
+...
+----
+
+*config.properties*
+
+....
+jdbc.url=jdbc:mysql://host/database
+....
+
+This is very ok until you need to use a different configuration. This may be because of changed environments or a changed hostname of your database server. The big disadvantage is, that the content is static. So let's make it dynamic by using templates. Let's create a template with variables/placeholders:
+
+*config.template.properties*
+
+....
+jdbc.url=@jdbc.url@
+....
+
+and a file/property source, which contains the correct values:
+
+*production.properties*
+
+....
+jdbc.url=jdbc:mysql://productionhost/database
+....
+
+This file is somewhere outside of your code. You don't want to package it into your artifact. Imagine, you would do so and deploy the artifact then into your artifact repository, which is readable perhaps by the whole company: Everybody would gain access to your database passwords.
+
+In the next step you would package the artifact and deploy it to the artifact repository. Still there is a template and a real config in it; The config points to some dev system, so we need something for post-processing the artifact. Let's use http://maven.paluch.biz/configurator-maven-plugin/[configurator-maven-plugin] for it!
+
+This plugin can perform artifact download and configuration in front of your application deployment. You define an artifact/file and define one or more property sources. Then you call the configuration goal.
+
+....
+mvn configurator:configure-artifact
+....
+
+After it's done, the configurator produces a post-processed/configured artifact which contains the right property values for your environment. You can drop that file into your application container. That's it. An example pom.xml snippet is:
+
+*pom.xml*
+
+[source,xml]
+----
+<project>
+  ...
+    <build>
+    ...
+        <plugins>
+        ...
+            <plugin>
+            <groupId>biz.paluch.maven.configurator</groupId>
+            <artifactId>configurator-maven-plugin</artifactId>
+            <version>1.0</version>
+                <configuration>
+                    <groupId>myGroupId</groupId>
+                    <artifactId>myArtifactId</artifactIdId>
+                    <version>1.2.5</version>
+                </configuration>
+            </plugin>
+        ...
+        </plugins>
+    ...
+    </build>
+...
+</project>
+----
+
+You can find more documentation at http://maven.paluch.biz/configurator-maven-plugin. Any issues with the plugin? Then go to https://github.com/mp911de/configurator-maven-plugin/issues
+
+In the background the artifact file is extracted recursively (works for EAR's, WAR's, JAR's, WAR-in-EAR, JAR-in-EAR and so on). All files with the naming pattern ++*++.template.++*++ are scanned and processed, after processing the template-part in the file name is removed and the files are compressed again. Real post-processing for all kinds of configuration file templates: Properties, XML, JSON, ...

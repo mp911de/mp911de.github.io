@@ -1,0 +1,11 @@
++++
+title = "JBoss Development Deployer auf GitHub"
+date = "2011-09-14T06:22:39"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "jboss-dev-deployer"
+wordpress_id = "44"
+url = "/2011/09/14/jboss-dev-deployer/"
+categories = ["Blog"]
++++
+Vor ca. einer Woche habe ich den Quellcode meines JBoss Development Deployers auf GitHub migriert. Das Repository ist unter https://github.com/mp911de/JBoss-Development-Deployer erreichbar. Happy social coding!

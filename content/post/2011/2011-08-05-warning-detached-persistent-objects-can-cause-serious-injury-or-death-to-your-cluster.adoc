@@ -1,0 +1,114 @@
++++
+title = "WARNING: DETACHED PERSISTENT OBJECTS CAN CAUSE SERIOUS INJURY OR DEATH TO YOUR CLUSTER"
+date = "2011-08-05T15:31:00"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "warning-detached-persistent-objects-can-cause-serious-injury-or-death-to-your-cluster"
+wordpress_id = "40"
+url = "/2011/08/05/warning-detached-persistent-objects-can-cause-serious-injury-or-death-to-your-cluster/"
+categories = ["Blog"]
++++
+Vor nicht allzulanger Zeit, da gab es mal ein Projekt, in einem nicht weit entfernten Land. Und was jetzt folgt ist keine Gute-Nacht-Geschichte. In einem meiner Projekte gab es folgendes Setup: JBoss, Hibernate mit Cache und einen Cluster
+
+Ein regulärer Stack für Enterprise-Projekte. Das System funktionierte zuverlässig und führte in regelmäßigen Abständen zu unterschiedlichen Daten auf den verschiedenen Nodes (bei den selben Objekten)
+
+<!--more-->
+
+== Beispiel-Objekt: Person
+
+* ID = 4711
+* Name = Max Muster
+
+== Cluster-Nodes
+
+[cols=",,,",options="header",]
+|===
+|Node |Zustand |Id |Name
+|Node 1 |Datenstand aus der Datenbank |4711 |Max Muster
+|Node 2 |Irgendwas anderes |4711 |(null)
+|===
+
+Wie kann das nun sein? Die Objekt-Caches wurden untereinander Repliziert (Evict), die Datenbank war die selbe, aber woher kommt das Problem? Wie können zwei Systeme, die so eng miteinander verbunden sind solche Abweichungen haben?
+
+Die Ursache liegt wie so häufig im Detail: Die Objektreferenzen wurden beim Speichern falsch behandelt. Statt einem Lookup aus der Datenbank wurden die referenzierten Objekte neu instanziiert und es wurde die ID der Referenz gesetzt. Folgende Code-Beispiele sollen dies verdeutlichen:
+
+== Evil Code:
+
+[source,java]
+----
+public void saveObject(Customer customer, int personId, Session session)
+{
+  Person person = new Person();
+  person.setId(personId);
+  customer.setPerson(person);
+  session.saveOrUpdate(customer);
+}
+----
+
+== Good Code:
+
+[source,java]
+----
+public void saveObject(Customer customer, int personId, Session session)
+{
+  Person person = session.get(Person.class, personId);
+  customer.setPerson(person);
+  session.saveOrUpdate(customer);
+}
+----
+
+Gerade wenn Caches verwendet werden ist ein zusätzlicher Lookup unproblematisch, da die Daten bestenfalls im Cache liegen. Dieser Fall lässt sich auch mit anderen persistierungsmethoden (save, update, merge, usw...) nachstellen, da Hibernate, sofern es das referenzierte Objekt noch nicht im Persistence Context oder Cache hat, in den Context und Cache aufnimmt. Das tückische an diesem Problem ist, dass die Id's je nach Projekt unterschiedlich organisiert sein können (getId(), getPerson++_++id(), getPerson()) und es keine allgemeingültige Möglichkeit gibt, das Problem zu vermeiden.
+
+Ein Ansatz kann Field-Access statt Property-Access sein, sofern die Id's generiert werden. Dabei greift der Persistence Provider über das Feld der Klasse und nicht über einen Setter auf die Id zu. Wenn dann der Setter für die Id weggelassen wird oder von der Sichtbarkeit eingeschränkt wird (und auch keinen Id-Constructor) hat, so stehen die Chancen ganz gut, dass ein Entwickler nicht auf die Idee kommt, genau dieses Problem nachzustellen.
+
+== Möglicher Lösungsweg
+
+* Field-Access statt Property-Access beim ORM-Mapping
+* Kein Id-Setter oder private/protected Id-Setter
+* Kein Id-Constructor
+
+== Evil Code:
+
+[source,java]
+----
+@Entity
+public class Person
+{
+  private int id;
+ 
+  public Person(int id)
+  {
+    this.id = id;
+  }
+ 
+  @Id
+  public int getId()
+  {
+    return id;
+  }
+ 
+  public void setId(int id)
+  {
+    this.id = id;
+  }
+}
+----
+
+== Good Code:
+
+[source,java]
+----
+@Entity
+public class Person
+{
+  @Id
+  private int id;
+ 
+  public int getId()
+  {
+    return id;
+  }
+}
+----
+
+Manchmal ist jedoch ein Id-Constructor oder der Id-Setter ganz nützlich. Meine Antwort darauf: Bau dir ein Test-Util, der das Id-Feld über Reflection setzt und dieses Test-Util gehört (in Maven-Projekten) nach src/test/java.

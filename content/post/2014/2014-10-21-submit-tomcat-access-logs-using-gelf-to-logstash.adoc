@@ -1,0 +1,54 @@
++++
+title = "Submit Tomcat Access Logs using GELF to Logstash"
+date = "2014-10-21T07:57:34"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "submit-tomcat-access-logs-using-gelf-to-logstash"
+wordpress_id = "181"
+url = "/2014/10/21/submit-tomcat-access-logs-using-gelf-to-logstash/"
+categories = ["Blog"]
++++
+Elasticsearch, Logstash and Kibana are widely used for log management. I wrote in earlier posts about submitting application logs towards logstash. Let’s approach access logs today.
+
+<!--more-->
+
+A common pattern for submitting access logs is setting up a shipper logstash process monitoring your log files. This means, you set up a file input combined with a grok pattern and send the data directly to elasticsearch. You’re required to run additional logstash processes on every host you parse log files. Logs are no longer submitted if your logstash process crashes or hangs altough your application still produces logs.
+
+Let’s approach a different alternative: Sending access logs using GELF. If you use logstash somewhere, it’s most likely having the GELF input running. GELF is intended to specify how log events are submitted in a common format with the possibility of adding custom fields. There is no access log valve available which could submit access log data using GELF.
+
+I created two Gists containing basic log valves for Tomcat 6 & 7 to submit access logs using GELF. Both GelfAccessLogValve’s respect the defined pattern and store the request data within individual fields. Due to sending data using UDP you do not run into congestions caused by the GELF submission. Its decoupled in a similar way to external file parsing. You do not need additional logstash instances running on your application servers and eating up your RAM and CPU time. If your Tomcat crashes, you won’t be able to submit logs anymore but then also your application is not working.
+
+== How to integrate
+
+Here are the steps if you want to give `GelfAccessLogValve` a try:
+
+[arabic]
+. Grab yourself the Gist and setup a Maven project using the supplied two files
+. Compile & Package (`mvn clean package`)
+. Drop the created file (from the `target` directory), http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.5.3/logstash-gelf-1.5.1.jar[logstash-gelf-1.5.1.jar] and http://search.maven.org/remotecontent?filepath=com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar[json-simple-1.1.1.jar] into your Tomcat’s lib directory
+. Add the valve into your `server.xml`
+
+[source,xml]
+----
+<server port="8005" shutdown="SHUTDOWN">
+...
+<service name="Catalina">
+...
+ <engine name="Catalina" defaulthost="localhost">
+   <host name="localhost" appbase="webapps" unpackwars="true" autodeploy="true">
+        <valve classname="biz.paluch.logging.accesslogvalve.GelfAccessLogValve" host="localhost" port="12201" pattern="%h %m %U %I %l %u %t "%r" %s %b" resolvehosts="false"></valve>
+   </host>
+ </engine>
+</service>
+</server>
+----
+
+[arabic, start=5]
+. Start Tomcat and enjoy access logs being submitted
+
+== Links
+
+* https://gist.github.com/mp911de/649cc4338bc09896e266[Gist: GelfAccessLogValve for Tomcat 6]
+* https://gist.github.com/mp911de/c558d1bc48effe4844e2[Gist: GelfAccessLogValve for Tomcat 7]
+* http://logging.paluch.biz/[logstash-gelf Website]
+* https://developer.s24.com/blog/tomcat-log-management-with-logstash-and-graylog2.html[Tomcat log management with Logstash]

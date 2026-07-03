@@ -1,0 +1,49 @@
++++
+title = "R2DBC Tour: Mid- and North-Germany"
+date = "2019-04-07T16:47:23"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "r2dbc-tour-mid-and-north-germany"
+wordpress_id = "271"
+url = "/2019/04/07/r2dbc-tour-mid-and-north-germany/"
+categories = ["Blog"]
++++
+link:/2018/11/04/r2dbc-java-user-group-tour/[R2DBC Tour] took place in Mid- and North-parts of Germany. R2DBC standardizes reactive integrations with SQL databases as https://github.com/r2dbc[Open Source initiative].
+
+Reactive Relational Database Connectivity (R2DBC) started out as idea to see what’s possible when thinking about reactive programming and SQL databases. Since the last months, R2DBC grew beyond that idea. It inspired driver maintainers and client library authors as common language: A specification for drivers and an interface for library authors so they can build client libraries on top of a vendor-independent SPI. Client libraries are tools that we as application developers need to keep productivity high and not to solve problems that are solved already.
+
+<!--more-->
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Super interesting and informative talk by <a href="https://twitter.com/mp911de?ref_src=twsrc%5Etfw">@mp911de</a> from <a href="https://twitter.com/pivotal?ref_src=twsrc%5Etfw">@pivotal</a> about reactive <a href="https://twitter.com/hashtag/programming?src=hash&amp;ref_src=twsrc%5Etfw">#programming</a> in <a href="https://twitter.com/hashtag/java?src=hash&amp;ref_src=twsrc%5Etfw">#java</a> using <a href="https://twitter.com/r2dbc?ref_src=twsrc%5Etfw">@r2dbc</a> instead of JDBC ??<a href="https://twitter.com/microXchg?ref_src=twsrc%5Etfw">@microXchg</a> <a href="https://t.co/RrOJujuLzg">pic.twitter.com/RrOJujuLzg</a></p>&mdash; Ania Wyrwinska (@AniaWyrwinska) <a href="https://twitter.com/AniaWyrwinska/status/1112719741058277376?ref_src=twsrc%5Etfw">1. April 2019</a></blockquote>
+++++
+
+I visited last week Berlin at http://microxchg.io[microXchg]. A fantastic little conference. The tour continued to Aachen, where http://www.euregjug.eu[EuregJUG] made a video of my talk. You can find it on YouTube:
+
+ +
+
+++++
+<iframe width="560" height="315" src="https://www.youtube.com/embed/AJ7C4XZ4j98" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+++++
+
+The talk on Wednesday took place in Paderborn hosted by http://jug-pb.gitlab.io/[JUG Paderborn] and on Thursday I had the honor to talk at a historical Hamburg location, at Ballindamm. Thanks to https://jug-hamburg.de/[JUG Hamburg] for having me.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Today at <a href="https://twitter.com/jugpaderborn?ref_src=twsrc%5Etfw">@jugpaderborn</a> : <a href="https://twitter.com/mp911de?ref_src=twsrc%5Etfw">@mp911de</a> gives us an introduction to reactive database access with R2DBC <a href="https://t.co/kNTYZgmIpF">pic.twitter.com/kNTYZgmIpF</a></p>&mdash; Thorben Janssen (@thjanssen123) <a href="https://twitter.com/thjanssen123/status/1113474411544424449?ref_src=twsrc%5Etfw">3. April 2019</a></blockquote>
+++++
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">What are reactive database streams all about? Quite interesting talk by <a href="https://twitter.com/mp911de?ref_src=twsrc%5Etfw">@mp911de</a> <a href="https://twitter.com/pivotal?ref_src=twsrc%5Etfw">@pivotal</a> <a href="https://t.co/N9G19LWHxV">pic.twitter.com/N9G19LWHxV</a></p>&mdash; jughh (@jughh) <a href="https://twitter.com/jughh/status/1113857539332952064?ref_src=twsrc%5Etfw">4. April 2019</a></blockquote>
+++++
+
+My talk at https://www.jug-hannover.de/[JUG Hannover] concluded that week and I was able to head home for my Birthday weekend together with my Family.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">What a beautiful day at Home ? ?? <a href="https://t.co/8VPNYbZL9b">pic.twitter.com/8VPNYbZL9b</a></p>&mdash; Mark Paluch ?‍?&amp;? (@mp911de) <a href="https://twitter.com/mp911de/status/1114826909597229057?ref_src=twsrc%5Etfw">7. April 2019</a></blockquote>
+++++
+
+See you next week in Switzerland and Austria. Check out https://www.jug.ch/[jug.ch] for locations and dates in Bern, Lucerne, Zurich and https://www.meetup.com/de-DE/Enterprise-Java-User-Group-Austria/[EJUG Austria] for Linz and Vienna.
+
+++++
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+++++

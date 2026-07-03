@@ -1,0 +1,19 @@
++++
+title = "Hello, Pivotal"
+date = "2016-02-01T06:06:07"
+lastmod = "2025-01-03T22:48:49"
+draft = false
+slug = "hello-pivotal"
+wordpress_id = "242"
+url = "/2016/02/01/hello-pivotal/"
+categories = ["Blog"]
++++
+I consider myself very lucky for contributing to the open source space. Open source is one of the main building blocks of our digital world. For me, contributing is sharing, and sharing is giving back. I started contributing in early 2011. Transparency, quality, and purpose are my main reasons for my open source involvements. That is how I got in touch with the Spring Data team.
+
+<!--more-->
+
+I’m starting today at Pivotal on the Spring Data team. I’m very humbled for the chance to work on the various Spring Data modules and their eco-system. I’m very excited to make Spring Data even better, build features, fix issues, and create documentation. I will help users to understand Spring Data and support the community.
+
+I’m very happy now that I can work full-time on open source. I’m sure that my OSS projects will benefit from my activities at Pivotal. All my OSS projects stay OSS and nothing changes in my involvement. It’s really exciting to get a close look on the Spring projects. In some projects, I recognize things I did in the past when there was no Spring project for this particular use-case. That’s a great outlook for Pivotal and me to work with an amazing team on great building blocks for tomorrow’s software.
+
+Oh, there’s one more thing: I’m speaking at JavaLand, 08.03.2016, 11:00 - 11:20 in Quantum 4 about https://www.doag.org/konferenz/konferenzplaner/konferenzplaner_details.php?id=499959&locS=0&vid=509676[What’s new in CDI 2.0 (JSR365)].

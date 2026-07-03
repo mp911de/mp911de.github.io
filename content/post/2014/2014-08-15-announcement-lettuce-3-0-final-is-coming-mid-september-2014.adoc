@@ -1,0 +1,21 @@
++++
+title = "Announcement: lettuce 3.0.Final is coming mid-September 2014"
+date = "2014-08-15T18:49:27"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "announcement-lettuce-3-0-final-is-coming-mid-september-2014"
+wordpress_id = "134"
+url = "/2014/08/15/announcement-lettuce-3-0-final-is-coming-mid-september-2014/"
+categories = ["Blog"]
++++
+When releasing lettuce 3.0-Beta3 I was sure this will be the last beta of lettuce 3.0. In the mean time lots of stuff came up: New redis features around clustering, new commands and data structures. On the dev side there was low test coverage and instabilities during the build. This were the reasons to release an third beta. The original plan was to head for final as soon as redis 3.0 is going to be releases.
+
+<!--more-->
+
+Up to now every then and when a new https://groups.google.com/d/msg/redis-db/3bsTzud-eu8/uzLnEIFtdbMJ[redis beta] comes around. According to the beta-8 announcement redis 3.0.0 is feature complete now and the next release is a RC. lettuce 3.0.Beta3 supports the latest features of redis 3.0.0 beta-8. Implementing the new features took some time. And it requires some time to prove the implementation in real use, see how things behave.
+
+The next point is the test coverage. Coverage was at 80% when releasing beta 2 (15 Jul 2014). This was way too less for a client framework which needs to be rock solid and best in performance. Essential functionality was not or badly tested. Supportive tools were not working like they should. During the test extensions some bugs became visible and were fixed in place (e.g. Spring and CDI support, clustering command distribution). Heavy testing also showed up some missing functionality.
+
+Documentation was added and reworked. Nearly every command documented within redis is documented within the Javadocs (except a few CLUSTER commands). http://redis.paluch.biz/apidocs/index.html[Javadoc], the http://redis.paluch.biz/[Maven] site and the https://github.com/mp911de/lettuce/wiki[Wiki] are online. Snapshot releases, Site and Javadocs are updated after every commit/PR merge.
+
+These huge changes need some time for adoption, test and use. This is the reason why beta 3 is available now. I've scheduled the final release for mid-September, as long as no blocker issues appear. Stay tuned on https://github.com/mp911de/lettuce/milestones/Lettuce%203.0%20Final[Github] and watch the final milestone. Enjoy beta 3 until then.

@@ -1,0 +1,57 @@
++++
+title = "R2DBC Tour has just begun"
+date = "2019-03-29T09:02:22"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "r2dbc-tour-has-just-begun"
+wordpress_id = "270"
+url = "/2019/03/29/r2dbc-tour-has-just-begun/"
+categories = ["Blog"]
++++
+link:/2018/11/04/r2dbc-java-user-group-tour/[Last year] I announced the R2DBC Java User Group and recently I started the tour visiting various user groups and conferences. Reactive Relational Database Connectivity lifts a roadblock when integrating with SQL databases. It’s an Open Source standardized API across multiple database drivers and an ongoing specification effort hosted on https://github.com/r2dbc[GitHub].
+
+<!--more-->
+
+Reactive programming scales insanely well because of efficient resource usage. Keep in mind, that a reactive programming model is associated with costs: Steep learning curve, readability of code changes fundamentally, an entirely different debugging experience. My take on whether you should switch to reactive programming is:
+
+_Don’t do reactive because it’s fancy, do reactive because you have to._
+
+Good reasons to apply reactive programming are:
+
+* Scalability requirements
+* Streaming of vast amounts of data
+* Active streaming of live data/pushing events to consumers
+
+The R2DBC Tour has just started. Most significants learnings are about use-cases that are solved today with imperative/asynchronous programming and that can be solved in a more efficient way using reactive programming. Here are some impressions from the first talks in Bucharest at https://romania.voxxeddays.com/bucharest/2019-03-20/[Voxxed Days Bucharest], Karlsruhe, Saarbrücken, and Mannheim.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Second round of talks at Voxxed Days Bucharest 2019! <a href="https://twitter.com/hashtag/itisfun?src=hash&amp;ref_src=twsrc%5Etfw">#itisfun</a> <a href="https://twitter.com/hashtag/vdbuh2019?src=hash&amp;ref_src=twsrc%5Etfw">#vdbuh2019</a> <a href="https://twitter.com/ppalaga?ref_src=twsrc%5Etfw">@ppalaga</a> <a href="https://twitter.com/martin_fmi?ref_src=twsrc%5Etfw">@martin_fmi</a> <a href="https://twitter.com/SvenRuppert?ref_src=twsrc%5Etfw">@SvenRuppert</a> <a href="https://twitter.com/mp911de?ref_src=twsrc%5Etfw">@mp911de</a> <a href="https://t.co/yEsrok94fz">pic.twitter.com/yEsrok94fz</a></p>&mdash; Voxxed Bucharest (@VoxxedBucharest) <a href="https://twitter.com/VoxxedBucharest/status/1108728839855837184?ref_src=twsrc%5Etfw">21. März 2019</a></blockquote>
+++++
+
+In Bucharest, we had a great opportunity to discuss R2DBC with members of the https://microprofile.io/[MicroProfile] community to see how MicroProfile could integrate with R2DBC with providing a client library on top of R2DBC.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="de" dir="ltr">Total gespannt auf den Vortrag über Reactive Ralational Database Connectivity von <a href="https://twitter.com/mp911de?ref_src=twsrc%5Etfw">@mp911de</a> vom <a href="https://twitter.com/SpringData?ref_src=twsrc%5Etfw">@SpringData</a> Team bei <a href="https://twitter.com/synyx_ka?ref_src=twsrc%5Etfw">@synyx_ka</a> im Rahmen der <a href="https://twitter.com/jugka?ref_src=twsrc%5Etfw">@jugka</a>, los geht&#39;s! <a href="https://t.co/z5PMbpLAWK">pic.twitter.com/z5PMbpLAWK</a></p>&mdash; Jochen Binder (@jojobinder) <a href="https://twitter.com/jojobinder/status/1105896916670443520?ref_src=twsrc%5Etfw">13. März 2019</a></blockquote>
+++++
+
+Karlsruhe was a lot of fun and we had a good discussion when reactive programming makes sense and when it does not. Having an existing application is a good example of leaving things as is. Starting fresh with scalability requirements makes a good case for reactive programming if your team is willing and able to cope with a reactive mindshift. Still, you can benefit from reactive programming for individual, specific use-cases. Server-Sent-Events is one of these.
+
+++++
+<blockquote style="float: left" class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">All set for <a href="https://twitter.com/r2dbc?ref_src=twsrc%5Etfw">@R2DBC</a> at <a href="https://twitter.com/jugsaar?ref_src=twsrc%5Etfw">@jugsaar</a> <a href="https://t.co/J52GnPV4JX">pic.twitter.com/J52GnPV4JX</a></p>&mdash; Mark Paluch ?‍?&amp;? (@mp911de) <a href="https://twitter.com/mp911de/status/1110588419141324800?ref_src=twsrc%5Etfw">26. März 2019</a></blockquote>
+++++
+
+++++
+<blockquote style="float: left" class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Reactive Relational Database Connectivity <a href="https://twitter.com/r2dbc?ref_src=twsrc%5Etfw">@r2dbc</a> presented by <a href="https://twitter.com/mp911de?ref_src=twsrc%5Etfw">@mp911de</a> <a href="https://t.co/1UB32GtGbk">pic.twitter.com/1UB32GtGbk</a></p>&mdash; Mannheim Java User Group (@majug) <a href="https://twitter.com/majug/status/1110966247724859399?ref_src=twsrc%5Etfw">27. März 2019</a></blockquote>
+++++
+
+++++
+<blockquote style="float: left" class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">After one day spark training in Frankfurt. The last program today <a href="https://twitter.com/majug?ref_src=twsrc%5Etfw">@majug</a> learn <a href="https://twitter.com/hashtag/r2dbc?src=hash&amp;ref_src=twsrc%5Etfw">#r2dbc</a> from <a href="https://twitter.com/mp911de?ref_src=twsrc%5Etfw">@mp911de</a> thanks!!! <a href="https://t.co/6ZUWFyngmY">https://t.co/6ZUWFyngmY</a> <a href="https://t.co/Ut2HuDMBrj">pic.twitter.com/Ut2HuDMBrj</a></p>&mdash; Bin (@woo2333) <a href="https://twitter.com/woo2333/status/1110969894181523462?ref_src=twsrc%5Etfw">27. März 2019</a></blockquote>
+++++
+
+In Mannheim we discussed parameter bind markers in detail and how this compares to bind markers we are used to. Switching from anonymous (?) bind markers to named or indexed bind markers requires rethinking. In some cases it's important to retain portability across various databases. In other cases, portability is a non-issue.
+
+R2DBC Tour continues next week in Berlin (at http://microxchg.io/2019/index.html[microXchg]), Aachen, Paderborn, Hamburg, and Hannover. Stay tuned!
+
+++++
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+++++

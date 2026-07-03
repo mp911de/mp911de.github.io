@@ -1,0 +1,92 @@
++++
+title = "First look at Datenpumpe"
+date = "2014-08-04T10:44:29"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "first-look-at-datenpumpe"
+wordpress_id = "131"
+url = "/2014/08/04/first-look-at-datenpumpe/"
+categories = ["Blog"]
++++
+Logstash, Elastic Search and Kibana gave us power back over our logs. Now it’s time to expand our potential and use well known components to get even more out of the ELK stack.
+
+<!--more-->
+
+More and more projects integrate logstash into their setup. They discovered the potential of centralizing data which was distributed on different nodes. They run reports agains Elastic Search and build dashboards using Kibana. But until now, everything was somehow related to logs. Anyone wanting to push more data into the ELK stack has to use the MDC (Message Diagnostic Context) and is bound tight to log messages.
+
+Based on the idea, to push any data to logstash/Elastic Search, an extension to logstash-gelf is here: The Datenpumpe. Datenpumpe is a german term, which means pump for data. And this is the exact purpose of it. Use it to push any data into your ELK stack. Reuse GELF, reuse any Redis to push events, stats, messages and anything for later consolidation and reporting.
+
+Datenpumpe is part of logstash-gelf 1.6.0-SNAPSHOT. It is meant as preview for exploring possibilities. In addition to that, you can find logstash-gelf-subsystem (7.0-SNAPSHOT for JBossAS7 and 8.0-SNAPSHOT for JBoss Wildfly ++[++AS8++]++). This subsystem provides you the GelfSender and the Datenpumpe for injecting them (using JNDI) into your application that runs on a JBoss server - CDI and EJB, Servlets and anything supporting @Resource.
+
+[source,java]
+----
+public class MyServlet extends HttpServlet {
+
+    @Resource(mappedName = "jndi:/jboss/datenpumpe")
+    public Datenpumpe datenpumpe;
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)  {
+
+        Map<String, Object> message = new HashMap<>;
+        message.put("uri", req.getRequestUri());
+        message.put("resource", "MyServlet");
+        message.put("event", "access");
+
+        datenpumpe.submit(message);
+    }
+}
+----
+
+Or more sophisticated (using reflection to retrieve the fields from _your_ model):
+
+[source,java]
+----
+@Stateless
+public class MyEjb {
+
+    @Resource(mappedName = "jndi:/jboss/datenpumpe")
+    public Datenpumpe datenpumpe;
+
+    public void shoppingCartOrdered(ShoppingCart cart) {
+        datenpumpe.submit(cart);
+    }
+}
+
+public class ShoppingCart{
+
+    private String cartId;
+    private double amount;
+    private String customerId;
+
+    public String getCartId(){
+        return cartId;
+    }
+
+    public double getAmount(){
+        return amount;
+    }
+
+    public String getCustomerId(){
+        return customerId;
+    }
+}
+----
+
+This results in a Gelf message like:
+
+[source,json]
+----
+{ "timestamp": "1406797244.645",
+  "facility": "logstash-gelf", 
+  "_cartId": "the cart id", 
+  "_amount": 9.27,
+  "_customerId": "the customer id" }
+----
+
+== Download/Links
+
+* logstash-gelf Github Repo: https://github.com/mp911de/logstash-gelf
+* logstash-gelf Maven Repo: https://oss.sonatype.org/content/repositories/snapshots/biz/paluch/logging/logstash-gelf/1.6.0-SNAPSHOT/
+* JBoss Subsystem (AS7 and Wildfly): https://github.com/mp911de/logstash-gelf-subsystem/releases/tag/First-Snapshot
+* JBoss Subsystem Github Repo: https://github.com/mp911de/logstash-gelf-subsystem

@@ -1,0 +1,26 @@
++++
+title = "visualizr - Show your data"
+date = "2014-04-24T07:45:24"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "visualizr-show-your-data"
+wordpress_id = "115"
+url = "/2014/04/24/visualizr-show-your-data/"
+categories = ["Blog"]
++++
+visualizr - Show your data Once in a while I get in touch with lots of time based data, such as monitoring or profiling values.
+
+Calls per minute, actions per time unit and so on. Having such data is a great value but having it visualized gives a different impression instead looking at numbers. I’ve created visualizr. It’s a small Single-Page-Application with a Java-based backend. Visualizr provides support for multiple data sources (a data source can contain multiple charts), auto-reloading and a great user experience.
+
+Give it a try, you can find the code at https://github.com/mp911de/visualizr or as a maven artifact (SNAPSHOT-version until now)
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.visualizr</groupId>
+    <artifactId>visualizr</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+----
+
+Sonatype OSS Snapshot Repository: https://oss.sonatype.org/content/repositories/snapshots

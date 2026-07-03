@@ -1,0 +1,49 @@
++++
+title = "Redis Client lettuce 3.0.2 Final released"
+date = "2015-01-15T10:05:04"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "redis-client-lettuce-3-0-2-final-released"
+wordpress_id = "200"
+url = "/2015/01/15/redis-client-lettuce-3-0-2-final-released/"
+categories = ["Blog"]
++++
+I released lettuce 3.0.2. This is a bugfix release fixing a memory leak in pubsub.
+
+This release contains:
+
+== Fixes
+
+* Memory leak https://github.com/mp911de/lettuce/issues/21[++#++21], https://github.com/mp911de/lettuce/pull/22[++#++22]
+
+== Other
+
+* Streamline build and release
+
+== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/3.0.2.Final[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.Redis%22%20AND%20a%3A%22lettuce%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/Redis/lettuce/3.0.2.Final/lettuce-3.0.2.Final.jar[Download lettuce 3.0.2.Final]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+* http://redis.paluch.biz[Maven Site (Javadoc)]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.2.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.2.Final</version>
+    <classifier>shaded</classifier>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/lettuce/issues[issues on GitHub].

@@ -1,0 +1,21 @@
++++
+title = "logstash-gelf 1.2.6 released"
+date = "2014-02-14T09:24:35"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "logstash-gelf-1-2-6-released"
+wordpress_id = "104"
+url = "/2014/02/14/logstash-gelf-1-2-6-released/"
+categories = ["Blog"]
++++
+Today I've released the patch 1.2.6 of logstash-gelf. This release contains a performance bugfix which caused an incident in the past.
+
+The java.util.logging hoghandler's publish method was synchronized. This caused stalling of different threads which ended up in a denial of service. Usually a restart of the application is sufficient to solve that problem, but that's only a temporary solution. Other implementations of logstash-gelf (Log4j, Log4j2 and Logback) are not affected.
+
+Links
+
+* https://github.com/mp911de/logstash-gelf/releases/tag/logstash-gelf-1.2.6[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.logging%22%20AND%20a%3A%22logstash-gelf%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.2.6/logstash-gelf-1.2.6.jar[Download logstash-gelf 1.2.6]
+
+Any feedback is appreciated or create https://github.com/mp911de/logstash-gelf/issues[issues on GitHub].

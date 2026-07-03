@@ -1,0 +1,57 @@
++++
+title = "Redis Client lettuce 3.0.3 Final released"
+date = "2015-02-01T17:14:37"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "redis-client-lettuce-3-0-3-final-released"
+wordpress_id = "202"
+url = "/2015/02/01/redis-client-lettuce-3-0-3-final-released/"
+categories = ["Blog"]
++++
+I released lettuce 3.0.3. This is a bugfix release fixing a memory leak in pubsub and adds stability when reconnecting.
+
+<!--more-->
+
+This release contains:
+
+This release fixes a memory leak when using PubSub.
+
+== Fixes
+
+Memory leak on connection loss https://github.com/mp911de/lettuce/issues/26[++#++26]
+
+Fix channel loss on reconnect https://github.com/mp911de/lettuce/pull/27[++#++27] (Thanks to https://github.com/kichik[@kichik])
+
+Resubscribe even when there are no listeners https://github.com/mp911de/lettuce/pull/30[++#++30] (Thanks to https://github.com/kichik[@kichik])
+
+== Other
+
+* Allow passing server, port and password on command line for tests https://github.com/mp911de/lettuce/pull/29[++#++29]
+
+== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/3.0.3.Final[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.Redis%22%20AND%20a%3A%22lettuce%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/Redis/lettuce/3.0.3.Final/lettuce-3.0.3.Final.jar[Download lettuce 3.0.3.Final]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+* http://redis.paluch.biz[Maven Site (Javadoc)]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.3.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.3.Final</version>
+    <classifier>shaded</classifier>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/lettuce/issues[issues on GitHub].

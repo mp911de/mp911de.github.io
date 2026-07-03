@@ -1,0 +1,53 @@
++++
+title = "Leveraging dynamic Queries- How to concatenate Query-Statements"
+date = "2013-11-12T07:29:17"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "leveraging-dynamic-queries-how-to-concatenate-query-statements"
+wordpress_id = "97"
+url = "/2013/11/12/leveraging-dynamic-queries-how-to-concatenate-query-statements/"
+categories = ["Blog"]
++++
+Applications querying datasources can run into it. And perhaps you've seen it already: Custom built queries:
+
+<!--more-->
+
+[source,java]
+----
+Set<String> fields = getFields();
+String sql = "SELECT";
+for(int i=0; i<fields.size(); i++) {
+    if(i != 0)
+    {
+        sql += ", ";
+    }
+    sql += fields.get(i);
+}
+sql += " FROM MY_TABLE"
+----
+
+Lots of applications are able to deal with static query structures. Queries that follow a static definition, the only dynamic are the used constraint values. Sooner or later some applications come to the point, where they need dynamic queries. Because you want to constrain by changing fields, because you need different sets of select fields. SQL isn't the only one query language; there are tons of them:
+
+* SQL
+* CMIS QL
+* Solr Query Language
+* OQL/OCL
+
+This one above is the easy example. Building dynamic query statements in that way is nothing uncommon. This is a very simple approach. But what if you have nested clauses, something, that would result in:
+
+....
+WHERE language in ('de', 'en', 'fr') 
+    AND ( (service = 'twitter' AND follower = 'me') 
+        OR (service = 'facebook' 
+            AND (likes > 10 OR follower = 'me'))
+....
+
+This example is much more difficult to handle, you have to take care of the operators, comparators and parenthesis. My proposal: Switch your thinking from string concatenation to tokens and token stacks.
+
+Every expression in the query example above is a token: The equals comparator, the field name, the constraint value. Even the expression within the parenthesis is a token, well, a composite token. With this idea, you can express your query in a set of tokens and nested tokens. You just need the appropriate ones in order to build your object model to represent your query. You take advantage from the object model that you can perform checks, whether the nested tokens are empty and you need parenthesis or whether two operators follow each other and would cause a syntax error.
+
+Take a look at the following gist to get an inspiration for a possible solution. Please not: The gist produces a Solr Query but is applicable to other query languages as well.
+
+++++
+<script src="https://gist.github.com/mp911de/7426942.js" type="text/javascript"></script>
+++++

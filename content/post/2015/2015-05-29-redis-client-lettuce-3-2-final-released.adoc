@@ -1,0 +1,91 @@
++++
+title = "Redis Client lettuce 3.2 Final released"
+date = "2015-05-29T05:47:14"
+lastmod = "2025-01-03T22:49:03"
+draft = false
+slug = "redis-client-lettuce-3-2-final-released"
+wordpress_id = "214"
+url = "/2015/05/29/redis-client-lettuce-3-2-final-released/"
+categories = ["Blog"]
++++
+This release features Unix domain sockets on linux-x86++_++64 systems. Local connections to a Redis instance are now possible without the use of the network. A second feature with a huge impact is client options. Client options allow to control behavior on a fine-grained base. It is now possible to turn off auto-reconnect, validate the connection with a PING before activating the connection for client usage and many more.
+
+<!--more-->
+
+We tested lettuce using YourKit for performance. Subtracting all IO, the most time is spent on constructing the return futures and command objects. The async API can issue about 300Kops/sec whereas the sync API performs about 13Kops/sec (GET's, PING's) on a single thread. +
+Sync performance depends on the Redis performance (tested on a Mac, 2,7 GHz Intel Core i7).
+
+lettuce provides now also base functionality for building clients using the Redis protocol. +
+An example is spinach (https://github.com/mp911de/spinach).
+
+lettuce is built with Java 8 but can be used with Java 6, 7 and 8. Java 6 and 7 support will be +
+dropped with lettuce 4.0. The new lettuce-testcontainer project ensures until then. +
+You can find the build results at https://travis-ci.org/mp911de/lettuce-testcontainer
+
+If you need any support, meet lettuce at https://gitter.im/mp911de/lettuce
+
+== Unix Domain Sockets
+
+Unix Domain Sockets are inter-process communication channels on POSIX compliant systems. They allow to exchange data between processes on the same host operating system. When using Redis, which is usually a network service, Unix Domain Sockets are usable only if connecting locally to a single instance. Redis Sentinel and Redis Cluster,maintain tables of remote or local nodes and act therefore as registry. Unix Domain Sockets are not beneficial with Redis Sentinel and Redis Cluster. +
+Using RedisClusterClient with Unix Domain Sockets would connect to the local node using a socket and then open TCP connection to all the other hosts. A good example is connecting locally to a standalone or a single cluster node to gain performance.
+
+Unix Domain Socket connections are currently only available to Linux x86++_++64 systems with a minimum netty version of 4.0.26.Final. You can, however, port the native library to your system. The netty guys would appreciate.
+
+See https://github.com/mp911de/lettuce/wiki/Unix-Domain-Sockets
+
+== Enhancements
+
+* Provide an option to connect to Redis via Unix Domain Sockets https://github.com/mp911de/lettuce/issues/52[++#++52]
+* Add new cluster command MYID https://github.com/mp911de/lettuce/pull/53[++#++53] (Thanks to https://github.com/taer[@taer])
+* Expose futures of re-subscription on reconnect https://github.com/mp911de/lettuce/issues/62[++#++62] (Thanks to https://github.com/kichik[@kichik])
+* Ping before connect https://github.com/mp911de/lettuce/pull/61[++#++61] (Thanks to https://github.com/kichik[@kichik])
+* Introduce ClientOptions to control specific behavior https://github.com/mp911de/lettuce/issues/58[++#++58]
+* Enhance stability when reconnecting https://github.com/mp911de/lettuce/issues/56[++#++56]
+* Extract and use interfaces for improved extensibility
+* Upgrade netty to 4.0.28.Final
+
+== Fixes
+
+* RedisPubSubConnectionImpl.activated does not call super.activated() https://github.com/mp911de/lettuce/issues/55[++#++55]
+* RedisPubSubConnectionImpl.activated() deadlock https://github.com/mp911de/lettuce/issues/57[++#++57]
+* Fix zrevrangebyscoreWithScores signature bug https://github.com/mp911de/lettuce/issues/65[++#++65]
+* Handle absence of optional epoll library in a reasonable way bug https://github.com/mp911de/lettuce/issues/64[++#++64]
+
+== Other
+
+* Inspect lettuce using YourKit https://github.com/mp911de/lettuce/issues/54[++#++54]
+
+lettuce requires a minimum of Java 8 to build and Java 6 run. It is tested continuously against Redis 3.0.
+
+For complete information on lettuce see the websites:
+
+* https://github.com/mp911de/lettuce[http://github.com/mp911de/lettuce]
+* http://redis.paluch.biz.
+
+== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/3.2.Final[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.redis%22%20AND%20a%3A%22lettuce%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/redis/lettuce/3.2.Final/lettuce-3.2.Final.jar[Download lettuce 3.2.Final]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+* http://redis.paluch.biz[Maven Site (Javadoc)]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.2.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.2.Final</version>
+    <classifier>shaded</classifier>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/lettuce/issues[issues on GitHub].

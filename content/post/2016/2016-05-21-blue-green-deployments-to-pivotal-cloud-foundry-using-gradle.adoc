@@ -1,0 +1,137 @@
++++
+title = "Blue/Green Deployments to Pivotal Cloud Foundry using Gradle"
+date = "2016-05-21T03:51:46"
+lastmod = "2025-01-03T22:48:49"
+draft = false
+slug = "blue-green-deployments-to-pivotal-cloud-foundry-using-gradle"
+wordpress_id = "256"
+url = "/2016/05/21/blue-green-deployments-to-pivotal-cloud-foundry-using-gradle/"
+categories = ["Blog"]
++++
+Blue/Green deployments are a method of deploying with zero downtime. This is possible on Pivotal’s CloudFoundry using either the CLI, http://docs.run.pivotal.io/buildpacks/java/build-tool-int.html[Maven&#44; or Gradle]. Matt Stine http://www.mattstine.com/2013/07/10/blue-green-deployments-on-cloudfoundry/[wrote earlier] on this topic how to do blue/green deployments using the CLI.
+
+<!--more-->
+
+This post will explain how to deploy a Java application to CloudFoundry using Gradle.
+
+But let’s step back for a moment to see what a blue/green deployment means:
+
+[arabic]
+. You run two copies of your production environment („blue“ and „green“).
+. You route all traffic to the active blue environment by mapping production URLs to it.
+. You deploy and test any changes to the application in the green environment.
+. Then you switch by mapping URLs onto green and unmapping them from blue. Green becomes active, blue is inactive.
+
+== Prepare your build script
+
+Performing blue/green deployments using the CLI is pretty neat but it’s not automated. It requires to have the https://console.run.pivotal.io/tools[CLI tools installed]. So let’s use something that you need anyway as your build tool. I stick to Gradle and the http://docs.run.pivotal.io/buildpacks/java/build-tool-int.html#gradle[CloudFoundry Gradle Plugin] as it allows to define more easily conditional configuration.
+
+The most basic configuration requires to include the CloudFoundry Gradle plugin and to configure it in your `build.gradle` file:
+
+....
+buildscript {
+  …
+  dependencies {
+  …
+    classpath('org.cloudfoundry:cf-gradle-plugin:1.1.3')
+  }
+}
+
+apply plugin: 'cloudfoundry'
+
+cloudfoundry {
+  application = "my-application"
+  domain = "cfapps.io"
+  host = "my-application"
+  variants = ['-blue', '-green']
+}
+....
+
+This setup gives you the possibility to run
+
+`gradle build cfDeploy cfSwapDeployed`
+
+to build, deploy, and perform the blue/green switch of your application.
+
+The plugin will scan for applications and always deploy to the inactive variant. It will also create applications on CloudFoundry if they do not exist.
+
+== Conditional Blue/Green Deployment
+
+In some cases there are stages in your environment that do not have blue/green deployment set up, maybe because you don’t need them. These cases require adjustments to your build which isn’t always great. So let’s take blue/green deployments to the next level by using Groovy power.
+
+The piece which maps nicely to a stage is called in CloudFoundry a `space`. Spaces are groups for multiple application instances. It does not matter whether a space contains only one or multiple applications, even of a different kind. That said we need to create a link between space and stage including the configuration differences.
+
+....
+apply plugin: 'cloudfoundry'
+
+cloudfoundry {
+  application = "my-application"
+  domain = "cfapps.io"
+  host = "my-application"
+  variants = ['-blue', '-green']
+}
+
+task deploy(dependsOn: [build]) {
+  description = 'Deploys the project to a Cloud Foundry space (specified with -Pspace=<targetspace>)'
+  dependsOn 'cfDeploy'
+
+  if(project.getProperty(TARGET_SPACE) == 'production') {
+    // only needed when variants are set up.
+    dependsOn 'cfSwapDeployed'
+  }
+}
+
+if (project.hasProperty("space")) {
+  cloudfoundry {
+    space = project.getProperty("space")
+    host = "my-application-${space}"
+    uris = (space == "production" ? ["my-application.cfapps.io"] : [ "$application-${space}.cfapps.io" ])
+  }
+
+  if (space == "production") {
+    cloudfoundry {
+      variants = ['-blue', '-green']
+    }
+  }
+}
+....
+
+The script is now conditional. It has blue/green variants set up only for the `production` space. The magic happens in the newly added `deploy` task which requires us to start the script a bit differently:
+
+`gradle build deploy -Pspace=production`
+
+`deploy` depends on `build` and performs then the deployment. Blue/green deployment is only activated for the `production` space. Any other space leads to a regular, single-instance/single-variant deployment.
+
+The `space` parameter is now required, but it’s a good thing. Parameters do not always require to be provided from the command line. Parameters for Gradle builds can also be taken from environment variables (`ORG++_++GRADLE++_++PROJECT++_++space=...`) or the `gradle.properties` file, which may be located within the repository. Or even determined by the build script itself.
+
+== Level 9000
+
+Let’s take Blue/Green deployments to another level. When working with Git, there’s always a leading master repository. Builds usually run from there and are sometimes deployed to a stage. How about not only having blue/green deployments for production but also use this tooling to feed all other stages?
+
+Let’s add TravisCI to the stack. Travis builds add a https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables[variety of environment variables] to the build. One of the more interesting variables could be the current branch. `master` is known to be the production-ready branch. So we could define, all successful builds on `master` get deployed to production, build on staging branches, prefixed with `staging-` get deployed into a staging space.
+
+....
+def travisBranch = System.getenv().get("TRAVIS_BRANCH")
+
+if (!project.hasProperty("space") && travisBranch != null) {
+  if (travisBranch =~ '^master$') {
+    project.ext.setProperty("space", "production")
+  } else if (travisBranch =~ '^stage-.*') {
+    project.ext.setProperty("space", "staging")
+  }
+}
+....
+
+Adding this snippet to your `build.gradle` file will deploy builds of `stage-` prefixed branches to the staging space and you’re no longer required to specify the `space` property for the build, just run
+
+`gradle build deploy` in your TravisCI build.
+
+You can get the code from Github at https://github.com/mp911de/blue-green-demo-application[mp911de/blue-green-demo-application]. It contains the full build file with some cleanups.
+
+== Fast Rollback
+
+Blue/green deployments have even more benefits than just zero-downtime. A blue/green setup provides an infrastructure to roll back easily at any given time you notice thet new deployment should be rolled back. The inactive blue variant is running and known to be working. To roll back, map the production URLs from the active green to the inactive blue variant and remove the production URL mapping from the blue variant. The rollback procedure switches green to inactive and blue to active again.
+
+You can get the code from Github at https://github.com/mp911de/blue-green-demo-application[mp911de/blue-green-demo-application]. It contains the full build file with some cleanups.
+
+This script is derived from the https://github.com/spring-io/sagan/blob/master/gradle/deploy.gradle[Sagan reference app] and https://github.com/pivotalsoftware/pivotal-cla/blob/master/gradle/deploy.gradle[Pivotal CLA] which are both deployed with zero dowtime to Pivotal CloudFoundry using Github and TravisCI.

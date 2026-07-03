@@ -1,0 +1,42 @@
+baseURL = 'https://paluch.biz'
+locale = 'en-us'
+title = 'paluch.biz'
+theme = 'mark'
+
+[params]
+color = 'light'
+
+# header
+name = 'Mark Paluch'
+
+# header social icons
+github = 'mp911de'
+bluesky = 'mp911.de'
+rss = true
+
+# misc
+mainSections = ['post']
+favicon = 'favicon.ico'
+faviconSvg = 'favicon.svg'
+appleTouchIcon = 'apple-touch-icon.png'
+
+[menu]
+[[menu.main]]
+name = 'About'
+url = '/about/'
+weight = 10
+[[menu.main]]
+name = 'Privacy'
+url = '/privacy/'
+weight = 20
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+[markup.asciidocExt]
+[markup.asciidocExt.attributes]
+source-highlighter = 'rouge'
+
+[security.exec]
+allow = ['^(dart-)?sass(-embedded)?$', '^go$', '^git$', '^node$', '^postcss$', '^tailwindcss$', '^asciidoctor$']

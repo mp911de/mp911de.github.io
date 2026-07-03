@@ -1,0 +1,89 @@
++++
+title = "Controlling a relay via Midi"
+date = "2012-11-18T19:08:41"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "controlling-a-relay-via-midi"
+wordpress_id = "69"
+url = "/2012/11/18/controlling-a-relay-via-midi/"
+categories = ["Blog"]
++++
+Some time ago, I've used an USB-based relay to control a XFD (extreme feedback device). Now, let'g go a step beyond that and let a relay dance.
+
+<!--more-->
+
+== Update: You can control and watch christmas lights yourself using Midi at http://heckenlights.org. Heckenlights are my publicly controllable christmas lights.
+
+Today you get nearly everything. So I grabbed myself an Ethernet-based relay. This relay has 8 channels and is able to control each of that individually. The http://www.robot-electronics.co.uk/htm/eth_rly16tech.htm[UK price is currently some £52.50]. The big advantage to the USB-based model is, you do not need any drivers, only an IP-Address and a free RJ-45 Ethernet port. That's it. My plan is, to use the relay as basic controller for Christmas lights, but that will be handled in a future post.
+
+As Java developer, i'd like to control the relay using a server-application, so this can run on my Raspberry Pi. I want to use http://www.Midi.org/techspecs/Midimessages.php[Midi files] to control the relay state, and for sure, I don't want to deal with C-code. Luckily Java provides a Midi API to access the Midi devices. On the other hand I have to bring the Midi-System and the Relay (non-Midi-device) somehow together. Why also not implementing a own Midi-receiver?.
+
+The API is quite simple. A Midi-receiver implements two methods: close and send. Close is intended to free resources, send is used to dispatch the Midi message. http://www.Midi.org/techspecs/Midimessages.php[Midi-messages are usually 3 bytes long]. Sometimes there are longer messages, but for now they are out of scope.
+
+The first byte consists of a Hi and Low-Byte. The High-Byte (also the first four bits) describe the command (Note on/off, Control change and so on). The Low-Byte contains usually the Midi-channel (0-15). There are also System Midi events, which use different Low-Byte information. For Note on and off, we have to see the second and third byte. The second byte is the note/key (C, G++#++, Ab), the third byte specifies the velocity/volume of that event. Now we have everything, we need to control the relay states.
+
+The next challenge is to play/sequence the commands in the right order and time controlled. Therefore we can use the built-in sequencer. The trick is, to provide the custom Midi receiver as target, then you'll receive all the Midi commands in the right moment.
+
+[source,java]
+----
+Receiver receiver = new Receiver() {
+    public void send(MidiMessage mm, long timeStamp) {
+        byte[] bytes = mm.getMessage();
+        byte message[] = null;
+        int t1 = 0;
+        int t2 = 0;
+        int t3 = 0;
+        byte hi;
+        byte lo;
+
+        if (bytes.length > 1) {
+            t1 = bytes[0];
+            t2 = bytes[1];
+
+            if (bytes.length > 2) {
+                t3 = bytes[2];
+                message = new byte[bytes.length - 3];
+                if (bytes.length >= 3) {
+                    System.arraycopy(bytes, 3, message, 0, message.length);
+                }
+            }
+        }
+
+        hi = (byte) ((t1 & 0xF0) >> 4);
+        lo = (byte) (t1 & 0x0F);
+
+        if (lo == 9) {
+            // drum channel, we skip that guy.
+            return;
+        }
+
+        if (hi == MidiHelper.NOTE_ON || hi == MidiHelper.NOTE_OFF) {
+            System.out.println("Note: " + t2);
+            System.out.println("Velocity: " + t3);
+        }
+    }
+
+    public void close() {
+    }
+};
+
+Sequencer s = MidiSystem.getSequencer(false);
+s.getTransmitter().setReceiver(receiver);
+s.open();
+s.setSequence(MidiSystem.getSequence(new URL("http://www.bluegrassbanjo.org/buffgals.mid")));
+s.start();
+----
+
+The last part is a mapping between the Midi notes and the relay commands. The http://www.phys.unsw.edu.au/jw/notes.html[Midi number for C4 is 60]. For my use-case I map several half-tones to it's higher parent (so C and C++#++ control port 1, D and D++#++ port 2 and so on). I've made two videos, showing how it works.
+
+++++
+<iframe width="640" height="360"" src="http://www.youtube-nocookie.com/embed/5Bf9YvnFW-I?rel=0" frameborder="0" allowfullscreen></iframe>
+++++
+
+Put all the things together and you can control your relay. Or see https://github.com/mp911de/midi-relay for a ready-to-run application.
+
+++++
+<iframe width="640" height="360" src="http://www.youtube-nocookie.com/embed/bAwZw8OpyQ0?rel=0" frameborder="0" allowfullscreen></iframe>
+++++
+
+You can also go beyond: Play live instead of providing Midi-files. Grab a Midi input device such as a Midi-keyboard to route the Midi message (live-played) to the relay.

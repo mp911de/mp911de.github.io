@@ -1,0 +1,63 @@
++++
+title = "Integrating Logstash with Tomcat 7"
+date = "2014-07-07T07:05:00"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "integrating-logstash-with-tomcat-7"
+wordpress_id = "122"
+url = "/2014/07/07/integrating-logstash-with-tomcat-7/"
+categories = ["Blog"]
++++
+Ever wondered, how to integrate logstash and Tomcat 7 the easy way? Here we go!
+
+<!--more-->
+
+You need the following components to begin:
+
+[arabic]
+. A http://tomcat.apache.org/download-70.cgi[Tomcat server] (I took Apache Tomcat 7, but it should work the same way for Tomcat 5 and 6)
+. https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz[Logstash] (currently version 1.4.2)
+. http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.4.2/logstash-gelf-1.4.2-logging-module.zip[Logstash-Gelf] (currently version 1.4.2)
+
+Having all dependencies allows you to proceed with the integration - hassle-free, multi-lined messages and stack traces are working out of the box.
+
+== One word at java util logging
+
+Tomcat uses the java util logging in order to produce log output for the server itself. The log system in the Tomcat server is initialized as one of the first, even before utilizing the library classpath. Therefore you have to have any logging libraries on the JVM's starting class path (java -cp ...). To achieve this, you've got to modify the startup scripts. I've added a full listing and a diff.
+
+== Now adjust the Tomcat server
+
+[arabic]
+. Extract the logstash-gelf module and drop all the jars (`commons-pool2-2.0.jar, jedis-2.5.1.jar, json-simple-1.1.jar, logstash-gelf-1.4.2.jar`) into the bin-directory of your Tomcat server (or you can use every other path outside the lib-directories. This example relies on the bin-directory)
+. Add the jars to the Tomcat class path modifying the bin/catalina.sh or bin/catalina.bat file (see https://gist.github.com/mp911de/90792c304fcc5bf0737c#file-catalina-sh-diff[Gist for diff]) +
+
+[source,bash]
+----
+if [ -r "$CATALINA_BASE/bin/logstash-gelf-1.4.2.jar" ] ; then
+  CLASSPATH=$CLASSPATH:$CATALINA_BASE/bin/logstash-gelf-1.4.2.jar:$CATALINA_BASE/bin/json-simple-1.1.jar:$CATALINA_BASE/bin/jedis-2.5.1.jar:$CATALINA_BASE/bin/commons-pool2-2.0.jar
+else
+  CLASSPATH=$CLASSPATH:$CATALINA_HOME/bin/logstash-gelf-1.4.2.jar:$CATALINA_HOME/bin/json-simple-1.1.jar:$CATALINA_HOME/bin/jedis-2.5.1.jar:$CATALINA_HOME/bin/commons-pool2-2.0.jar
+fi
+----
+
+[arabic, start=3]
+. Add the log handler to conf/logging.properties (see https://gist.github.com/mp911de/69385b908d129a74b205#file-logging-properties[Gist for the full logging.properties file]) +
+
+[source,java]
+----
+handlers = 1catalina.org.apache.juli.FileHandler, 2localhost.org.apache.juli.FileHandler, 3manager.org.apache.juli.FileHandler, 4host-manager.org.apache.juli.FileHandler, java.util.logging.ConsoleHandler, biz.paluch.logging.gelf.jul.GelfLogHandler
+ 
+.handlers = 1catalina.org.apache.juli.FileHandler, java.util.logging.ConsoleHandler, biz.paluch.logging.gelf.jul.GelfLogHandler
+ 
+biz.paluch.logging.gelf.jul.GelfLogHandler.host=udp:localhost
+biz.paluch.logging.gelf.jul.GelfLogHandler.port=12201
+biz.paluch.logging.gelf.jul.GelfLogHandler.level=INFO
+----
+
+[arabic, start=4]
+. Start Tomcat and enjoy logging!
+
+== Resources
+
+* Gist containing the diffs: https://gist.github.com/mp911de/90792c304fcc5bf0737c
+* Gist containing the complete files: https://gist.github.com/mp911de/69385b908d129a74b205

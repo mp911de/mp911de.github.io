@@ -1,0 +1,23 @@
++++
+title = "Heckenlights, social christmas lights awake on Dec. 1st 5pm (CET)"
+date = "2014-12-01T06:52:05"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "heckenlights-social-christmas-lights"
+wordpress_id = "198"
+url = "/2014/12/01/heckenlights-social-christmas-lights/"
+categories = ["Blog"]
++++
+image:/images/2014/12/heckenlights-logo.png[heckenlights-logo]Christmas means joy, love and light to us. Cities, houses and streets are decorated for christmas all around the world.
+
+Christmas has reached the internet, too. The Christmas Spirit Tree was one of the first christmas-themed things of the internet. It showed movement in the social universe of tweets and blogs. And here, in Heckenpfad, Weinheim, Germany, the sparkle of Heckenlights will launch on December 1st. Lights will switch on for admiring and listening.
+
+<!--more-->
+
+Heckenlights is an interactive christmas lights installation and much more than just a light show. Lights sparkle to christmas music and the show is available through a live stream. Heckenlights can be enjoyed all over the world. The stream contains audio and video of the played tracks. Heckenlights' playlist is user controlled. Website visitors can post their christmas music and participate in the light show. The lights setup consists of multiple christmas lights circuits of which every one belongs to a certain music note. You can play every title on Heckenlights without the need to transcribe music to a certain light show arrangement. Lights are controlled via MIDI which is a computer music interface for mostly controlling music instruments. Heckenlights can play also music directly from an electronic piano keyboard. MIDI signal commands are translated to control commands switching lights using relays. This way lights sparkle together with the music.
+
+You can visit Heckenlights online on http://heckenlights.org or in Heckenpfad, Weinheim, Germany. Visitors on site will see the current title and https://twitter.com/search?q=%23heckenlights[++#++Heckenlight] tweets on a display panel.
+
+The code is powered by several open source projects such as Spring, TokuMX, Akka and PHP. All project code is open source and available on Github (https://github.com/mp911de/midi-relay, https://github.com/mp911de/heckenlights).
+
+The switch-on starts December 1st at 5pm (CET). Heckenlights plays daily from 5pm to 23pm (CET) and from 5am to 8am (CET) until January 6th. Live stream and track submission are available on http://heckenlights.org

@@ -1,0 +1,510 @@
+/* mark - a quiet Hugo theme */
+
+/* ---------- palette ---------- */
+
+:root {
+    --w: 650px;
+    --bg: #fffaf3;
+    --fg: #493232;
+    --muted: #94807a;
+    --accent: #9c4f2e;
+    --border: #e8dbcd;
+    --code-bg: #f7eee1;
+    --glow: rgba(201, 168, 120, 0.55);
+    --glow-soft: rgba(201, 168, 120, 0.3);
+    --syn-com: #9d8d85;
+    --syn-kw: #9c4f2e;
+    --syn-str: #5d7a4a;
+    --syn-lit: #47707a;
+    --syn-type: #7a5f9e;
+    --syn-name: #8a6d3b;
+}
+
+/* color presets (light scheme only; the dark scheme below is shared) */
+html.p-linen {
+    --bg: #fffaf3;
+    --fg: #38342c;
+    --muted: #8f887a;
+    --accent: #7a6134;
+    --border: #e7e1d0;
+    --code-bg: #f2eee1;
+}
+
+html.p-gray {
+    --bg: #fbfbfb;
+    --fg: #2f2f2f;
+    --muted: #8b8b8b;
+    --accent: #4a6b8a;
+    --border: #e5e5e5;
+    --code-bg: #f2f2f2;
+    --glow: rgba(140, 160, 200, 0.5);
+    --glow-soft: rgba(140, 160, 200, 0.28);
+}
+
+html.p-light {
+    --bg: #ffffff;
+    --fg: #444;
+    --muted: #888888;
+    --accent: #797163;
+    --border: #e8e8e8;
+    --code-bg: #f5f5f5;
+    --glow: rgba(140, 160, 200, 0.5);
+    --glow-soft: rgba(140, 160, 200, 0.28);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        --bg: #1c1616;
+        --fg: #e9ddd4;
+        --muted: #a89890;
+        --accent: #d9a583;
+        --border: #3a2f2b;
+        --code-bg: #251d1a;
+        --glow: rgba(190, 210, 255, 0.45);
+        --glow-soft: rgba(190, 210, 255, 0.25);
+        --syn-com: #7d6f68;
+        --syn-kw: #e0a173;
+        --syn-str: #a8bd8a;
+        --syn-lit: #8fb8c2;
+        --syn-type: #b9a3d6;
+        --syn-name: #cbb086;
+    }
+}
+
+:root[data-theme='dark'] {
+    --bg: #1c1616;
+    --fg: #e9ddd4;
+    --muted: #a89890;
+    --accent: #d9a583;
+    --border: #3a2f2b;
+    --code-bg: #251d1a;
+    --glow: rgba(190, 210, 255, 0.45);
+    --glow-soft: rgba(190, 210, 255, 0.25);
+    --syn-com: #7d6f68;
+    --syn-kw: #e0a173;
+    --syn-str: #a8bd8a;
+    --syn-lit: #8fb8c2;
+    --syn-type: #b9a3d6;
+    --syn-name: #cbb086;
+}
+
+/* moonlight dark for the neutral presets: grayer, a tad blue */
+@media (prefers-color-scheme: dark) {
+    html.p-light:not([data-theme='light']),
+    html.p-gray:not([data-theme='light']) {
+        --bg: #16181c;
+        --fg: #d6dbe0;
+        --muted: #8b939c;
+        --accent: #8fa8bf;
+        --border: #2b3036;
+        --code-bg: #1d2126;
+        --syn-com: #6e7680;
+        --syn-kw: #89a7cc;
+        --syn-str: #96b189;
+        --syn-lit: #7fb2bd;
+        --syn-type: #a89fd1;
+        --syn-name: #b3ab8e;
+    }
+}
+
+html.p-light[data-theme='dark'],
+html.p-gray[data-theme='dark'] {
+    --bg: #16181c;
+    --fg: #d6dbe0;
+    --muted: #8b939c;
+    --accent: #8fa8bf;
+    --border: #2b3036;
+    --code-bg: #1d2126;
+    --syn-com: #6e7680;
+    --syn-kw: #89a7cc;
+    --syn-str: #96b189;
+    --syn-lit: #7fb2bd;
+    --syn-type: #a89fd1;
+    --syn-name: #b3ab8e;
+}
+
+/* ---------- base ---------- */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 40px auto;
+    max-width: var(--w);
+    line-height: 1.6;
+    font-size: 18px;
+    color: var(--fg);
+    padding: 0 10px;
+    background-color: var(--bg);
+}
+
+h1, h2, h3 {
+    line-height: 1.2
+}
+
+a {
+    color: var(--accent);
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-underline-offset: 3px;
+}
+
+a:hover {
+    text-decoration-color: var(--accent);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 3px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 2em 0;
+}
+
+blockquote {
+    margin: 1.2em 0;
+    padding: 0 1em;
+    border-left: 3px solid var(--border);
+    color: var(--muted);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.2em 0;
+}
+
+th,
+td {
+    border: 1px solid var(--border);
+    padding: 0.4em 0.6em;
+    text-align: left;
+}
+
+th {
+    background: var(--code-bg);
+}
+
+::selection {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ---------- code ---------- */
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: var(--code-bg);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}
+
+pre {
+    background: var(--code-bg);
+    padding: 0.8rem 1rem;
+    overflow-x: auto;
+    border-radius: 6px;
+    line-height: 1.5;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.8em;
+}
+
+/* rouge tokens */
+.highlight .c,
+.highlight .c1,
+.highlight .cm,
+.highlight .cs,
+.highlight .cp,
+.highlight .cd {
+    color: var(--syn-com);
+    font-style: italic;
+}
+
+.highlight .k,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.highlight .kv,
+.highlight .o,
+.highlight .ow {
+    color: var(--syn-kw);
+}
+
+.highlight .kt,
+.highlight .kc,
+.highlight .nc,
+.highlight .no {
+    color: var(--syn-type);
+}
+
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .se,
+.highlight .sh,
+.highlight .si,
+.highlight .sx,
+.highlight .sr,
+.highlight .ss {
+    color: var(--syn-str);
+}
+
+.highlight .m,
+.highlight .mi,
+.highlight .mf,
+.highlight .mh,
+.highlight .mo,
+.highlight .il {
+    color: var(--syn-lit);
+}
+
+.highlight .na,
+.highlight .nb,
+.highlight .nd,
+.highlight .ne,
+.highlight .nf,
+.highlight .nn,
+.highlight .nt,
+.highlight .nv {
+    color: var(--syn-name);
+}
+
+/* asciidoctor blocks */
+.listingblock .title,
+.imageblock .title,
+.tableblock .title {
+    color: var(--muted);
+    font-size: 0.85em;
+    margin: 0.3em 0;
+}
+
+.admonitionblock {
+    border-left: 3px solid var(--accent);
+    background: var(--code-bg);
+    padding: 0.2em 1em;
+    margin: 1.2em 0;
+}
+
+.admonitionblock table,
+.admonitionblock td {
+    border: 0;
+    margin: 0;
+}
+
+.admonitionblock td.icon {
+    font-weight: 600;
+    padding-left: 0;
+}
+
+/* ---------- header ---------- */
+
+header.site {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1.4rem;
+    margin-bottom: 2.5rem;
+}
+
+.brand {
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.brand a {
+    color: var(--fg);
+    text-decoration: none;
+}
+
+nav.menu {
+    display: flex;
+    gap: 1.1rem;
+}
+
+nav.menu a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+nav.menu a:hover {
+    color: var(--fg);
+}
+
+nav.social {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+nav.social a {
+    color: var(--muted);
+    display: inline-flex;
+    line-height: 0;
+    padding: 0.15rem;
+}
+
+nav.social a:hover {
+    color: var(--fg);
+}
+
+/* ---------- teaser (latest post on the front page) ---------- */
+
+.teaser {
+    margin-bottom: 3rem;
+}
+
+.teaser-title {
+    margin: 0 0 0.15em;
+}
+
+.teaser-title a {
+    color: var(--fg);
+    text-decoration: none;
+}
+
+.teaser-title a:hover {
+    color: var(--accent);
+}
+
+.teaser .post-meta {
+    color: var(--muted);
+    font-size: 0.85em;
+    margin: 0 0 0.8em;
+}
+
+.teaser-summary p:first-child {
+    margin-top: 0;
+}
+
+a.read-more {
+    text-decoration: none;
+}
+
+/* ---------- post lists ---------- */
+
+h2.year {
+    margin: 0 0 .5em;
+}
+
+ul.post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2em 0;
+}
+
+.post-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.22em 0;
+}
+
+.post-list a {
+    text-decoration: none;
+    color: var(--fg);
+}
+
+.post-list a:hover {
+    color: var(--accent);
+}
+
+.post-list time {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+/* lunar phase of the day the post was written, from the moon sprite.
+   muted in light mode only; dark mode wears the full colors */
+.post-list .moon-phase {
+    width: 13px;
+    height: 13px;
+    background-repeat: no-repeat;
+    background-size: auto 13px;
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .post-list .moon-phase {
+        opacity: 1;
+    }
+}
+
+:root[data-theme='dark'] .post-list .moon-phase {
+    opacity: 1;
+}
+
+.archive-link {
+    display: inline-block;
+    margin-top: 2em;
+    text-decoration: none;
+}
+
+/* ---------- single ---------- */
+
+h1.post-title {
+    margin-bottom: 0.2em;
+}
+
+.post-meta {
+    color: var(--muted);
+    font-size: 0.85em;
+    margin-top: 0;
+}
+
+/* ---------- footer ---------- */
+
+footer.site {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8em;
+    color: var(--muted);
+}
+
+footer.site a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+footer.site a:hover {
+    color: var(--fg);
+}
+
+/* ---------- calm for tired eyes ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}

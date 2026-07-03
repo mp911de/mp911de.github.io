@@ -1,0 +1,71 @@
++++
+title = "Exception Handling mit RMI/EJB: Safety Facade Pattern"
+date = "2011-10-14T19:02:21"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "exception-handling-mit-rmiejb-safety-facade"
+wordpress_id = "45"
+url = "/2011/10/14/exception-handling-mit-rmiejb-safety-facade/"
+categories = ["Blog"]
++++
+In vielen Software-Systemen und Use Cases gibt es Ausnahmen. Ausnahmen, die durch Zustände ausgelöst werden, die nicht den erwarteten Ablauf (Idealfall) ermöglichen. Diese Ausnahmen und der Umgang verbirgt sich hinter dem lapidar benutzten "Exception Handling". Dabei ist ein schnell erstellter try-catch oftmals nicht die Lösung. Und in den Fällen, in denen Exceptions an den Client weitergeleitet werden, gibt es einige Fallstricke.
+
+<!--more-->
+
+Gerne wird das Pattern des Exception Wrappings genutzt. Damit können 3rd-Party-Exceptions in die eigene Exeption-Hierarchie integriert werden. Dies ist sehr nützlich für den eigenen Code, denn es müssen nur noch eigene Exceptions weitergeleitet oder behandelt werden. Geht dies über Anwendungsgrenzen hinweg, so führt dies oftmals zu Dependency-Problemen. Diese äussern sich darin, dass der Client die Exception-Klasse nicht kennt und somit auch keine korrekte Exception auf Client-Seite auslöst. Was geschieht ist oftmals eine ClassNotFound-Exception - ein Fehler eines Fehlers.
+
+Damit dies nicht passiert gibt es zwei Ansätze:
+
+* Entweder dafür zu sorgen, dass die Exceptions mit Abhängigkeiten nicht übergeben werden (Was in einem catch(Exception) endet) oder
+* Nutzung der Safety-Facade
+
+== Safety-Facade
+
+Die Safety-Facade ist eine Mischung aus Exception-Handling und Exception-Decoupling und besteht aus einigen wenigen Klassen. Der Gedanke dabei ist, eine generische Handler-Schicht zu etablieren, die alle Exceptions verarbeitet und die Klassenabhängigkeiten auflöst, jedoch die Exception-Informationen erhält (Stack-Trace, Exception-Typen).
+
+[source,java]
+----
+public String executeWithException() throws TechnicalException() 
+{
+    return SafetyFacade.execute(new IUnsafe<String>()
+    {
+        public String run()
+        {
+            if(something)
+                throw new IllegalStateException("blubb");
+            
+            return "result";
+        }
+    }, TechnicalException.class);
+}
+----
+
+ +
+Die Safety-Facade setzt sich dabei aus folgenden Teilen zusammen:
+
+[arabic]
+. Executable-Interfaces (analog dem Command-Pattern)
+. Executor
+. Execption-Handler (innerhalb des Executors)
+
+== Executable-Interfaces
+
+Code muss lesbar und leicht verständlich sein. Deshalb trägt die Safety-Facade mit einem Command-Pattern dazu bei. Der unsichere Code (Unsafe) wird dabei in der Klammer der Executable-Interfaces definiert und später vom Executor ausgeführt. Dabei sollte sich innerhalb der Executables nur ein geringer Codeanteil befinden.
+
+== Executor
+
+Der Executor ist der Controller. Er befindet sich hinter der Klasse SafetyFacade, ruft die run()-Methode der einzelnen Executables auf und gibt das Ergebnis zurück. Im Fehlerfall erfolgt das Exception-Handling innerhalb des Executors. Dazu wird auch eine Exception-Klasse an den Executor gegeben, damit alle Exceptions in diesen Exceptiontyp gewrapped werden.
+
+== Execption-Handler
+
+Der Exception-Handler wird durch den Executor gekapselt und ist im eigentlichen Code nicht sichtbar. Der Exceptionhandler übernimmt die Aufgabe, die Exceptions zu analysieren und die Informationen zu extrahieren. Anschließend wird die ursprüngliche Exception in eine Exceptionhierarchie transformiert, die allen Schnittstellenbeteiligten bekannt ist. Bei der Transformation werden der Stack-Trace, die hierarchische Repräsentation und die Messages erhalten.
+
+== Der Execption-Handler im Detail
+
+Das Geheimnis des Exception-Handlers sind spezielle NestedProxyException's, die den ursprünglichen Exception-Typ simulieren und die Teil-Stack-Traces beinhalten. Diese Proxies gehören daher zum API-Teil, der zwischen den Schnittstellenbeteiligten ausgetauscht wird.
+
+== Fazit
+
+Die Safety-Facade trägt maßgeblich dazu bei, in EJB/RMI-Schnittstellen technische Probleme zu beseitigen. Ist einmal das Prinzip erkannt, so gehört die Nutzung der Safety-Facade zur täglichen Arbeit. Das Safety-Facade-Pattern hat sich in vielen meiner Projekte als sehr erfolgreiche Lösung bewiesen und trägt täglich zur Verbesserung des operativen Betriebes bei.
+
+Der Code für die Safety-Facade liegt auf Github.com und kann von dort aus heruntergeladen werden: https://github.com/mp911de/Public/tree/master/safety-facade

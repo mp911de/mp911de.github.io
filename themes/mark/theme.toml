@@ -1,0 +1,10 @@
+name = "Mark"
+license = "Apache-2.0"
+licenselink = "https://paluch.biz/"
+description = "A quiet, zen Hugo theme. Warm colors, system-preference dark mode with a moon switcher, near-zero JavaScript."
+homepage = "https://paluch.biz/"
+min_version = "0.146.0"
+
+[author]
+  name = "Mark Paluch"
+  homepage = "https://paluch.biz/"

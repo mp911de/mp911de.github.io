@@ -1,0 +1,50 @@
++++
+title = "Exception Handling"
+date = "2011-10-26T15:10:54"
+draft = false
+slug = "exception-handling-de"
+wordpress_id = "48"
+url = "/2011/10/26/exception-handling-de/"
+categories = ["Blog"]
++++
+Exceptions, ja, was sind eigentlich Exceptions? Exceptions sind zu deutsch Ausnahmen. Und im Grunde genommen stellen Exceptions und der Umgang mit ihnen genau das gleiche dar, wie der Umgang mit Business Logik. Exceptions sind nur ein eleganterer Mechanismus. Dieser erlaubt es, in Ausnahmesituationen (unerwartete Parameter, Fehler bei Dateizugriffen) eine adäquate Reaktion zu ermöglichen.
+
+<!--more-->
+
+In Business Logiken wird lieber ein Return-Code verwendet, als eine Exception zu werfen. Lieber wird bei Exceptions ein try/catch/printStackTrace genutzt, als eine konkrete Exception-Handling Strategie. Dabei sind Exceptions und die Behandlung dieser bei richtiger Anwendung eine wunderbare Konstruktion, die jedem Entwickler das Leben vereinfacht.
+
+Das Prinzip einer Exception ist es, eine unterbrechende Nachricht zu senden. Diese Nachricht signalisiert, dass ein unerwarteter Fall eingetreten ist. Ein Fall, der den geplanten Ablauf nicht mehr zulässt. Wenn ich das Beispiel mal auf das reelle Leben übertrage, möchte ich folgendes Beispiel anführen, was auch die häufigsten Annahmen und Fehlannahmen reflektiert:
+
+Ich möchte um 10 Uhr mit dem Zug fahren. Fährt mein Zug nun pünktlich ab, so ist die Welt in Ordnung.
+
+Wie würde ich jedoch reagieren, wenn der Zug nicht kommt? Dies wäre eine Ausnahme zu meinem geplanten Vorgehen. Eine Möglichkeit, die oft in der Technik verwendet wird, ist ein Retry. Auf das richtige Leben übertragen: Es keinen Sinn machen, würde ich erneut versuchen, in einen nicht vorhandenen Zug einzusteigen, denn es ist kein Zug da.
+
+Wenn ich nun weiss, dass der Zug später kommt, so kann ich mit zwei unterschiedlichen Aktionen reagieren:
+
+* Ich warte bis der Zug da ist und versuche dann einzusteigen (Retry mit Delay) oder
+* ich fahre mit einem anderen Zug (Exception Handling, ich gehe auf die Exception ein und reagiere)
+
+Andere Möglichkeiten wären:
+
+* Nichts tun, was irgendwann dazu führt, dass ich gar nicht mehr an mein Ziel gelange (würde einem printStackTrace entsprechen, ohne Grund schaut niemand in Log-Files...leider).
+* In einen anderen Zug einsteigen, der mich ganz wo anders hinbringt, was mir aber nichts bringt
+
+Wenn ich denn nun weiss, dass sich der Zug verspätet und jemand anderes wartet auf mich (z. B. weil ich in die Arbeit muss) so könnte ich in der Arbeit anrufen, und entsprechend Bescheid geben, dass ich mich verspäte. Mit dieser Information können meine Kollegen schonmal ohne mich weitermachen und verschieben die Dinge, mit denen sie auf mich warten. +
+Dies entspricht im Code: Server-Methode wird von einem Client aufgerufen. Dies ist vergleichbar mit der Weitergabe der Exception (durchschleifen oder wrappen) an den Aufrufer. Dieser kann entsprechend auf diese Ausnahme reagieren.
+
+Ein leidiges Thema bei Client-Server-Exceptions sind die Stack-Traces. Normalerweise benötigt der Client den Server-Stacktrace nicht, aber wenn diese Informationen weitergegeben wird, so kann dies nützlich sein. Kehre ich zu meinem Arbeit-Verspäter-Beispiel zurück, so würde ich meinem Chef sagen, dass ich aufgrund des Zuges zu spät komme (und nicht, weil ich zu lange gefeiert habe oder keine Lust auf die Arbeit habe :-). Dies bewahrt mich zumindest eine Zeit lang vor einer Abmahnung.
+
+Mit dem Logging von Exceptions verhält es sich ähnlich wie mit dem Stack-Trace. Brauchen tue ich es nicht, denn was kümmert es mich eine Woche später, dass ich mal zu spät war. Treten die Verspätungen jedoch öfter auf, so kann ich mich bei der Bahn beschweren. Damit ist ein Logging von Exceptions, zumindest an der Client-Server-Grenze sehr von Vorteil. Meiner Meinung nach sollten nur technische Exceptions (Netzwerk nicht da, Festplatte voll, etc.) protokolliert werden. Business Exceptions nicht, da eine Business Exception ein wohldefiniertes Verhalten ist und der Aufrufer zusehen muss, dass er einen validen Zustand herstellt. Beim nächsten mal erhält er auch keine Exception (wenn er denn alles richtig macht).
+
+Kommen wir aber zum ersten verspäteten Zug zurück: Wenn ich denn nicht weiss, was mit dem Zug los ist, ob noch einer kommt oder nicht, so muss ich tatsächlich darüber nachdenken, was ich tun kann. Fahre ich mit dem Auto? Warte ich noch? Gehe ich wieder nach Hause? Dies ist alles davon abhängig, in welcher Situation ich mich befinde. Ähnlich verhält es sich mit dem Code. Wenn ich eine generische Exception erhalte, muss ich anhand des Kontextes entscheiden, was ich mit dieser Exception tue, wie ich darauf reagiere. Und vor allen Dingen, was Sinnvoll ist. Im echten Leben würde ich mich auch nicht von der Brücke stürzen, wenn mein Zug nicht kommt.
+
+== Sonderfälle
+
+Während ich nun auf meinen Zug warte, und der Zug kommt nicht, weil ich nach dem falschen Zug geschaut habe, so liegt das Problem nicht beim Zug. Es liegt bei mir. Mit diesem Beispiel möchte ich auf Programmierfehler, insbesondere auf NullPointerException's hinweisen. Es macht keinen Sinn, sich Gedanken zu machen, wie die Ausnahme behandelt werden soll, denn es ist keine Ausnahme: Es ist ein Programm- oder Denkfehler.
+
+Ein anderer Sonderfall ist, wenn die Welt plötzlich untergeht. In diesem Fall würde ich schreiend im Kreis umherlaufen, aber es würde wenig an meiner Situation ändern. Dennoch wäre es gut, wenn ich meinem Chef bescheid geben würde, dass die Welt am untergehen ist (vielleicht kann er sich zumindest von jemandem verabschieden). Das Beispiel mag sehr weit hergeholt sein, jedoch möchte ich auf Ausnahmen hinweisen, die ausserhalb der Reichweite des Entwicklers liegen. +
+Damit meine ich Errors (OutOfMemoryError oder ClassNotFoundError). Bei Systemen ohne UI ist eine Protokollierung sehr sinnvoll, jedoch können diese Ausnahmen oder Fehler nicht behandelt werden. In diesem Fall macht es sogar Sinn, sich voll und ganz aus der Behandlung zurück zu ziehen. Deshalb ist auch ein catch(Throwable) so gut wie verboten, es sei denn, man weiss, was man tut, und leider zeigt die Praxis, dass dies sehr selten der Fall ist.
+
+== Fazit
+
+Ich habe mehr gezeigt, als nur sich verspätende Züge. Die Nachricht ist: Denk über deine Ausnahmesituationen nach, denn in jeder Situation kann etwas unternommen werden. Tatsächliche Fehler oder Ausnahmen, die nicht behandelt werden können, sollten garnicht erst abgefangen werden. In allen anderen Situationen lohnt es sich, darüber nachzudenken, was man seinem Aufrufer mitteilen möchte. Ein "AAArrrgkg! Fehler!" (throw new Exception) ist nicht Zielführend.

@@ -1,0 +1,19 @@
++++
+title = "SEMAT in action, to create structures"
+date = "2013-08-28T06:06:59"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "semat-in-action-to-create-structures"
+wordpress_id = "93"
+url = "/2013/08/28/semat-in-action-to-create-structures/"
+categories = ["Blog"]
++++
+Some weeks ago SEMAT hit me: Somewhere Uncle Bob said something about Ivar Jacobson’s book „http://www.amazon.com/The-Essence-Software-Engineering-Applying/dp/0321885953[The Essence of Software Engineering: Applying the SEMAT Kernel]“. This was reason enough to sneek peak and after a couple of minutes I bought that book.
+
+<!--more-->
+
+SEMAT itself does not provide any new facts about software engineering. Yet it is a very good approach to provide structure and a common understanding about the involved components in software engineering. The so called kernel itself consists in the core of 7 alphas (Stakeholder, Opportunity, Software System, Requirements, Team, Way of Working and Work). These components relate each other and have thus a state. The clear description of the relation and an assignment of states helps to understand these components even better, although I’m in software since ’98.
+
+Luckily I’m currently on a team which has some adhoc-driven style of development. No clear requirements process, some requirements are just created by: We could change this or create that (with no actual business requirement behind). No planning and not even working according to waterfall model. This was the ideal ground to apply SEMAT knowledge. The team got in touch with the alphas, some of their states and their relations to each other. The deep understanding that software development is depending on opportunities and stakeholders causes a clear view for who we are working for. That requirements change with changing stakeholders. That some requirements just appear or disappear because the market situation affects the stakeholders’ opportunities. This invitation of rethinking of the current situation and the way of working could lead now to a more structured approach. An approach, where requirement and work items are planned and prioritized, short development cycles.
+
+I enjoyed also Ivar’s statement, that „The people who dictate the way of working are not the one who are using it“. This affection or non-affection accompanied me though the last years. I’ve seen, if people are not affected by their decisions, the decisions are hard to apply or cause effort/cost. For example operations: For years now operators complain about developers because they think to less about operations. True for some cases because developers are not affected with deployment, maintenance and operations. But as soon as developers start to operate/maintain a software system, they create scripts, tools, monitoring interfaces which cause the operation to be fun. They are affected so they start to make the best out of the given situation. Same applies to development methods, company policies and processes: Therefore, in my opinion, the software team has to elaborate it’s own way of working, select the right methods and tools for the development. I’m aware, that not every developer is capable of this way of thinking but if someone is, he should be able to apply his knowledge/experience and change the way of working to get the most out of it.

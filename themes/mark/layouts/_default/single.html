@@ -1,0 +1,13 @@
+{{ define "main" }}
+  <article>
+    <h1 class="post-title">{{ .Title }}</h1>
+    {{- if in (site.Params.mainSections | default (slice "post")) .Section }}
+      <p class="post-meta">
+        <time datetime="{{ .Date.Format `2006-01-02` }}"
+          >{{ .Date.Format "January 2, 2006" }}</time
+        >
+      </p>
+    {{- end }}
+    {{ .Content }}
+  </article>
+{{ end }}

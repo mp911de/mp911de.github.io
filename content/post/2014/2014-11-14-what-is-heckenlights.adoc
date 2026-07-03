@@ -1,0 +1,37 @@
++++
+title = "What is Heckenlights"
+date = "2014-11-14T09:13:18"
+lastmod = "2025-01-03T22:49:04"
+draft = false
+slug = "what-is-heckenlights"
+wordpress_id = "195"
+url = "/2014/11/14/what-is-heckenlights/"
+categories = ["Blog"]
++++
+Some years ago I moved into my own home. At that time I had the idea to setup christmas lights in our garden. Maybe not as large as Carson Williams setup, but at least something. And well, you know, it grew from year to year. Now I came to the point where I want give you control over the lights.
+
+<!--more-->
+
+Heckenlights is a christmas lights installation at Heckenpfad 14, Weinheim, Germany that comes to life after sunset. The lights follow a light show program, Heckenlights aren't just “on”. They blink, they go on and off. Everyone can watch Heckenlights using live streaming on http://heckenlights.org or http://www.ustream.tv/channel/heckenlights. Heckenlights is made to share. You can take control over Heckenlights and let others see what you're playing on Heckenlights. The whole installation is controlled by MIDI. Grab your christmas MIDI tracks, go to http://heckenlights.org and watch Heckenlights your MIDI tracks play. It's free and requires no registration.
+
+Heckenlights features provides 9 channels that are mapped to MIDI music notes, every note controls one particular channel. You'll see what's currently played and even, if you visit Heckenlights in real life. The current track and Twitter stream for ++#++Heckenlights will be displayed on a RGB matrix panel.
+
+== Technical
+
+link:/images/external/heckenlights/Heckenlights.png[image:/images/external/heckenlights/Heckenlights.png[/images/external/heckenlights/Heckenlights]]
+
+The Heckenlights installation is backed by a set of hard- and software. Heckenlights' power state is switched by ethernet based relays (http://www.robot-electronics.co.uk/htm/eth_rly16tech.htm[ETHRLY-16]). This is to control every light channel individually using some generic TCP-based protocol. MIDI files are played using the internal software sequencer/synthesizer which forwards MIDI notes to the relays. You can find https://github.com/mp911de/midi-relay[midi-relay] on Github. midi-relay does the mapping from MIDI event (note on, note off) to relay command (lights on, lights off). It has a HTTP API for starting playback and querying the current state. Playing a MIDI file results in dancing lights in the beat of music.
+
+heckenlights-frontend and heckenlights-backend provide the frontend and backend for watching and submitting MIDI files. All MIDI submissions are stored in a NoSQL data store (TokuMX). Another task of heckenlights-backend is to run the playlist.
+
+link:/images/external/heckenlights/Heckenlights-Messagebox.png[image:/images/external/heckenlights/Heckenlights-Messagebox.png[/images/external/heckenlights/Heckenlights-Messagebox]]
+
+A RaspberryPi is used together with a http://www.adafruit.com/product/420[16x32 RGB LED matrix panel] to provide a display. Playlist (current track) and the Twitter stream for ++#++Heckenlights are scrolled over it. Tweets and the current track are collected by https://github.com/mp911de/heckenlights/tree/master/heckenlights-messagebox[heckenlights-messagebox]. Twitter data is stored in a NoSQL data store (TokuMX). Twitter data can come in faster than the display can handle it. It's a sort of buffer. heckenlights-messagebox also generates PPM (PNM Format) images that contain the rendered data. PPM is supported by https://github.com/mp911de/heckenlights/tree/master/rpi-rgb-led-matrix[rpi-rgb-led-matrix], a fork of https://github.com/hzeller/rpi-rgb-led-matrix. rpi-rgb-led-matrix takes an image and scrolls it over the matrix panel using GPIO. The images need to come down to the RaspberryPi somehow and this is done using a tiny Python script https://github.com/mp911de/heckenlights/tree/master/heckenlights-messagebox-controller[heckenlights-messagebox-controller]. It download images from heckenlights-messagebox and invokes rpi-rgb-led-matrix. No other magic.
+
+All code is open source and available from https://github.com/mp911de/heckenlights
+
+== Program
+
+Heckenlights starts on Dec. 1st 2014 and will be available until Jan. 6th 2015. Since christmas lights are cool only at night Heckenlights will operate daily between 17:00 CET to 22:00 CET and 5:00 CET to 8:00 CET. In this time you will be able to watch and control Heckenlights. Visit Heckenlights at http://heckenlights.orghttp://heckenlights.org[]
+
+Follow Heckenlights on Twitter with https://twitter.com/hashtag/Heckenlights[++#++Heckenlights]

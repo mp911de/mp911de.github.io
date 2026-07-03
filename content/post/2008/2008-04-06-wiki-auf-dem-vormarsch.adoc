@@ -1,0 +1,40 @@
++++
+title = "Wiki auf dem Vormarsch"
+date = "2008-04-06T19:40:25"
+draft = false
+slug = "wiki-auf-dem-vormarsch"
+wordpress_id = "21"
+url = "/2008/04/06/wiki-auf-dem-vormarsch/"
+categories = ["Blog"]
++++
+Lange Zeit stand die heilige Kuh von KM am Firmament und keiner konnte so richtig was damit anfangen. Dabei ist KM nur ein Modebegriff für Wissensmanagement
+
+<!--more-->
+
+oder mit einfachen Worten gesagt: Doku zu irgend einem Thema. In vielen Besprechnungen fällt vielmals die Aussage im Raum: Das müssen wir mal niederschreiben, das müssen wir mal festhalten. Aber für alles was neues anfangen? Viele Dokumente, bei denen man den Überblick verliert? Dass muss nicht sein. Dabei hilft eine Idee, die in Hawaii ihren Namensgeber fand.
+
+Hawaii ist nicht nur das liebste Reiseziel der Amerikaner, sondern mittlerweile auch zu einem Stück des Internets geworden. Wiki bedeutet auf Hawaiianisch soviel wie schnell. Und als der Programmierer Ward Cunningham Anfang 1994 nach einer Möglichkeit suchte, sich schnell mit seinen Entwicklern auszutauschen, entstand die erste Wiki, das WikiWikiWeb. +
+Eine Wiki ist nichts anderes als eine Dokumentensammlung, die von jedem bearbeitet werden kann. Das zweite Highlight ist, dass man zum Verfassen einer Wiki keine technischen Kenntnisse haben muss. Das Format wird mit einigen wenigen Sonderzeichen definiert, und selbst das Format lässt sich einfach lesen.
+
+[source,code]
+----
+In [[Europa]] leben .. -> Ein Link auf das Dokument Europa  
+== Überschrift == -> Eine Überschrift 
+=== Überschrift === -> Eine Überschrift der 2. Ebene   
+Eine nummerierte Liste 
+# Eintrag 1 
+## Eintrag 2 
+# # Eintrag 2.1 
+# # Eintrag 2.2 
+
+und eine Liste mit Punkten statt Zahlen 
+* Eintrag 1 
+* Eintrag 2 
+** Eintrag 2.1 
+** Eintrag 2.2  
+
+''Kursiv''  '''Fett'''   
+----
+
+Auf diesem Prinzip sind viele Wiki's entstanden, wie z.B. die bekanntesten Wiki's, die Wikipedia, die größte freie Online-Enzyklopädie. Aber eine Wiki kann in vielen weiteren Bereichen eingesetzt werden: Knowledge-Management in Unternehmen, Dokumentationen für Projekt oder sogar als Online-Handbücher. Die wichtigsten Funktionalitäten, wie die Suche, der Editor und sogar eine Benutzerverwaltung für ein Berechtigungsmanagement sind bereits enthalten. Die Software, z.B. MediaWiki, die auch für die Wikipedias verwendet wird, ist open source. Mit einem PHP-fähigen Webserver und MySQL wird die MediaWiki zum leben erweckt. +
+Stellt sich nur noch die Frage: Worauf warten?

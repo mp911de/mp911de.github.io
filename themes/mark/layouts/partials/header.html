@@ -1,0 +1,60 @@
+<header class="site">
+  <div class="brand">
+    <h2><a href="{{ site.Home.Permalink }}"
+      >{{ site.Params.name | default site.Title }}</a
+    ></h2>
+    <button
+      class="moon-btn"
+      aria-label="Toggle color scheme"
+      style="background-image: url('{{ `theme.png` | absURL }}')"
+    >
+      <span
+        class="moon-ring"
+        aria-hidden="true"
+        style="background-image: url('{{ site.Params.faviconSvg | default `favicon.svg` | absURL }}')"
+      ></span>
+    </button>
+  </div>
+
+  {{- with site.Menus.main }}
+    <nav class="menu">
+      {{- range . }}
+        <a href="{{ .URL }}">{{ .Name }}</a>
+      {{- end }}
+    </nav>
+  {{- end }}
+
+  {{- $socials := slice "twitter" "github" "instagram" "linkedin" "mastodon" "threads" "bluesky" "rss" }}
+  <nav class="social">
+    {{- range $socials }}
+      {{- $value := index site.Params . }}
+      {{- if $value }}
+        {{- $href := "" }}
+        {{- if eq . "rss" }}
+          {{ $href = "index.xml" | absURL }}
+        {{- else if eq . "mastodon" }}
+          {{ $href = $value }}
+        {{- else if eq . "bluesky" }}
+          {{ $href = printf "https://bsky.app/profile/%s" $value }}
+        {{- else if eq . "threads" }}
+          {{ $href = printf "https://threads.net/%s" $value }}
+        {{- else if eq . "linkedin" }}
+          {{ $href = printf "https://linkedin.com/in/%s" $value }}
+        {{- else }}
+          {{ $href = printf "https://%s.com/%s" . $value }}
+        {{- end }}
+        <a
+          href="{{ $href }}"
+          aria-label="{{ . | title }}"
+          {{ if eq . "rss" }}
+            rel="alternate"
+          {{ else }}
+            target="_blank" rel="me noopener"
+          {{ end }}
+        >
+          {{- partial (printf "icons/%s.html" .) -}}
+        </a>
+      {{- end }}
+    {{- end }}
+  </nav>
+</header>

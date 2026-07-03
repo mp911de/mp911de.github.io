@@ -1,0 +1,53 @@
++++
+title = "Logging Hadoop messages into Logstash using logstash-gelf"
+date = "2014-02-21T07:45:24"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "logging-hadoop-messages-into-logstash-using-logstash-gelf"
+wordpress_id = "111"
+url = "/2014/02/21/logging-hadoop-messages-into-logstash-using-logstash-gelf/"
+categories = ["Blog"]
++++
+Operating a Hadoop cluster means lots of daemons running on lots of machines. When it comes to the logs, and you're searching for something, it can get nasty, since you do not know, where to search.
+
+<!--more-->
+
+Connecting a Hadoop cluster to log stash for collecting logs is quite simple since Hadoop uses log4j for logging. Following actions have to be taken in order to push Hadoop logs into log stash:
+
+[arabic]
+. Download http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.2.6/logstash-gelf-1.2.6.jar[logstash-gelf] and drop it into your Hadoop directory `share/hadoop/common/lib`
+. Add logstash-gelf to your log4j.properties in `etc/hadoop/log4j.properties` (see sample code)
+. Adjust your hadoop-env.sh in `etc/hadoop/log4j.properties` (see sample code)
+. Adjust two lines in hadoop-daemon.sh (it's actually a bugfix) in `sbin` (see sample code)
+
+Deploy it to all your Hadoop nodes, that's it.
+
+== About hadoop-daemon.sh
+
+All sbin-scripts contain a possibility to set the root logger using environment variables. Only hadoop-daemon.sh contains a fixed string for the root logger definition. You need to replace
+
+[source,bash]
+----
+export HADOOP_ROOT_LOGGER=INFO,DRFA
+export HADOOP_SECURITY_LOGGER=INFO,DRFAS
+----
+
+by
+
+[source,bash]
+----
+export HADOOP_ROOT_LOGGER=${HADOOP_ROOT_LOGGER:-INFO,DRFA}
+export HADOOP_SECURITY_LOGGER=${HADOOP_ROOT_SECURITY_LOGGER:-INFO,DRFAS}
+----
+
+ 
+
+(or take the code provided in the gist).
+
+This how-to is based on hadoop 0.23.10 (Apache Distribution).
+
+== The code
+
+++++
+<script src="https://gist.github.com/mp911de/9130280.js" type="text/javascript"></script>
+++++

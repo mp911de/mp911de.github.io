@@ -1,0 +1,41 @@
++++
+title = "logstash-gelf 1.5.3 released"
+date = "2014-09-07T17:27:15"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "logstash-gelf-1-5-3-released"
+wordpress_id = "177"
+url = "/2014/09/07/logstash-gelf-1-5-3-released/"
+categories = ["Blog"]
++++
+I've released today logstash-gelf 1.5.3. This is a bugfix release for Hadoop Hive users. I did not announce release 1.5.2 the last time. Apologies for that.
+
+<!--more-->
+
+This release contains following changes:
+
+== Fixes
+
+* https://github.com/mp911de/logstash-gelf/issues/30[++#++30] Passing originHost from log4j2.xml (1.5.2)
+* https://github.com/mp911de/logstash-gelf/issues/31[++#++31] "No default-logstash-fields.properties resource present" output breaks Apache Hive (1.5.3)
+* Polished documentation for stack trace filter
+
+== Links
+
+* https://github.com/mp911de/logstash-gelf/releases/tag/logstash-gelf-1.5.3[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.logging%22%20AND%20a%3A%22logstash-gelf%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.5.3/logstash-gelf-1.5.3.jar[Download logstash-gelf 1.5.3]
+* http://logging.paluch.biz[Documentation]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.logging</groupId>
+    <artifactId>logstash-gelf</artifactId>
+    <version>1.5.3</version>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/logstash-gelf/issues?state=closed[issues on GitHub].

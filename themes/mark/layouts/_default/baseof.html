@@ -1,0 +1,101 @@
+<!doctype html>
+{{- $presets := dict
+  "warm" (dict "class" "" "bg" "#fffaf3" "darkBg" "#1c1616")
+  "linen" (dict "class" "p-linen" "bg" "#faf8f1" "darkBg" "#1c1616")
+  "gray" (dict "class" "p-gray" "bg" "#fbfbfb" "darkBg" "#16181c")
+  "light" (dict "class" "p-light" "bg" "#ffffff" "darkBg" "#16181c")
+-}}
+{{- $preset := index $presets (site.Params.color | default "warm") | default (index $presets "warm") -}}
+{{- .Scratch.Set "light_bg" $preset.bg -}}
+{{- .Scratch.Set "dark_bg" $preset.darkBg -}}
+<html
+  lang="{{ or site.Language.Locale site.Language.Lang }}"
+  {{ with $preset.class }}class="{{ . }}"{{ end }}
+>
+  {{- partial "head.html" . -}}
+  <body>
+    {{- partial "header.html" . -}}
+    <main>{{- block "main" . -}}{{- end -}}</main>
+    {{- partial "footer.html" . -}}
+
+    <script>
+      const btn = document.querySelector('.moon-btn');
+      const metas = document.querySelectorAll('meta[name="theme-color"]');
+      btn.addEventListener('click', () => {
+        const root = document.documentElement;
+        const isDark = root.dataset.theme
+          ? root.dataset.theme === 'dark'
+          : matchMedia('(prefers-color-scheme: dark)').matches;
+        const next = isDark ? 'light' : 'dark';
+        root.classList.add('theme-fade');
+        root.dataset.theme = next;
+        localStorage.setItem('theme', next);
+        metas.forEach((m) =>
+          m.setAttribute(
+            'content',
+            next === 'dark' ? '{{ $preset.darkBg }}' : '{{ $preset.bg }}',
+          ),
+        );
+        setTimeout(() => root.classList.remove('theme-fade'), 900);
+      });
+
+      // ring easter egg: animate via .ringing so a hover exit can fade out
+      // smoothly (browsers don't transition from removed animation values)
+      const ring = document.querySelector('.moon-ring');
+      let ringCleanup;
+      btn.addEventListener('mouseenter', () => {
+        clearTimeout(ringCleanup);
+        ring.style.opacity = '';
+        ring.style.transform = '';
+        btn.classList.add('ringing');
+      });
+      btn.addEventListener('mouseleave', () => {
+        const cs = getComputedStyle(ring);
+        const visible = parseFloat(cs.opacity) > 0;
+        if (visible) {
+          ring.style.opacity = cs.opacity;
+          ring.style.transform = cs.transform;
+        }
+        btn.classList.remove('ringing');
+        if (visible) {
+          // force a style commit so Chrome transitions from the frozen
+          // frame instead of discarding the animation-derived value
+          void ring.offsetWidth;
+          ring.style.opacity = '0';
+          ringCleanup = setTimeout(() => {
+            ring.style.opacity = '';
+            ring.style.transform = '';
+          }, 650);
+        }
+      });
+
+      // spinning favicon: browsers render favicons as static images, so
+      // the ring's light orbits the tab icon via canvas frame swaps.
+      // one full orbit every 5s; background tabs throttle gracefully.
+      const ico =
+        document.querySelector('link[rel="icon"][type="image/svg+xml"]') ||
+        document.querySelector('link[rel="icon"]');
+      if (ico && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const img = new Image();
+        img.src = ico.href;
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = c.height = 64;
+          const ctx = c.getContext('2d');
+          ico.type = 'image/png';
+          let angle = 0;
+          setInterval(() => {
+            angle = (angle + 9) % 360;
+            ctx.clearRect(0, 0, 64, 64);
+            ctx.save();
+            ctx.translate(32, 32);
+            ctx.rotate((angle * Math.PI) / 180);
+            ctx.drawImage(img, -32, -32, 64, 64);
+            ctx.restore();
+            ico.href = c.toDataURL('image/png');
+          }, 125);
+        };
+      }
+    </script>
+  </body>
+</html>

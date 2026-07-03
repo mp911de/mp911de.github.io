@@ -1,0 +1,16 @@
++++
+title = "Release JBoss Development Deployer 0.6"
+date = "2011-05-22T11:28:40"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "release-jboss-development-deployer-06"
+wordpress_id = "38"
+url = "/2011/05/22/release-jboss-development-deployer-06/"
+categories = ["Blog"]
++++
+Das Release 0.6 des JBoss Development Deployers ist nun da. Folgende Features sind nun enthalten:
+
+* EAR Deployment mit flexiblem Class-Path und modulweiser Umleitung in Entwicklungsverzeichnisse
+* WAR Deployment mit flexiblem Class-Path und Umleitung ins Entwicklungsverzeichnis
+
+Der JBoss Development Deployer ist unter http://jb-dev-deploy.sourceforge.net/ verfügbar.

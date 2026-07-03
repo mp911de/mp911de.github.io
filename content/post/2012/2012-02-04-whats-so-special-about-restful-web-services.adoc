@@ -1,0 +1,197 @@
++++
+title = "What's so special about REST"
+date = "2012-02-04T22:01:35"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "whats-so-special-about-restful-web-services"
+wordpress_id = "49"
+url = "/2012/02/04/whats-so-special-about-restful-web-services/"
+categories = ["Blog"]
++++
+Roy T. Fielding http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm[wrote and described] REST in his dissertation in the 2000's. He basically told about the an architectural pattern and mapped it to most common protocol: http://tools.ietf.org/html/rfc2616[HTTP]
+
+Since these days the IT community began to realize and to understand more and more what it means to deal with resources, what power and strength HTTP provides. But what's so special about it? And why does everybody talk about it but the least understood it? Why is today everything called REST, but in fact it's not REST? Let's dig into it.
+
+<!--more-->
+
+== What is REST
+
+REST is a set an web architecture pattern. The basic idea is to have resources (think about today's web browsing. http://www.ebay.com/index.html is a resource) which can be retrieved or edited by so-called representation (e.g. text/html or application/json). It defines of a set constraints, which there are
+
+* Client-Server communication
+* Statelessness (meant as: no server session context)
+* Caching
+* Uniform Interface (Identification of Resources, manipulation of resources through representations and the use of hypermedia)
+* Layering (hierarchical data structures
+
+Even through REST demands an independence of protocols, it is intended as web architectural pattern. It could be implemented using FTP, Mail, Telnet or HTTP protocols. The most common protocol is HTTP. Even SOAP services can use Messaging (Message Queues) for a implementation, but the least take advantages out of it.
+
+== Web Services (SOAP)
+
+End 1999 it all began with the first SOAP implementation by Microsoft (Actually there was XML-RPC, which was the base for SOAP). SOAP was known for the Simple Object Access Protocol. Well...
+
+* Simple: Well, not really. There is a lot of Stuff, the complete WS-++*++ stack, lot's of XML standards (Document/RPC), headers
+* Object: What objects? The body is XML
+* Access: Yes, access of some data, but sometimes
+* Protocol: Surely not, HTTP is a protocol
+
+Therefore SOAP Services (commonly known also as Web Services) are RPC oriented. Some distinctive methods are called on a Server. Now, in the 2008's we have learned well how to use it by stable means, how to interoperate and how to describe a SOAP service by WSDL.
+
+By the evolution of SOAP nearly everybody, who integrated some RPC-style interfaces, feels common with SOAP services. For example: In Java you need very little to create such a SOAP Web Service. This leads to the fact, that lots of developers can create and use easily RPC based SOAP services, because RPC is pretty much like local method calls in a software system.
+
+On the other side, when you take a look on the protocol usage of HTTP (which is the most used protocol for SOAP Web Services), you'll see, that no more than 10 - 15 % of the protocol features are used. In the following request you can see, that only one HTTP method is used together with some header fields and a XML body.
+
+....
+POST /InStock HTTP/1.1
+Host: www.example.org
+Content-Type: application/soap+xml; charset=utf-8
+Content-Length: 299
+ 
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+   <soap:Header>
+   </soap:Header>
+   <soap:Body>
+      <m:GetStockPrice xmlns:m="http://www.example.org/stock">
+         <m:StockName>IBM</m:StockName>
+      </m:GetStockPrice>
+   </soap:Body>
+</soap:Envelope>
+
+HTTP/1.1 200 OK
+Content-Type: application/soap+xml; charset=utf-8
+ 
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+   <soap:Header>
+   </soap:Header>
+   <soap:Body>
+      <soap:Fault>
+      <faultcode>soap:MustUnderstand</faultcode>
+       <faultstring>SOAP Must Understand Error</faultstring>
+   </soap:Fault>
+</soap:Body>
+</soap:Envelope>
+....
+
+== HTTP
+
+HTTP is THE Internet protocol. If you don't use HTTP, you are most likely not on the web. All current web browsers use the HTTP protocol to communicate with web servers, to request data. Within the http://tools.ietf.org/html/rfc2616[HTTP protocol] specification are 19 Request header fields, 19 Response header fields, 8 HTTP methods and 41 status codes (without extensions) defined. Lot's of stuff. Fielding used HTTP as example mapping for REST in his paper. He's very accurate when it comes to the HTTP headers, to pair those with the REST idea.
+
+Nearly every web developer has created some HTTP interfaces to get some data and process requests for
+
+* retrieving data
+* storing data
+* processing and calculating some data
+
+These interfaces (or requests to these) may look like
+
+....
+POST /servlet/OrderServlet?customerId=12
+
+GET /servlet/OrderServlet?article=12&customerName=someCustomer
+
+GET /images/preview?image=4711
+....
+
+These calls do some processing on the server side, they might return some data, may lead to initiate a download or send you a redirect. But by that i did not mention the most obvious interface. We use these days webbrowsers for nearly all web activities. These requests look also pretty much, what the REST secrets describe.
+
+....
+GET /app/index.html
+
+GET /images/logo.png
+....
+
+This is the most common usage for HTTP. Retrieving some resources. HTML pages are resources, Images are resources, Files are resources. Every request from a browser to a resource uses more than 12 header fields and lots of HTTP status codes to tell you, what the result of a request was. Websites with static content are therefore a good example for RESTlike interface. Surely, they use only GET as method, this is nevertheless the first step in the right direction. Those resources have different content-types (media types), have sometimes cache headers, provide sometimes ETags and in the most cases the HTTP servers use very different status codes to tell you, whether the request was OK, whether you get redirected or your resource is missing.
+
+== RESTlike
+
+Lots of developers claim: I have a RESTful interface. I suppose, that beginning with AJAX and discovering the disadvantages of SOAP (for example you see in access logs always a POST on the Endpoint of a SOAP Web Service, but not really what method was called) REST became more interesting. For AJAX it is very handy to request data in JSON format, you do not need any conversions, because you have your objects directly available in JavaScript. It's also comfortable and cool to have more information in your URI. Common so-called REST interfaces look like
+
+....
+GET /services/rest/?method=flickr.test.echo&name=value
+
+POST /services/getLoginUrlByWebsiteId/4711
+....
+
+We developers are pretty much familiar with RPC calls, so we try all to port our knowledge to the new REST architectural thinking. And that are most of the results. Sure, these interfaces provide some JSON or XML data, but that's not REST. REST is about Resources, not RPC, REST is about Representation, not guessing, REST is about a Resources' state, not stateless. And transfer, well, you use HTTP. That's the reason, why everybody is talking about REST, but the least got REST.
+
+== REST
+
+A good example for REST is web browsing. It's the most obvious thing about it. You access one entry-point and get a HTML page (distinguished by the content-type). Then you click on a link and you jump to the next page. On the next page you click on the route description, which is provided as PDF file, so your browser starts a download. You are pretty familiar with redirects, and surely with 404's and 500's.
+
+....
+GET /
+
+GET /contact/
+
+GET /contact/route.pdf
+....
+
+This might give you a small insight, what HTTP features are used while browsing some pages. Browsing is easy because it's a lot like REST. Sure, in the beginning of some content management systems the URL's looked a lot of */index.php?page=125&language=de++_++DE&menu=4711*, but this changes more and more, because of SEO/SEM reasoning :-)
+
+A typical REST conversiation would look like:
+
+....
+GET /hotel/42/room/11 HTTP/1.1
+Host: server.com
+Accept: appliaction/json
+If-None-Match: "31b5-4d68387a"
+If-Modified-Since: Fri, 01 Jan 2011 23:17:14 GMT
+
+HTTP/1.1 200 OK
+Content-Type: appliaction/json
+ETag: "9977-4d68387a"
+Date: Wed, 01 Feb 2012 11:48:44 GMT
+Expires: Mon, 06 Feb 2012 19:35:29 GMT
+Cache-Control: max-age=2592000
+{
+   "id": "11",
+   "type": "Junior Suite",
+   "atom.link":
+    [
+     {"@href":"http://server.com/hotel/42/room","@rel":"list"},
+     {"@href":"http://server.com/hotel/42/room","@rel":"add"},
+     {"@href":"http://server.com/hotel/42/room/11","@rel":"self"},
+     {"@href":"http://server.com/hotel/42/room/11","@rel":"update"},
+     {"@href":"http://server.com/hotel/42/room/11","@rel":"remove"},
+     {"@href":"http://server.com/reservation/413","@rel":"reservation"}
+    ]
+}
+....
+
+There are a lot of good books about REST, and in every book you find a lot of examples, and for some reason every is interpreting REST someway different. REST gives you to deal with your resources in a sexy way. Yes, a good REST Web Service (or REST resource) is sexy. Why? Read the challenges!
+
+== Challenges
+
+There are a lot of challenges while designing a REST interface. It's not all only about GET and POST. Think about the situation, when you explore a REST interface. You have only the entry point and by that, you could click yourself through the resources. It can be very exciting, when the server tells you, what's going on. The first and main thing is, that you need a resource. Not everything is suited for a resource. Good examples are
+
+* Sessions (You can create, read, update and remove those)
+* Users
+* Orders
+* All Entities (or easier said: your data in your database. List, create, read, update, delete, whatever) or virtual entities
+* Nearby everything you store, read or every data you could organize in read/write and in hierarchical structures
+
+Bad examples for REST resources are
+
+* Everything you do not store (RPC style, method invocations)
+* Information you can use only one-way (e.g. a search request on a full-text-index)
+* Artificial stuff, which should be turned RESTlike altough it is RPC
+
+Resources have usually, a state. A very good example is WebDAV. With WebDAV you PUT (create/overwrite) files on a Server, with GET you can retrieve those and additionally you can DELETE these. In fact, WebDAV uses some extensions which would not fit to Fieldings description of REST, but you can find there the main idea. REST demands there from you to think about
+
+* more than only how your URI looks like. REST URI's describe resources, not methods (_GET /hotel/1/room/42_ and not _GET /services/getLoginByWebsite/1234_). Naming is one of the hardest challenges of information technology. Use Query-, Path-, Matrix-, and Body-Parameters, where suitable,
+* Representation: Recently you would use some XML with a schema. REST is more about Content-Types/Media-Types and then about the follow-up standards (_Content-Type: application/vnd.hotel.room{plus}json or application/vnd.hotel.room{plus}xml_ instead of _text/xml_ or _text/json_). Making up your mind about the representation is pretty much the same as designing a database table/schema. You can use different representations for the same resource (e.g. summary-view, detail-view)
+* HTTP Methods (if using HTTP): You can choose between 8 methods for a operation. And don't invent other, because the next Proxy won't understand that.
+* Resource Linking: You provide one entry point for your REST resource, the links to other resources (sub resources, related resources) have to be provided within your representation. It's like web browsing. There you also know only the home page and navigate yourself through the site.
+* Status Codes: A request to a REST resource yields in some response. So you have to tell your client what's going on by using the some of the 41 HTTP status codes. Surely, not every status code fits to your use case, so use these, which fits best or create own in the 1xx/2xx/3xx/4xx or 5xx-ranges
+* Caching: It's all HTTP, the best-run websites use caching, so why shouldn't you? Every web browser can handle cache stuff and this can help you to reduce your systems' load
+* Authorization: You get cool looking URI's with different methods, so you can easily define security rules with hierarchical layouts
+
+And this just the basic stuff. Therefore it much more challenging to design and describe a REST interface. REST brings and demands conceptual work with things, you never thought of in that detail level. It's hard at the beginning to get into this, but when you got it, and have the right use cases a REST interface is way more fun than a SOAP service might ever be. Describing a REST interface is also more difficult than SOAP services. In SOAP you would describe the operations, messages and provide a WSDL.
+
+In REST you could document your structure in a http://en.wikipedia.org/wiki/Web_Application_Description_Language[WADL], but a WADL does not really fit into a RESTful world as you can navigate from a start-point through the complete app. The real-world looks different here, as a developer you do not want to explore the whole RESTiversion on your own. Documenting a REST interface is writing about Content-Types with their JSON/XML/... formats, describing the possible methods and status codes and telling about the other HTTP features. Google has some http://code.google.com/intl/de-DE/apis/gdata/docs/developers-guide.html[documentation] on the web, https://dev.twitter.com/docs/api/1/post/statuses/update[Twitter] also (Twitter's REST resources are rather simple, but they are REST) or even http://developers.flattr.net/api/resources/things/[Flattr]. Usually you could say, a good REST design takes at least twice the time of a SOAP service.
+
+== Conclusion
+
+A lot of companies and people, who have HTTP interfaces call these REST. Some of these are, and some of these are HTTP RPC interfaces. On the other side, not everything is suitable for being a REST resource. And don't try to make a REST resource of everything, this is intended to fail. Fieldings words seem to me also like a call: Use more HTTP features, which fit to your needs and don't cut out only the GET and POST, use the protocol and use it right. Perhaps your REST interface will end up in a connection between two automated systems, therefore you won't react to every status code, but a human will develop it. Use Content-Types. In the end, whether your URL is _GET /hotels/1_ or _GET /hotel/1it_ does not matter as long as you don't _GET /getHotelsById?id=1_

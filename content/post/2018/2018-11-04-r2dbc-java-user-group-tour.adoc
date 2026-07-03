@@ -1,0 +1,59 @@
++++
+title = "R2DBC Java User Group Tour"
+date = "2018-11-04T21:43:13"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "r2dbc-java-user-group-tour"
+wordpress_id = "268"
+url = "/2018/11/04/r2dbc-java-user-group-tour/"
+categories = ["Blog"]
+aliases = ["/blog/175-r2dbc-java-user-group-tour.html"]
++++
+R2DBC is an endeavor to bring a reactive programming API to relational data stores and stands for Reactive Relational Database Connectivity. It was first announced at SpringOne Platform 2018. I’m happy to announce my http://r2dbc.io/[R2DBC] tour across Java User Groups in Germany, Switzerland, and Austria. I will explain what R2DBC is, how it was founded and what to expect from a reactive relational database integration. We will speak about the SPI, various drivers, and about Spring.
+
+<!--more-->
+
+I’ve some spots left in March and April. So if your JUG is along the way and you want me to give a talk at your JUG, then drop me a link:/2008/11/22/impressum/[mail] or a tweet at https://twitter.com/mp911de[@mp911de].
+
+== Week 11/2019 (March)
+
+* Mar 13th, 2019 - JUG Karlsruhe
+
+== Week 13/2019 (March)
+
+* Mar 25th, 2019 - Happy to speak at your JUG.
+* Mar 26th, 2019 - https://www.meetup.com/de-DE/Java-User-Group-Saarland-jugsaar/events/256146252[JUG Saar]
+* Mar 27th, 2019 - http://www.majug.de/2019/03/27/reactive-relational-database-connectivity/[JUG Mannheim]
+* Mar 28th, 2019 - https://www.jugs.org/va2019/03-28.html[JUG Stuttgart].
+
+== Week 14/2019 (April)
+
+* Apr 2nd, 2019 - http://www.euregjug.eu/register/34[EuregJUG].
+* Apr 3rd, 2019 - http://jug-pb.gitlab.io/[JUG Paderborn].
+* Apr 4th, 2019 - JUG Hamburg
+* Apr 5th, 2019 - https://www.meetup.com/de-DE/Java-User-Group-Hannover/events/256180939/[JUG Hannover]
+
+== Week 15/2019 (April)
+
+* Apr 8th, 2019 - https://www.jug.ch/html/events/2019/reactive_relational_database_access_be.html[JUG CH Bern]
+* Apr 9th, 2019 - https://www.jug.ch/html/events/2019/reactive_relational_database_access_lu.html[JUG CH Luzern]
+* Apr 10th, 2019 - https://www.jug.ch/html/events/2019/reactive_relational_database_access_zh.html[JUG CH Zurich]
+* Apr 11th, 2019 - EJUG Linz
+* Apr 12th, 2019 - https://www.meetup.com/de-DE/Enterprise-Java-User-Group-Austria/events/259323152/[EJUG Vienna]
+
+== Week 17/2019 (April)
+
+* Apr 24th, 2019 - http://jug-berlin-brandenburg.de/blog/2019/r2dbc.html[JUG Berlin Brandenburg]
+* Apr 25th, 2019 - https://jugsaxony.org/veranstaltungen/113/reactive_relational_database_access/[JUG Saxony]
+
+== Week 20/2019 (May)
+
+* May 14th, 2019 - https://www.meetup.com/de-DE/SVQJUG/events/256148846/[JUG Sevilla]
+
+== Week 21/2019 (May)
+
+* May 21st, 2019 - Spring User Group Paris
+
+== Week 23/2019 (June)
+
+* June 6th, 2019 - JUG Munich

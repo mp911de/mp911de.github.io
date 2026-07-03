@@ -1,0 +1,53 @@
++++
+title = "And yet another java redis client: Fork of lettuce"
+date = "2014-06-04T09:09:57"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "and-yet-another-java-redis-client-fork-of-lettuce"
+wordpress_id = "119"
+url = "/2014/06/04/and-yet-another-java-redis-client-fork-of-lettuce/"
+categories = ["Blog"]
++++
+You might as yourself: Why is there another java redis client? Until now, there are tons available.
+
+True.
+
+Let me tell you about my motivation.
+
+<!--more-->
+
+It started with a project on which I worked. I had to integrate Redis for collecting logs during integration tests. I tried several, available clients. Every one of them had issues with unstable connections, library issues (external libraries that get in conflict with the existing project dependencies) or was just not up to date. I was experiencing connections drops in my environment; sometimes there is a lot of traffic, and sometimes the connection is idle for hours.
+
+Based on my research, https://github.com/mp911de/lettuce[lettuce] was the best choice amongst all. Lettuce provides async handling out of the box; it can reconnect inactive connections. The only problem: It’s not up to date, and the last release was one year ago. I’ve added the latest features including Sentinel and cluster support and opened a https://github.com/wg/lettuce/pull/32[pull request], but there was no real interest on merging the changes back into lettuce. After some controversy on this I’ve decided to publish my fork of lettuce. My vision for lettuce is becoming the best Redis client available.
+
+Today I’m proud to announce the first beta release of lettuce 3.0. Since the original lettuce 2.3.3 version you get:
+
+* Redis Cluster support (Redis 3.0)
+* Redis Sentinel support (Redis 2.x)
+* Upgrade to netty 4.0.19 (from netty 3.x)
+* Support for the latest redis commands (HyperLogLog, SCAN, TIME and many more)
+* CDI and Spring Support (Bean Factory for the Redis Client)
+* Database and Authentication on initial connect
+* Streaming API: Instead of receiving huge lists and maps you can now provide your own StreamingChannel which is notified on every incoming key/value
+* Connection-Pooling and transparent Connection-Pooling
+* Listenable Futures (using Guava) for true async operations
+* Bugfixes in reconnection and stability
+* Integration on Travis CI
+* Included redis test setup (inspired by Jedis)
+* Extended documentation
+* Standalone and shaded Jar
+
+You can find the beta-release in Maven central or on https://github.com/mp911de/lettuce[Github].
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.Beta1</version>
+</dependency>
+----
+
+It started all with a project on which I worked. I had to integrate Redis for collecting logs during integration tests. I tried several, available clients. Every one of them had issues with unstable connections, library issues (external libraries that get in conflict with the existing project dependencies) or was just not up to date. I was experiencing connections drops in my environment; sometimes there is a lot of traffic, and sometimes the connection is idle for hours.
+
+Based on my research, lettuce was the best choice amongst all. Lettuce provides async handling out of the box; it can reconnect inactive connections. The only problem: It’s not up to date, and the last release was one year ago. I’ve added the latest features including Sentinel and cluster support and opened a pull request, but there was no real interest on merging the changes back into lettuce. After some controversy on this I’ve decided to publish my fork of lettuce. My vision for lettuce is becoming the best Redis client available.

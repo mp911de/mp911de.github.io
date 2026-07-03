@@ -1,0 +1,25 @@
++++
+title = "The 95 percent"
+date = "2014-08-13T18:03:17"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "the-95-percent"
+wordpress_id = "132"
+url = "/2014/08/13/the-95-percent/"
+categories = ["Blog"]
++++
+Test-driven development is a life-assurance for several software projects.
+
+I’ve started about 10 years ago with test-driven development. Since then I fell into the mantra writing test code then production code run the test and start over. Sometimes even model and interface first then test code then production code and so on. This way less bugs had a chance to remain within production code. But unit testing is not everything. The next level is integration testing, which help to discover even more bugs. As soon as components play together, they start to behave slightly different than assumed in unit tests. Sometimes integration-tests are the only way to test a software (in a sensible way).
+
+<!--more-->
+
+This also applies to https://github.com/mp911de/lettuce[lettuce]. I’m maintaining and developing now the redis client lettuce (which is in fact a fork now). lettuce was already a well tested client framework at the time I came in touch with it. Since https://coveralls.io/r/mp911de/lettuce[coveralls.io] was integrated, I got curious how high test coverage could get (and when the badge turns green).
+
+Reaching the 80% of code coverage was not hard. Every redis method had to be tested and this did the job. The way up to 90% was harder: Deep analysis of the coverage reports, removing unused methods (like hashCode/equals from models), writing tests for not tested functionality and special constellations (mostly parameter checks). On this way a couple bugs got visible and were fixed. Therefore I’d say, it was worth it. At a certain point, I pushed my changes and waited for the next coverage report to work on the next not covered code.
+
+Today, lettuce has 95% code coverage. The last 5% were very hard.
+
+Writing tests for getter/setter (in order to provide a flexible and reusable data model), tests for toString, removing even more not used code, running tests with enabled DEBUG/TRACE log level. Sometimes special mocking for exception cases. The client framework needs a running redis instance. lettuce supports failover and has an exception handling, in case connections die or become unavailable at a certain point. These particular lines are not test covered. Why? It’s a very expensive task to create such a scenario within the tests, simulating a failure when a request is processed in a certain point. These are test cases for the real world, from where lettuce has learned from. There might be some 180 lines of code (of about 3.600 lines) which are not test covered: Exception catch blocks, which convert exceptions and private constructors .
+
+My opinion on TDD is simple : It’s worth until a certain point. Some software projects can live with 60%, some need 90% or even 100% and others are happy with 10% or none. For lettuce it was worth going the last mile, because some severe bugs could be fixed before they occurred in production systems and before they could cause any severe cost. I’ll continue this way.

@@ -1,0 +1,143 @@
++++
+title = "Using lettuce 3.3.Beta1 with the Redis Geo-API"
+date = "2015-08-07T20:40:16"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "using-lettuce-3-3-beta1-with-the-redis-geo-api"
+wordpress_id = "219"
+url = "/2015/08/07/using-lettuce-3-3-beta1-with-the-redis-geo-api/"
+categories = ["Blog"]
++++
+The Geo-API of the upcoming Redis 3.2 release allows to maintain a set (backed by a http://redis.io/topics/data-types-intro#redis-sorted-sets[Redis sorted set]) of Geo points described by WGS84 coordinates. You can add and query set members using the new Geo-API. Use `ZREM` to remove members from the until https://github.com/antirez/redis/issues/2674 is resolved.
+
+<!--more-->
+
+The design of the Geo-API within lettuce, differs from other APIs in lettuce. The response structures of `GEORADIUS` depend on the command input, and there are other languages that fit better into the Redis response structure patterns. The static type checking within Java would only allow a `List++<++Object++>++` (or `Object`) which contains nested Lists and Maps carrying the data. You would have to cast the elements to maps or lists and access then again the nested elements. Working with Lists and Maps in Java is less convenient compared to JavaScript or Ruby.
+
+The Geo-API features `GeoCoordinates` and `GeoWithin` types that allow direct access to the response values such as distance or the coordinate points.
+
+== Let’s face the Geo-API
+
+Spatial data in Redis 3.2 is held within Geo sets that are basically http://redis.io/topics/data-types-intro#redis-sorted-sets[sorted sets]. Data can be added, removed and queried. So the Geo set needs some data (“members”) before we can start querying the spatial data. Every Geo entry consists of three parts:
+
+* Name
+* Longitude
+* Latitude
+
+Elements can be added either one by one
+
+[source,java]
+----
+redis.geoadd(key, 8.6638775, 49.5282537, "Weinheim");
+----
+
+or multiple elements at once:
+
+[source,java]
+----
+redis.geoadd(key, 8.6638775, 49.5282537, "Weinheim",
+                  8.3796281, 48.9978127, "Office tower",
+                  8.665351, 49.553302, "Train station");
+----
+
+Geo sets cannot contain duplicate members, so adding “Weinheim” does not cause duplicates within the set.
+
+Let’s say, you have a geo coordinate and you want to see what’s within a radius of 5 kilometers:
+
+[source,java]
+----
+// georadius contains "Weinheim" and "Train station"
+Set<String> georadius = redis.georadius(key, 8.6582861, 49.5285695,
+                                               5, GeoArgs.Unit.km);
+----
+
+The `GEORADIUS` query returns two items: “Weinheim” and “Train station”. This simple call contains only the members without any additional details.
+
+Now we calculate the distance between those two points in kilometers (supported units are: meters, kilometers, feet, and miles).
+
+[source,java]
+----
+// distance ≈ 2.78km
+Double distance = redis.geodist(key, "Weinheim", "Train station", GeoArgs.Unit.km);
+System.out.println("Distance: "+ distance);
+----
+
+The `GEORADIUS` commands provides a variant with more data accepting arguments. You can decide whether you want to retrieve:
+
+* the Geo hash
+* the Coordinates
+* limit the result
+* order the result by distance (ascending/descending)
+
+The result contains a list of `GeoWithin` elements. The provided data within http://redis.paluch.biz/docs/api/snapshots/3.3.Beta1/com/lambdaworks/redis/GeoWithin.html[`GeoWithin`] depends on the args, which results were requested.
+
+[source,java]
+----
+GeoArgs geoArgs = new GeoArgs().withHash()
+                               .withCoordinates()
+                               .withDistance()
+                               .withCount(2)
+                               .asc();
+
+// georadiusWithArgs contains "Weinheim" and "Train station"
+// ordered descending by distance and containing distance/coordinates
+List<GeoWithin<String>> georadiusWithArgs = redis.georadius(key,
+                                                        8.665351, 49.5285695,
+                                                        5, GeoArgs.Unit.km,
+                                                        geoArgs);
+GeoWithin<String> weinheim = georadiusWithArgs.get(0);
+System.out.println("Member: " + weinheim.member);
+System.out.println("Geo hash: " + weinheim.geohash);
+System.out.println("Distance: " + weinheim.distance);
+System.out.println("Coordinates: " + weinheim.coordinates.x + "/" + weinheim.coordinates.y);
+----
+
+You can retrieve elements either by coordinate or set member as reference for the center of the query radius. The `GEORADIUSBYMEMBER` command works like `GEORADIUS` but accepts a set member to retrieve the elements within a certain radius:
+
+[source,java]
+----
+// georadius contains "Weinheim" (self) and "Train station"
+Set<String> georadiusByMember = redis.georadiusbymember(key, "Weinheim",
+                                               5, GeoArgs.Unit.km);
+----
+
+Note that the result contains the point of reference in addition to other results. Like the `GEORADIUS` command, `GEORADIUSBYMEMBER` as well accepts `GeoArgs` which allow you to retrieve more than just the name of the member.
+
+The last Geo API command is `GEOPOS` which returns the geo-coordinates for one or more members from the Geo set. The result contains a list of http://redis.paluch.biz/docs/api/snapshots/3.3.Beta1/com/lambdaworks/redis/GeoCoordinates.html[`GeoCoordinates`] which is also used in http://redis.paluch.biz/docs/api/snapshots/3.3.Beta1/com/lambdaworks/redis/GeoWithin.html[`GeoWithin`].
+
+[source,java]
+----
+List<GeoCoordinates> geopos = redis.geopos(key, "Weinheim", "Train station");
+GeoCoordinates weinheimGeopos = geopos.get(0);
+System.out.println("Coordinates: " + weinheimGeopos.x + "/" + weinheimGeopos.y);
+----
+
+== Conclusion
+
+The Redis Geo-API allows basic use cases when working with spatial data. lettuce https://github.com/mp911de/lettuce/releases/tag/3.3.Beta1[3.3.Beta1] allows you to use the Geo-API on a higher level than just lists and maps. You need to use the `unstable` Redis branch and https://github.com/mp911de/lettuce/releases/tag/3.3.Beta1[lettuce 3.3.Beta1] to use the Geo API. I am excited, how the Geo-API evolves.
+
+=== How to get lettuce 3.3.Beta1 and support
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.3.Beta1</version>
+</dependency>
+----
+
+* https://github.com/mp911de/lettuce/releases/download/3.3.Beta1/lettuce-3.3.Beta1-bin.zip[Download lettuce 3.3.Beta1]
+* https://github.com/mp911de/lettuce/releases/3.3.Beta1[Release 3.3.Beta1 on Github]
+* Google Group: https://groups.google.com/d/forum/lettuce-redis-client-users or lettuce-redis-client-users@googlegroups.com
+* Join the chat at https://gitter.im/mp911de/lettuce
+* Github Issues: https://github.com/mp911de/lettuce/issues
+* Wiki: https://github.com/mp911de/lettuce/wiki
+
+=== The full example
+
+++++
+<script src="https://gist.github.com/mp911de/c5368c89f24971c98f3c.js"></script>
+++++

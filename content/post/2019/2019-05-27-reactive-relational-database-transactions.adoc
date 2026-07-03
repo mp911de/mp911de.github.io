@@ -1,0 +1,101 @@
++++
+title = "Reactive Relational Database Transactions"
+date = "2019-05-27T14:30:31"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "reactive-relational-database-transactions"
+wordpress_id = "272"
+url = "/2019/05/27/reactive-relational-database-transactions/"
+categories = ["Blog"]
++++
+Spring Framework announced recently to https://spring.io/blog/2019/05/16/reactive-transactions-with-spring[ship with support for reactive transaction management]. +
+Let’s take an in-depth look at how this works for R2DBC, the reactive specification for SQL database access.
+
+<!--more-->
+
+Transaction Management is a pattern and not technology-specific. From that perspective, its properties and runtime behavior are a function of the implementing technology.
+
+*TL; DR:* From a database perspective, imperative and reactive transactions work the same. From a Java perspective, there are several differences between imperative and reactive transactions.
+
+Let’s look at imperative transactions first.
+
+== Imperative Transactions
+
+In imperative transactions, more specifically aspect-oriented transaction management with e.g., interceptors, the transactional state is typically transparent for code. Depending on the underlying API, we can obtain the transactional state and transaction-bound resources from _somewhere_. This _somewhere_ lives typically in a `ThreadLocal` storage. Imperative transactions assume that all transactional work of your code happens on the same `Thread`.
+
+Another aspect of imperative transactions is that all data stays within a `@Transactional` method while a transaction is ongoing. Tools like JPA allow result streaming through a Java 8 `Stream.` In any case, the streaming requires an enclosing `@Transactional` method. No transactional data can leave a method while a transaction is ongoing – data does does not escape.
+
+I’m pointing these two issues out as they behave differently with reactive transactions.
+
+== Resource Binding
+
+Before continuing to reactive transactions, we need to improve our understanding of the transactional state. Transactional state consists typically of the transaction state (started, committed, rolled back) and resources that are bound to the transaction.
+
+Transactional resources, such as database connections, typically bind their transaction progress to an underlying transport connection. This is, in most cases, a TCP connection. In cases where a database connection uses multiplexing, the state is bound to a session object. In rare cases, database operations accept a transaction or session identifier. Therefore, we assume, that we bind a connection to a transaction to embrace the lowest capable approach as transactional state is typically not portable across connections.
+
+== Reactive Transactions
+
+When using reactive programming, we want to apply the same level of convenience (read: use the same programming model) when using transactions, ideally `@Transactional` methods when using annotation-based transaction demarcation. Coming back to the notion that transaction management is just a pattern, the only thing that we need to swap out is technology.
+
+Reactive transactions no longer bind their transaction state to `ThreadLocal` but rather to a subscriber context. That is a context associated with a particular execution path. Or to put it differently: Each reactive sequence that gets materialized gets its subscriber context that is isolated from other executions. This is already the first difference to imperative transactions.
+
+The second difference is data escaping from `@Transactional` methods. +
+Reactive programming with Reactive Streams is pretty much all about data flows and data streaming through functional-reactive operators. This is also a major advantage in contrast to asynchronous APIs that a reactive `Publisher` emits the first element as soon as it gets decoded by the database driver instead of awaiting the last packet to arrive before a `Future` can get completed.
+
+Reactive transactions embrace this fact. Similar as in imperative transactions, a transaction is started before the actual work. When we produce data as result of our transactional work, data flows through `Publisher`'s while the transaction is active. This means that data escapes our `@Transactional` method during an active transaction. In a more detailed look, we’ll realize that `@Transactional` methods are just markers within a reactive sequence. We don’t think so much in methods; we rather observe just the effects that happen on subscription and completion. +
+If any error happens during transaction processing, we potentially are left with data that was processed within a transaction while the actual transaction gets rolled back. This is something to consider in your application. +
+Reactive transaction management by intent does not delay emission not to neglect streaming properties. Atomicity weights more in your application than streaming then this is something you can handle in your application. Otherwise, you will receive the full power of reactive data streaming.
+
+== (B)locking
+
+Reactive database access with R2DBC is fully non-blocking when looking at it from a Java perspective. All I/O happens using non-blocking sockets. So what you get from R2DBC is that I/O no longer blocks your threads. However, reactive relational database drivers have comply with database communication protocols and adhere to database behavior. +
+While we’re no longer occupying a `Thread`, we still occupy a database connection because that is how an RDBMS works – sending command by command. Some databases allow for a slight optimization that is called pipelining. In pipelining mode, drivers keep sending commands to the connection without the need to await the previous command to complete.
+
+Typically, a connection can be released when:
+
+[arabic]
+. A statement (multiple statements) are completed
+. The application transaction is complete
+
+We can still observe locking that blocks a connection.
+
+== Database Locks
+
+Depending on the database you’re using, you can either observe https://en.wikipedia.org/wiki/Multiversion_concurrency_control[MVCC] behavior or blocking behavior, which is typically transactional locks. With imperative SQL database transactions, we typically end up with two (b)locks:
+
+[arabic]
+. Application thread is blocked by I/O
+. Database holds a lock
+
+Our application can progress only when the database releases its lock. Releasing the lock also unblocks the application thread. +
+Using reactive database integrations no longer blocks the application thread because of non-blocking I/O. The database lock behavior *remains*. Instead of blocking two resources, we end up with a blocked database connection.
+
+From a Java perspective, TCP connections are cheap.
+
+We still get strong consistency guarantees because of how SQL databases work.
+
+== Are ACID-compliant database inherently non-reactive by design?
+
+There are three perspectives on SQL databases and reactive:
+
+* Locking: SQL databases aren’t the best persistence mechanism when speaking about reactive. Many databases perform internal locks when running updates so concurrent access gets limited. Some databases apply https://en.wikipedia.org/wiki/Multiversion_concurrency_control[MVCC] that allows progress with less locking impact. In any case, write-heavy use-cases are probably a less good fit for your reactive application because, with traditional SQL databases, this can get a scalability bottleneck.
+* Scalability: SQL databases typically scale worse than NoSQL where you can put another 50 machines to grow your cluster. With New SQL databases like RedShift, CockroachDB, Yugabyte , we can scale differently and way better than traditional SQL databases.
+* Cursors: Many SQL databases have reactive features in their wire protocols. This is typically something like chunked fetching. When running a query, a reactive driver can read results from a cursor by fetching a small number of results to not overwhelm the driver. As soon as the first row is read, the driver can emit that row down to its consumer and proceed with the next row. Once the chunk is processed, the driver can start processing the next chunk. If a subscription gets canceled, the driver stops reading from the cursor and releases it. This is a pretty powerful arrangement.
+
+== Is there really any performance advantage?
+
+Performance is a huge field. Let’s focus on resource usage and throughput in the context of this post.
+
+*You don’t do reactive for throughput. You do it for scalability.*
+
+Some implications affect throughput that are entirely based on back pressure. Backpressure is the notion of how much items a `Subscriber` can process at a time by reporting the number of requested items to its `Publisher`. Backpressure, knowing how much rows the application wants, allows reactive drivers to apply smart prefetching. +
+Imperative drivers typically fetch the next chunk of data when the previous one finished processing. Blocking drivers block the underlying connection and Thread until the database replies (https://speakerdeck.com/mp911de/reactive-spring-workshop?slide=13[imperative fetch model], the white areas between requests are the latency). +
+Knowing how much data a client wants allows a reactive driver to fetch the next chunk of data while the application processes the previous chunk of data (https://speakerdeck.com/mp911de/reactive-spring-workshop?slide=51[reactive fetch model] where latency is minimized).
+
+In terms of resource usage, reactive drivers do not block threads. They emit received rows as soon as rows get decoded from the network stream. All in all, they come with a GC-friendly execution model during materialization. During assembly time, there’s an increased GC pressure.
+
+== Conclusion
+
+You have learned about imperative and reactive database properties. Transaction management needs to be implemented in imperative flows differently than in reactive code. Changes in implementations reflect in a slightly different runtime behavior, especially when it comes to data escape. You get the same strong consistency guarantees with a changed performance profile regarding latency and resource usage.
+
+Note: Programmatic transaction management is left out intentionally as this post outlines transaction management internals and differences between imperative vs. reactive transactions.

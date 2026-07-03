@@ -1,0 +1,27 @@
++++
+title = "Caching Apache Commons XML Configuration"
+date = "2013-11-22T14:21:40"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "caching-apache-commons-xml-configuration"
+wordpress_id = "99"
+url = "/2013/11/22/caching-apache-commons-xml-configuration/"
+categories = ["Blog"]
++++
+One of my recent projects uses Apache's XMLConfiguration in a very extensive way. Nearly everything is configured and stored as XML files. http://commons.apache.org/proper/commons-configuration/[Commons Configuration] is a very nice library, providing access to multiple configuration formats and automatic reloading. The other side of the library is, that it produces heavy CPU load.
+
+<!--more-->
+
+In my project, every call to retrieve a string had to evaluate an XPath expression on the XML configurations DOM tree. In a scenario of 300 concurrent users this caused a normal 50ms operation to take up to 500 ms. Nearly 10 times of slowdown. This caused us to look for improvement. Our approach was caching, but currently there is no support for cached configurations. So we built our own. You'll find the code in the attached https://gist.github.com/mp911de/7600734[Gist].
+
+== What to cache
+
+Our approach was first to use an CGlib Method invocation interceptor, but this caused the same slow down due to heavy operation overhead by CGlib. The next approach was to cache SubnodeConfiguration and the outcome of getProperty. And this way it helped us to speed up the configuration access times by factor 4. Take a look at the comparison:
+
+link:/images/2013/11/configuration-comparison.png[image:/images/2013/11/configuration-comparison.png[/images/2013/11/configuration-comparison]]Lower is better, all values in milliseconds.
+
+This approach allows efficiently to access configuration at different hierarchy levels, support for reloading configuration and value interpolation (for e.g. system property placeholder support).
+
+++++
+<script src="https://gist.github.com/mp911de/7600734.js"></script>
+++++

@@ -1,0 +1,69 @@
++++
+title = "Continuous Delivery Configuration: How do you deploy configuration data into your application (EAR/WAR)?"
+date = "2013-03-28T13:11:09"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "continuous-delivery-configuration-how-do-you-deploy-configuration-data-into-your-application-ear-war"
+wordpress_id = "77"
+url = "/2013/03/28/continuous-delivery-configuration-how-do-you-deploy-configuration-data-into-your-application-ear-war/"
+categories = ["Blog"]
++++
+It’s a common problem almost which every application has: Where do I put my configuration? Lucky you, rich clients and standalone applications. For most rich client/standalone apps it’s somehow easy, because you have to have somewhere a starter, so you can deploy the config somewhere along the starter.
+
+<!--more-->
+
+Todays’s trends head more and more for web applications. Let’s take Java-based applications for example. Enterprise and Java-Web-Applications are EAR/WAR packaged for deployment. Usual tooling, such as Maven, Ant or Gradle produce an EAR/WAR-file, which can be deployed either to an artifact repository (such as Artifactory or Nexus) or directly to your container.
+
+== Today’s approaches
+
+You could think about putting at build-time about the right configuration into your artifact. Possible, but causes loss of portability of your artifact. Or you can put the config of all environments into your artifact and selecting using environment variables which config to use. But what if you’ve got to change a single value? You’ve to redeploy. This sucks!
+
+In case you’ve a database and you use Data Sources, you could walk the way and put the config into your database. It’s a valid approach, but somehow hard to maintain the data. It’s for sure more effort to copy database data in comparison to files.
+
+== Go remote
+
+I’ve got a different approach for you: Go remote, got HTTP. Fetch your configuration using HTTP. Forget putting Dev, UAT or Production-tags into your application. Use the power of DNS.
+
+From today on you’ll fetch your configuration from:
+
+....
+http://config.mycompany.com/dns/config/myartifact/2.1/configuration.properties
+....
+
+You might state now: How does this work out for Dev, UAT and Production environments?
+
+See, most companies and applications rely today on DNS information. Resolving hosts to addresses. This works as well in a reverse manner. How did we came here? +
+Most systems I know run one instance of an application for exactly one environment. In a good environment every IP address has a forward and reverse entry. Based on the DNS reverse entry it’s easy to tell, whether you are talking to a Dev, UAT or Production machine (this works as well for IP’s, since DNS is easier to read I’ll stick to DNS reverse). Environment is one of the major variables which affects configuration.
+
+A version-identifier as well affects configuration. Sometimes you add or remove some config values between versions, but luckily the version is somehow static for a deployment artifact. The version of your deployable won’t change without rebuilding/releasing it. Therefore it’s easy to inject the version identifier into your artifact at build-time. Another thing, an deployable artifact should know is it’s artifact identifier. Every component should be able to identify itself by using some identifier. In case you use Maven, it’s easy.
+
+Last we have the name of the config file itself. It’s your application, so choose one.
+
+Now let’s put all the things together and assume you have one hostname which won’t ever change (haha :-).
+
+....
+http://config.mycompany.com/dns/config/${artifactId}/${version}/configuration.properties
+....
+
+You inject the artifact and version identifier at build-time into your artifact and use this URL to download at application start the config from the configuration server. Based on the DNS reverse the configuration server knows who you are: Dev, UAT, Production. Afterwards you get your config.
+
+Sure, the config server must have a sort of mapping between hostname and environment, but that’s not a big deal.
+
+== Big advantages
+
+So what is better than todays’ approaches? Well, now you’ve hidden the configuration behind a HTTP interface. This allows you to do two things:
+
+[arabic]
+. You can do anything behind the HTTP server. You’re free where to store the configuration
+. You can reference HTTP URL’s in nearly every case where you reference URL’s: Class-Loader, Spring PropertyPlaceholderConfigurer, Spring Imports, InputStreams for Properties
+
+Oh, wait. What?? Externalize Spring Context Files to a config server? That's crazy.
+
+My most favored approach is storing the config data in a separate SCM (like SVN or Git) repository. Most repositories are very easy to access, because nearly every developer relies on a SCM. So in case you’re privileged to access the config repository, just update the config within the SVN or Git and tell the config server to update itself. No nasty copying of database data or telling the Ops-Team to put a certain file into a place somewhere on the system and recognizing, that you’ve done a mistake and you have to start over.
+
+Take a look at my example implementation at GitHub: https://github.com/mp911de/config-server
+
+== References
+
+* Spring Property Placeholder Configurer: http://static.springsource.org/spring/docs/3.2.x/javadoc-api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html
+* GitHub Config-Server: https://github.com/mp911de/config-server

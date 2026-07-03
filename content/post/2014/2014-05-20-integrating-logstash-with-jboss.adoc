@@ -1,0 +1,86 @@
++++
+title = "Integrating Logstash with JBoss"
+date = "2014-05-20T08:06:17"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "integrating-logstash-with-jboss"
+wordpress_id = "116"
+url = "/2014/05/20/integrating-logstash-with-jboss/"
+categories = ["Blog"]
++++
+Logstash is one of the hottest tools when it comes to log management. There are lots of integration possibilities in standalone or web applications. But what if you want to capture the whole log output of your JBoss server? Take a look at the snippets.
+
+<!--more-->
+
+== JBoss 4
+
+Take the following 3 steps in order to integrate logstash using JBoss 4:
+
+[arabic]
+. Download http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.4.0/logstash-gelf-1.4.0-logging-module.zip[logstash-gelf-1.4.0-logging-module.zip]
+. Extract logstash-gelf-1.4.0.jar and json-simple-1.1.jar into your server's lib directory (server/++<++instance++>++/lib) +
+Optional: Copy also jedis-2.4.2.jar if you plan to use Redis instead of GELF
+. Add following code to your jboss-log4j.xml (server/++<++instance++>++/conf):
+
+[source,xml]
+----
+<appender name="GelfLogger" class="biz.paluch.logging.gelf.log4j.GelfLogAppender">
+  <param name="Threshold" value="INFO"/>
+  <param name="Host" value="<Your Logstash Host>"/>
+  <param name="Facility" value="JBoss 4"/>
+  <param name="ExtractStackTrace" value="true"/>
+  <param name="FilterStackTrace" value="true"/>
+  <param name="MdcProfiling" value="true"/>
+  <param name="AdditionalFields" value="Environment=Test"/>
+  <param name="MdcFields" value="remoteAddr,remoteUser,sessionId,requestUri,requestMethod"/>
+</appender>
+
+<root>
+  <appender-ref ref="CONSOLE";/>
+  <appender-ref ref="FILE"/>
+  <appender-ref ref="GelfLogger"/>
+</root>
+----
+
+You can find a complete XML file on https://gist.github.com/mp911de/7c00ad719a39e1124f4e[Github].
+
+== JBoss 7/Wildfly
+
+Take the following 3 steps in order to integrate logstash using JBoss AS7/Wildfly:
+
+[arabic]
+. Download http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.4.0/logstash-gelf-1.4.0-logging-module.zip[logstash-gelf-1.4.0-logging-module.zip]
+. Extract the file into your JBoss 7/8 modules directory, so you get the following directory structure ++<++Server++>++/modules/biz/paluch/logging/main (or if you use layers, ++<++Server++>++/modules/system/layers/base/biz/paluch/logging/main)
+. Add following code to your config (server/++<++instance++>++/conf):
+
+[source,xml]
+----
+<custom-handler name="GelfLogger" class="biz.paluch.logging.gelf.jboss7.JBoss7GelfLogHandler"
+                module="biz.paluch.logging">
+    <level name="INFO" />
+    <properties>
+        <property name="host" value="<Your Logstash Host>" />
+        <property name="extractStackTrace" value="true" />
+        <property name="filterStackTrace" value="true" />
+        <property name="mdcProfiling" value="true" />
+        <property name="facility" value="JBoss AS7/AS8" />
+        <property name="additionalFields" value="Environment=Test" />
+        <property name="mdcFields" value="remoteAddr,remoteUser,sessionId,requestUri,requestMethod" />
+    </properties>
+</custom-handler>
+
+<root-logger>
+    <level name="INFO"/>
+    <handlers>
+        <handler name="CONSOLE"/>
+        <handler name="FILE"/>
+        <handler name="GelfLogger"/>
+    </handlers>
+</root-logger>
+----
+
+If you like to add the config using CLI, take a look at https://gist.github.com/mp911de/9380f69690a881b93172[add-gelf-logger.cli]
+
+You can find the full documentation of logstash-gelf at http://logging.paluch.biz/
+
+The Github Repo is located at https://github.com/mp911de/logstash-gelf

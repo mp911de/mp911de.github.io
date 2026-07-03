@@ -1,0 +1,11 @@
+<footer class="site">
+  <span>
+    {{- if site.Copyright }}
+      {{ site.Copyright }}
+    {{ else }}
+      {{ now.Year }} •
+      {{ site.Params.name | default site.Title }}
+    {{ end -}}
+  </span>
+  <a href="{{ `index.xml` | absURL }}">RSS</a>
+</footer>

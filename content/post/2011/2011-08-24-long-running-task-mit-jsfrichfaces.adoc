@@ -1,0 +1,269 @@
++++
+title = "Long Running Task mit JSF/RichFaces"
+date = "2011-08-24T06:28:00"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "long-running-task-mit-jsfrichfaces"
+wordpress_id = "42"
+url = "/2011/08/24/long-running-task-mit-jsfrichfaces/"
+categories = ["Blog"]
++++
+Häufig wird die Anforderung gestellt, Aufgaben im Hintergrund zu verarbeiten. Durch den Trend der Webanwendungen trifft früher oder später diese Anforderung auch auf ein Web-Projekt zu. Erst kürzlich kam dieselbe Frage in der JBoss Community auf.
+
+<!--more-->
+
+Webanwendungen sind sehr häufig nach dem Schema der einmaligen und kurzen Ein- und Ausgabe konzipiert. Das heisst: Ein Anwender stellt eine Anfrage an den Server, es folgt eine kurze Verarbeitung und der Anwender erhält seine Antwort. Würde der Anwender länger warten, so klicken über 90% der Anwender erneut bzw. laden die Seite erneut, was zu Mehrfach-Requests führt. Bei Ajax-Anwendungen ist dies eleganter gelöst, dort wird nur ein Teil der Anforderung zum Server gesendet, zudem führen die Bitte-Warten-Meldungen dazu, dass der Anwender länger als 2 oder 3 Sekunden wartet. Was aber tun, wenn die Verarbeitung mehrere Minuten oder sogar Stunden in Anspruch nimmt?
+
+Für diesen Fall eignet sich ein Prozess-Monitor am besten. Mit einem Prozess-Monitor kann ein Prozess getrennt gestartet werden, dieser wird nach der eigentlichen Anfrage weiterhin ausgeführt. Der Prozess-Monitor zeigt nach dem Start den Zustand/Status des oder der Prozesse an.
+
+Als Hintergrundverarbeitung können mehrere Ausführungsarten verwendet werden:
+
+* eigene Threads (in J2EE-Umgebungen nicht empfehlenswert; das Beispiel verwendet dennoch Threads aus Gründen der Anschaulichkeit)
+* EJB Timer
+* JMS Worker
+
+Alle diese Ausführungsarten haben eines gemeinsam: Sie laufen unabhängig vom Benutzer weiter und benötigen eine Art von Status-Synchronisation, damit der Status entsprechend an den Prozess-Monitor weitergegeben werden kann. Dies können z. B. eine Datenbank, ein In-Memory-Model oder noch viele andere Sorten von Inter-Prozess-Kommunukationsmechanismen sein.
+
+Ich habe für diesen Fall ein Beispiel erstellt, welches genau diese Schritte mit einem Thread ausführt. Ein Beispiel mit JMS, EJB-Timern oder asynchronen EJB's wäre weit aus komplizierter, daher bedient sich das Beispiel eines eigenen Threads und ist in JSF2/RichFaces 4 gehalten. Der Code kann am Ende des Beitrags heruntergeladen werden.
+
+Das Beispiel besteht aus einem Controller (Frontend-Controller), einer Model-Klasse zum Transport der Daten (DTO) und einer Thread-Worker-Klasse. Das Frontend selbst ist eine XHTML-Seite.
+
+== Controller.java
+
+[source,java]
+----
+@ManagedBean
+@RequestScoped
+public class Controller implements Serializable
+{
+  private static final long serialVersionUID = -4160088442207082094L;
+ 
+  @ManagedProperty(value = "#{model}")
+  private Model model;
+ 
+  /**
+   * Start a long running task.
+   */
+  public void startLongRunningTask()
+  {
+    // Beware of this in real J2EE envs as Threads are a bit risky. 
+    // Use EJB Timers or JMS instead.
+    LongRunningTask task = new LongRunningTask(model);
+    task.start();
+  }
+ 
+  /**
+   * @return the model
+   */
+  public Model getModel()
+  {
+    return model;
+  }
+ 
+  /**
+   * @param model
+   *            the model to set
+   */
+  public void setModel(Model model)
+  {
+    this.model = model;
+  }
+}
+----
+
+== Model.java
+
+[source,java]
+----
+@ManagedBean
+@SessionScoped
+public class Model implements Serializable
+{
+ 
+  private static final long serialVersionUID = -6712635521042543903L;
+ 
+  private boolean running = false;
+  private boolean success = false;
+  private List<String> messages = new ArrayList<String>();
+ 
+  /**
+   * @return the running
+   */
+  public boolean isRunning()
+  {
+    return running;
+  }
+ 
+  /**
+   * @param running
+   *            the running to set
+   */
+  public void setRunning(boolean running)
+  {
+    this.running = running;
+  }
+ 
+  /**
+   * @return the success
+   */
+  public boolean isSuccess()
+  {
+    return success;
+  }
+ 
+  /**
+   * @param success
+   *            the success to set
+   */
+  public void setSuccess(boolean success)
+  {
+    this.success = success;
+  }
+ 
+  /**
+   * @return the messages
+   */
+  public List<String> getMessages()
+  {
+    synchronized (messages)
+    {
+      List<String> copy = new ArrayList<String>();
+      copy.addAll(messages);
+      return copy;
+    }
+  }
+ 
+  /**
+   * @return the last Message.
+   */
+  public String getLastMessage()
+  {
+    synchronized (messages)
+    {
+      if (messages.isEmpty())
+      {
+        return "";
+      }
+      return messages.get(messages.size() - 1);
+    }
+  }
+ 
+  public void addMessage(String message)
+  {
+    synchronized (messages)
+    {
+      messages.add(message);
+    }
+  }
+}
+----
+
+== LongRunningTask.java
+
+[source,java]
+----
+public class LongRunningTask extends Thread
+{
+ 
+  private Model model;
+ 
+  /**
+   * @param model
+   */
+  public LongRunningTask(Model model)
+  {
+    this.model = model;
+  }
+ 
+  /**
+   * @see java.lang.Thread#run()
+   */
+  @Override
+  public void run()
+  {
+    try
+    {
+      model.setRunning(true);
+ 
+      Thread.sleep(2000);
+      model.addMessage("first");
+      Thread.sleep(2000);
+      model.addMessage("second");
+      Thread.sleep(2000);
+      model.addMessage("third");
+      Thread.sleep(2000);
+      model.addMessage("last");
+      model.setSuccess(true);
+    }
+    catch (Exception e)
+    {
+      model.setSuccess(false);
+    }
+    finally
+    {
+      model.setRunning(false);
+    }
+  }
+----
+
+== index.xhtml
+
+[source,xml]
+----
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich">
+<f:view>
+  <h:head>
+    <title>My LRT Example</title>
+  </h:head>
+ 
+  <h:body>
+    <h:form prependid="false">
+ 
+      <h:panelGroup>
+        <h:outputText value="Start LRT" />
+        <a4j:commandButton value="Start LRT" 
+             action="#{controller.startLongRunningTask}" render="panel" />
+      </h:panelGroup>
+      <a4j:poll interval="1000" render="panel" />
+      <br />
+      <br />
+      <a4j:outputPanel id="panel">
+ 
+        <h:panelGrid columns="2">
+          <h:outputText value="Running" />
+          <h:outputText value="#{controller.model.running}" />
+ 
+          <h:outputText value="Success" />
+          <h:outputText value="#{controller.model.success}" />
+ 
+          <h:outputText value="Last Message" />
+          <h:outputText value="#{controller.model.lastMessage}" />
+        </h:panelGrid>
+ 
+        <br />
+        <br />
+        <rich:dataTable var="var" value="#{controller.model.messages}">
+          <rich:column>
+            <f:facet name="header">
+              <h:outputText value="All messages"/>
+            </f:facet>
+            <h:outputText value="#{var}" />
+          </rich:column>
+        </rich:dataTable>
+ 
+        <a4j:commandButton value="Refresh" render="panel"/>
+      </a4j:outputPanel>
+    </h:form>
+  </h:body>
+</f:view>
+</html>
+----
+
+Das Beispiel-Projekt liegt als Maven2-Projekt vor und kann hier heruntergeladen werden: link:/wp-content/uploads/2011/08/richfaces-long-running-task.zip[richfaces-long-running-task.zip (10KB)] oder bei https://github.com/mp911de/Public/tree/master/richfaces-long-running-task[Github]

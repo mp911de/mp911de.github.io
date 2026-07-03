@@ -1,0 +1,27 @@
++++
+title = "The two faces of Clean Code Development"
+date = "2012-07-11T18:39:29"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "the-two-faces-of-clean-code-development"
+wordpress_id = "60"
+url = "/2012/07/11/the-two-faces-of-clean-code-development/"
+categories = ["Blog"]
++++
+Recently I reported about Clean Code Development. Everybody who's visiting trainings, courses and sessions is amazed. It's easy, most topics are obvious but not everyone is always aware of these topics. But when you look deeper constrained by the big picture there is as well a dark side.
+
+<!--more-->
+
+My first CCD steps were somewhere in 2005/2006. Although I did not know, there was something like CCD I began to use and enforce clean code principles and practices. Since that time I was fascinated by clean code, encouraged others as well to clean code and yelled on these, who messed the software. It's true, clean code enables developers and their companies to work very effectively with code. But it demands a change of thinking. This change has to happen on very different levels:
+
+* Management: Management must back the whole project and change. Without Management support most projects and companies fall back to oldish anti-patterns.
+* Product Owners/Customers: Customers have to understand, that time of quickhacks is over. Sure, quality costs, but it pays later in QA and operations.
+* Developers: We are those, who really do these small steps within the code. Software Development is our craftsmanship, we are not code hackers in a hurry, we are professionals.
+
+I began about a half year ago with active workshops, saw how lucky developers are, when they hear about clean code, that it is reality and no fairy tale. Afterwards you hear "that's easy, why didn't we do that before", "so obvious, but we did not think about it", "my team cares, but other teams mess up our code" (from all experience levels, junior to senior). This is only the one side. On the other side and in the later sessions I often attended discussions arising from current and real problems. Beside some how-to's the "other teams"-quesion comes up: and that's exactly the point were you feel missing management backup.
+
+In distributed development teams (New York, Bangalore, Berlin, London) you find very often different management streams. Teams are not managed by a single head, instead they are organized on different branches and divisions of the company. The only common they share is the project/customer/project lead. Through this organizational layout it is hard to convince every manager of the clean code importance. This leads to individual initiatives which are handled team-local. As soon as these teams work on a shared codebase, you run into the problem. One team does CCD, others not. Other teams work Feature-Driven, do not get the CCD point and "destroy" the clean code efforts through not knowing/not caring.
+
+This fact, on one hand a very motivated CCD team, the other hand a code factory leads to a very bad mood. Developer start complaining and discussing about dirty code. They get demotivated, frustrated and in worser cases, they quit or start ignoring code quality. Is this the way it should be?
+
+I say no! Sure, it's hard, especially in a larger scope to find a common way and common policies. In the USA, where you do not follow the companies policy, you get fired. For that you need real management support to define CCD as overall company policy. In countries, you are allowed to express your creativity it get's harder to convince management from CCD benefits. Sure, Time-to-Market is important, but does your company really want to kill its reputation by buggy software?

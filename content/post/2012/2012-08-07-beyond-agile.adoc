@@ -1,0 +1,25 @@
++++
+title = "Beyond agile"
+date = "2012-08-07T19:35:53"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "beyond-agile"
+wordpress_id = "62"
+url = "/2012/08/07/beyond-agile/"
+categories = ["Blog"]
++++
+In every evolution step has a start and an end. Sometimes they're blurry, so you can't say for sure, where you are at. In every step, sooner or later, arises the question: What's next? What comes after agile? What ist the future of agile? This is today exactly my point.
+
+<!--more-->
+
+For years now, we're doing agile. Some still try waterfall and are happy with it. Others enforce agile patterns to the last rule and oversee the important points by doing so It ends in a dogma, not being suitable for anyone. Sure, agility is a more or less undefinable something, yet it has a agile manifesto describing some aspects. Implementations of agile methods result in tighter communication, faster feedback, short dev cycles (compared to waterfall or chaos). Using agile methods helped so lots of projects and companies to raise effectivity, lower bugs and improve their development. Others try to implement agile processes, which is, sorry for that, a brainless misuse of the term agile. Being able to react, taking sometimes risks into account, having quick-wins are contradictions to tight, well-described and controlled processes.
+
+For sure, agile is only a step within the evolution, until the evolution reaches it 90% and gets slower from there on. What is the next step? What could be a further improvement? How to achieve higher effectivity, even faster and continuous feedback? Whoops, there was it already. Perhaps you're familiar with continuous integration. This was a change in thinking, how to integrate new stuff (lines of code, components) into software. Result of that was: Higher quality by using a steady and fast feedback from your Jenkins, Bamboo or what ever you use as CI server. Since a few years, there is this continuous delivery trend. So having a releasable software artifact at any time. You see the benefit? No fear of releases, holding a stable quality level and involving even more stakeholders, providing them fast and reliable results. You see, what's next?
+
+Stop iterating, begin continuous development. Having a steady flow, a continuous pattern, enables all participating parties to be instant: Instant feedback, instant QA, instant delivery. From my perspective, this is the currently highest reachable state of professional software development.
+
+Having iterations is not really evil, because you build up something, step by step, but why iterate over time? Iterate over features, over changes. Today we build the basics and present it to management. If they love it, we build the next few days the rest of it.
+
+In classic waterfall, it would be something like the prototype phase, which would expect fully documented requirements and some sort of milestone. Traditional (what's traditional about that?) agile would do its prototyping/basic functionality within one sprint (or whatever you call your iterations) and presenting in a review or so the results. Next sprint would handle the rest of the implementation. In both cases, there is more time between finishing your piece of work and the beginning of the next part. So you have context switches, perhaps some days in between and then you have to get back into the topic.
+
+Imagine, you work continuously on a topic, until it's deliverable. Less switches, less time in between, higher effectivity. For sure, this is only a small-scoped example, but does this necessarily mean, that it prevents continuous development in a large scale? No! Some of us have already strong, cross-functional teams. These work already tight with product owners, QA and their customers. Kick out therefore the factors, which prevent your team from being even more effective. Have again fun at work, that's one of the best motivators, it comes out of you, out of the team and it's for free. Have less overdriving by management, use the positive movement and see the results by your own.

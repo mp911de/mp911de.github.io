@@ -1,0 +1,148 @@
++++
+title = "How to test a REST API with JUnit"
+date = "2015-03-12T09:03:14"
+lastmod = "2025-01-03T22:49:03"
+draft = false
+slug = "how-to-test-a-rest-api-with-junit"
+wordpress_id = "208"
+url = "/2015/03/12/how-to-test-a-rest-api-with-junit/"
+categories = ["Blog"]
++++
+Do you want to test your REST API as soon as possible and without any hassle? The earliest point in the code where tests can occur is within the commit stage, where you can run unit tests. I want to present you an approach how to test REST API as soon as possible in an easy way. The example code is based on JUnit and RESTEasy. It does not require any external database or heavyweight application servers which means you can run it isolated and out of the box.
+
+<!--more-->
+
+RESTEasy (and Jersey as well) contain a minimal web server within their libraries which enables their users to start up a tiny web server. Either for production use or to run tests.
+
+[source,java]
+----
+TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+server.setPort("12345");
+
+server.getDeployment().getResources().add(myResourceInstance);
+
+// alternative
+server.getDeployment().getProviderClasses().add("com.my.my.resource.class.name");
+
+server.start();
+----
+
+The server will mount your resources without any context prefix. You are ready to start your tests.
+
+[source,java]
+----
+new ResteasyClientBuilder().build().target("http://localhost:12345/myresource").request().get()
+----
+
+That's it. Some test cases are that simple. Other test cases require more features such as dynamic ports (e. g. when multiple builds run on the same machine), a security domain for authentication or a set of provider classes you need in order to marshal/unmarshal/convert exceptions. These requirements can lead to a lot of boilerplate in each of your tests. I want to present a more generic and reusable approach of testing REST API's with JUnit and RESTEasy 3.0:
+
+[source,java]
+----
+public class InMemoryRestTest {
+
+    @Path("myresource")
+    public static class MyResource {
+
+        @POST
+        @Consumes(MediaType.TEXT_PLAIN)
+        @Produces(MediaType.APPLICATION_XML)
+        public MyModel createMyModel(int number) {
+
+            return new MyModel(number);
+        }
+
+    }
+
+    public static MyResource sut = new MyResource();
+    public static InMemoryRestServer server;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        server = InMemoryRestServer.create(sut);
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        server.close();
+    }
+
+    @Test
+    public void postSimpleBody() throws Exception {
+
+        Response response = server.newRequest("/myresource").request().buildPost(Entity.text("42")).invoke();
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        MyModel myModel = response.readEntity(MyModel.class);
+        assertEquals(42, myModel.getResult());
+    }
+}
+----
+
+This test has everything built it to provide a REST API and consume it in one unit. `MyResource` is the REST service providing functionality, and the RESTEasy client utilizes the API. All bootstrapping and REST server setup is encapsulated by `InMemoryRestServer` that also provides a handy entry point to testing. You no longer need to deal with port numbers in your test code. You can find the full code at https://github.com/mp911de/rest-api-test
+
+Sometimes your code depends on further services or functionality that are located within other classes or behind interfaces. Usually, you would use a mock to simulate that behavior. So let's try that.
+
+[source,java]
+----
+@RunWith(MockitoJUnitRunner.class)
+public class InMemoryRestWithMockitoTest {
+
+    public static interface BackendService {
+
+        MyModel getMyModel(int number);
+    }
+
+    @Path("myresource")
+    public static class MyResource {
+
+        private BackendService backendService;
+
+        @POST
+        @Consumes(MediaType.TEXT_PLAIN)
+        @Produces(MediaType.APPLICATION_XML)
+        public MyModel createMyModel(int number) {
+
+            return backendService.getMyModel(number);
+        }
+
+    }
+
+    @InjectMocks
+    public static MyResource sut = new MyResource();
+    public static InMemoryRestServer server;
+
+    @Mock
+    private BackendService backendServiceMock;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        server = InMemoryRestServer.create(sut);
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        server.close();
+    }
+
+    @Test
+    public void postWithoutMocking() throws Exception {
+
+        Response response = server.newRequest("/myresource").request().buildPost(Entity.text("42")).invoke();
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void postWithMocking() throws Exception {
+
+        when(backendServiceMock.getMyModel(42)).thenReturn(new MyModel(42));
+
+        Response response = server.newRequest("/myresource").request().buildPost(Entity.text("42")).invoke();
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        MyModel myModel = response.readEntity(MyModel.class);
+        assertEquals(42, myModel.getResult());
+    }
+}
+----
+
+This code is not much more complicated than without mocking. You can use the mocking framework of your choice (here I used Mockito), inject the mocks into your REST API service and run your tests. You can find all code on Github at https://github.com/mp911de/rest-api-test

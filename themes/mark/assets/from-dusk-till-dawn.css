@@ -1,0 +1,157 @@
+/* from dusk till dawn - everything celestial: the moon switcher,
+   the dusk cross-fade, and the moonrise hover glow */
+
+/* celestial hover: immediate rise, halo swells slowly like moonrise */
+nav.social svg {
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1.6s cubic-bezier(0.45, 0.05, 0.35, 1);
+}
+
+nav.social a:hover svg,
+.moon-btn:hover {
+    filter: drop-shadow(0 0 3px var(--glow)) drop-shadow(0 0 8px var(--glow-soft)) brightness(1.12);
+}
+
+/* only the icons rise; the moon stays put, its halo just grows */
+nav.social a:hover svg {
+    transform: translateY(-2px);
+}
+
+/* ---------- moon switcher (phase sprite from hugo-paper) ---------- */
+
+.moon-btn {
+    position: relative;
+    border: 0;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    cursor: pointer;
+    background-color: transparent;
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: auto 24px;
+    transition: background-position 0.4s steps(7),
+    filter 1.6s cubic-bezier(0.45, 0.05, 0.35, 1);
+}
+
+/* linger over the moon for 15 patient seconds and the ring
+   approaches - once per hover. the animation-delay only elapses while
+   hovering, so patience is the trigger */
+/* the ring is laid out big and scaled down so Safari rasterizes the SVG at
+   full size - scaling a 24px raster up 45x renders pixelated */
+.moon-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 720px;
+    height: 720px;
+    margin: -360px 0 0 -360px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0;
+    transform: scale(0.013);
+    pointer-events: none;
+    will-change: transform, opacity;
+    /* fade-out on hover exit; the leave handler freezes the ring's current
+       frame inline, drops .ringing, and lets this transition carry it to 0 */
+    transition: opacity 0.6s ease;
+}
+
+/* growth and glow run as separate tracks. growth is one unbroken curve of
+   continuous acceleration - born small, drifting closer, monotonically
+   speeding up until it rushes past; no braking, no gear change. the glow
+   track appears early and vanishes with the final rush */
+/* exponential in size AND time: the size ladder keeps its good ratios,
+   while each keyframe segment lasts 0.85x the previous one - so the
+   animation runs faster at every keyframe, roughly doubling its speed.
+   the glow holds through the approach, then drops hard once the
+   acceleration stage begins */
+.moon-btn.ringing .moon-ring {
+    animation:
+        ring-grow 1.21s linear 15s,
+        ring-glow 1.21s linear 15s;
+}
+
+@keyframes ring-grow {
+    /* cruise: one linear segment, constant ~102px/s, 40px -> 116px */
+    0% {
+        transform: scale(0.055);
+    }
+    /* acceleration stage: opens at 0.13s pace, shrinking by 0.62x with
+       a 40ms floor (0.13s, 83ms, 52ms, then 40ms each) - instant kick
+       at onset, a readable terminal velocity at the end */
+    61.3% {
+        transform: scale(0.161);
+    }
+    72.4% {
+        transform: scale(0.18);
+    }
+    79.3% {
+        transform: scale(0.233);
+    }
+    83.5% {
+        transform: scale(0.28);
+    }
+    86.8% {
+        transform: scale(0.4);
+    }
+    90.1% {
+        transform: scale(0.58);
+    }
+    93.4% {
+        transform: scale(0.85);
+    }
+    96.7% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1.5);
+    }
+}
+
+@keyframes ring-glow {
+    0% {
+        opacity: 0;
+        animation-timing-function: cubic-bezier(0.2, 0.55, 0.35, 1);
+    }
+    12% {
+        opacity: 0.85;
+        animation-timing-function: ease;
+    }
+    61.3% {
+        opacity: 0.5;
+        animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.8);
+    }
+    83% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* going dark reads the timing below: an immediate first phase, then the
+   crescent rests on the last step instead of flashing in at the very end */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .moon-btn {
+        background-position: right center;
+        transition: background-position 0.45s steps(7, start),
+        filter 1.6s cubic-bezier(0.45, 0.05, 0.35, 1);
+    }
+}
+
+:root[data-theme='dark'] .moon-btn {
+    background-position: right center;
+    transition: background-position 0.45s steps(7, start),
+    filter 1.6s cubic-bezier(0.45, 0.05, 0.35, 1);
+}
+
+/* dusk cross-fade while switching; the moon keeps its own sprite slide */
+html.theme-fade body,
+html.theme-fade body *:not(.moon-btn) {
+    transition: background-color 0.8s ease,
+    color 0.8s ease,
+    border-color 0.8s ease !important;
+}

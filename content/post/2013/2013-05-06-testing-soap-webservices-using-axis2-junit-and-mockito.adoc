@@ -1,0 +1,121 @@
++++
+title = "Testing SOAP WebServices using Axis2, JUnit and Mockito"
+date = "2013-05-06T09:28:20"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "testing-soap-webservices-using-axis2-junit-and-mockito"
+wordpress_id = "83"
+url = "/2013/05/06/testing-soap-webservices-using-axis2-junit-and-mockito/"
+categories = ["Blog"]
++++
+Prior to this article I wrote about link:/blog/53-unit-testing-of-web-services-with-junit-soap-services.html[testing SOAP WebServices] locally. This was accomplished using JAX-WS. Lots of projects still use Axis or Axis2. Therefore I created a simple Axis2 setup to demonstrate JUnit-Testing of WebServices.
+
+<!--more-->
+
+== Approaching
+
+This was my first get in touch with Axis2. After some struggling with the dependencies I got it running. I’ve setup a WebService, the WeatherService. This Service requires a WeatherServiceSupplier to retrieve a Weather object. Pretty simple and straight forward. Now, I want to test the remote part of the WebService and use mocks for external stuff which is the WeatherServiceSupplier. After the service was created and registered in the services.xml we can step into the test phase.
+
+== Test phase vs. Real World
+
+In a real world application, you use perhaps Spring, J2EE, or other stuff. For sure, you don’t want to start up the whole stack just to test a WebService. To decouple your WebService from the stuff, which is not in scope, you’ve to define a set of classes which are under test. Axis2 requires a service class name and creates instances of the service itself, but you don’t want to change the class name for the test, just to make it testable. Therefore you have to tell Axis2 somehow to use special classes/instances for your test. These objects are prepared with mocks and must be integrated with Axis2. Luckily Axis2 allows you to specify a ServiceObjectSupplier parameter. The specified class has to implement the ServiceObjectSupplier interface and is used to retrieve instances of a service. In case you do not use ServiceObjectSuppliers in your production code, you can proceed with the examples. If you use ServiceObjectSuppliers within your service descriptors, you have to rethink about splitting them into production and test, to be able to inject custom objects.
+
+I used my test class, AxisServerAndClientTest as ServiceObjectSupplier. I manage all the dependencies in there: The Axis2-Server itself, the system under test (WeatherService) and the mocks. Most of the code is in order to setup the Axis2-Server or client.
+
+The used service is a very simple Pojo accessing an interface to retrieve the weather. In real world this interface would be implemented by a real service.
+
+[source,java]
+----
+public class WeatherService
+{
+    private WeatherServiceSupplier supplier;
+
+    public Weather getWeather(String location)
+    {
+        return supplier.getWeather(location);
+    }
+}
+
+public interface WeatherServiceSupplier
+{
+    Weather getWeather(String location);
+}
+----
+
+This snippet shows a part of the Test. You can find the full file https://github.com/mp911de/webservice-test-axis/blob/master/src/test/java/sample/AxisServerAndClientTest.java[here].
+
+[source,java]
+----
+@RunWith(MockitoJUnitRunner.class)
+public class AxisServerAndClientTest implements ServiceObjectSupplier
+{
+    @InjectMocks
+    private static WeatherService sut = new WeatherService();
+
+    @Mock
+    private static WeatherServiceSupplier supplier;
+
+    private static int port = RemoteUtil.findFreePort();
+    private static AxisServer server = new AxisServer();
+
+    @BeforeClass
+    // ...setup server...
+
+    @AfterClass
+    // ...stop server...
+    
+    @Test
+    public void getWeather() throws Exception
+    {
+        // Setup Mock
+        when(supplier.getWeather(anyString())).thenAnswer(new Answer<Weather>()
+        {
+            @Override
+            public Weather answer(InvocationOnMock invocation) throws Throwable
+            {
+                return new Weather(42, "It'll be sunny in " + invocation.getArguments()[0], false, 0);
+            }
+        });
+
+        // Axis 2 Client stuff
+        RPCServiceClient serviceClient = new RPCServiceClient();
+        Options options = serviceClient.getOptions();
+        
+        String endpoint = "http://localhost:" + port +
+                              "/axis2/services/WeatherService";
+
+        EndpointReference targetEPR = new EndpointReference(endpoint);
+        options.setTo(targetEPR);
+
+        // Getting the weather
+        QName opGetWeather = new QName("http://service.pojo.sample", 
+                                                         "getWeather");
+        Object[] opGetWeatherArgs = new Object[] { "Weinheim" };
+        Class[] returnTypes = new Class[] { Weather.class };
+
+        Object[] response = serviceClient.invokeBlocking(opGetWeather, 
+                                         opGetWeatherArgs, returnTypes);
+        Weather weather = (Weather) response[0];
+
+        // Assertions
+        assertEquals("It'll be sunny in Weinheim", weather.getForecast());
+    }
+
+    /**
+     * Callback-Method to retrieve the Service
+     *
+     * @param theService
+     * @return Service-Instance using Mocks
+     */
+    public Object getServiceObject(AxisService theService)
+    {
+        if (theService.getName().equals("WeatherService"))
+        {
+            return sut;
+        }
+        return null;
+    }
+}
+----
+
+You can find the code on GitHub, http://github.com/mp911de/webservice-test-axis. The project uses Maven for build.

@@ -1,0 +1,13 @@
++++
+title = "JBoss Development Deployer EAR Modul"
+date = "2011-05-08T13:27:23"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "jboss-development-deployer-ear-modul"
+wordpress_id = "37"
+url = "/2011/05/08/jboss-development-deployer-ear-modul/"
+categories = ["Blog"]
++++
+Demnächst ist es soweit. Das Release 0.6 des http://jb-dev-deploy.sourceforge.net/[JBoss Development Deployers] kommt im Mai. Das größte Feature ist das EAR-Deployment. In der EAR-Datei können die Pfad zur Entwicklungsumgebung angegeben werden und damit sind Redeployments oder schwierige JSP-Bearbeitungen im Temp-Verzeichniss des JBoss Vergangenheit. Derzeit befindet sich das Projekt noch in der Testphase, aber es hat zahlreiche Tests mit EJB, WAR (mit unteranderem JSF-Komponenten) und weiteren Modulen bestanden.
+
+Der JBoss Development Deployer ist unter http://jb-dev-deploy.sourceforge.net/ verfügbar.

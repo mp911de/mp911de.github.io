@@ -1,0 +1,46 @@
++++
+title = "Profil"
+date = "2008-01-10T08:00:00"
+draft = false
+slug = "leistungenprofil"
+wordpress_id = "14"
+url = "/2008/01/10/leistungenprofil/"
+categories = ["Uncategorised"]
++++
+Ich bin http://manifesto.softwarecraftsmanship.org[Software Craftsman], seit 2001. Kontinuierliche Verbesserung & Veränderung, Leichtgewichtigkeit (Lean) und Fokussierung gehören zu meinen Werten. Zu meinen Leistungen gehören:
+
+== Software-Engineering
+
+* Architekturentwurf
+* Projektarbeit
+* Frameworkentwicklung
+* Entwicklung
+* Zentrales Logging/Integration von Logstash
+* Integration von Redis
+* Build Management/Continuous Integration/Continuous Delivery
+* Einführung und Betreuung von agilen Entwicklungsmethoden (Scrum, Kanban)
+* Testautomatisierung
+* Performanceanalysen und Performance-Optimierung
+
+== Schulungen
+
+* Clean Code
+* Clean Architecture
+* Continuous Delivery
+* Einführung in Redis
+
+== Profil
+
+* link:/wp-content/uploads/2008/01/Profil-Mark-Paluch.pdf[Download Profil vom 22.12.2015]
+* link:/wp-content/uploads/2008/01/Kurzprofil-Mark-Paluch.pdf[Download Kurzprofil vom 22.12.2015]
+
+== Publikationen
+
+* link:/wp-content/uploads/2008/01/paluch_OS_04_13.pdf[Publikation: OBJEKTspektrum 04/2013: Testautomatisierung mit Continuous Integration: Ist manuelles Testen noch sinnvoll?]
+* link:/wp-content/uploads/2008/01/paluch_OS_04_10.pdf[Publikation: OBJEKTspektrum 04/2010: Code-Recycling (Refactoring)]
+
+== Frühere Projekte
+
+* link:/referenzen/7-adaccount.html[AdAccount]
+* link:/referenzen/1-print-on-demand-shop.html[Print on Demand - Shop]
+* link:/referenzen/19-inter-note-notenshop.html[INTER-NOTE - Notenshop]

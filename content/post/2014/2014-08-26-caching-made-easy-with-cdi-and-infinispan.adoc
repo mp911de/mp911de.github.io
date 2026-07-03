@@ -1,0 +1,67 @@
++++
+title = "Caching made easy with CDI and Infinispan"
+date = "2014-08-26T08:36:14"
+lastmod = "2025-01-03T22:49:13"
+draft = false
+slug = "caching-made-easy-with-cdi-and-infinispan"
+wordpress_id = "135"
+url = "/2014/08/26/caching-made-easy-with-cdi-and-infinispan/"
+categories = ["Blog"]
++++
+When CDI and Inifispan meet you've got the chance to improve your code a lot. Let's combine both to make all of your CDI beans @Cacheable.
+
+Caching of values usually goes this way:
+
+[source,java]
+----
+public String getSomething(String input) {
+    String result = cache.contains(input);
+    
+    if(result == null) {
+        result = getValueFromDatabase(input);
+        cache.put(input, result);
+    }
+    
+    return result;    
+}
+----
+
+This pattern repeats for every value which is cached/retrieved. Methods like the one above contain repetitive conditionals and value retrievals. Using the caching interceptor pattern eliminates the need for repetition. Business methods will be reduced back to their essence and caching becomes an aspect.
+
+[source,java]
+----
+@Cacheable
+public String getSomething(@CacheKey String input) {
+    return getValueFromDatabase(input);
+}
+----
+
+<!--more-->
+
+== How to:
+
+[arabic]
+. You need CDI (and http://infinispan.org/[Infinispan] if you re-use the code without altering it)
+. Grab the code from the https://gist.github.com/mp911de/1b068edb6613a809a239[Gist] and put it into your project
+. Annotate the methods you want to use the caching
+. Enable the caching interceptor in your beans.xml
+
+[source,xml]
+----
+<beans xmlns="http://java.sun.com/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://jboss.org/schema/cdi/beans_1_0.xsd">
+    <interceptors>
+        <class>...CachingInterceptor</class>
+    </interceptors>
+</beans>
+----
+
+[arabic, start=5]
+. Build yourself a clear operation to manually evict the cache, you'll need it.
+
+== Gist
+
+++++
+<script src="https://gist.github.com/mp911de/1b068edb6613a809a239.js" type="text/javascript"></script>
+++++

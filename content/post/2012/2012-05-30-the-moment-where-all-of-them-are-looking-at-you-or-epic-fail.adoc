@@ -1,0 +1,39 @@
++++
+title = "The moment where all of them are looking at you. Or: Epic Fail?"
+date = "2012-05-30T12:34:00"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "the-moment-where-all-of-them-are-looking-at-you-or-epic-fail"
+wordpress_id = "52"
+url = "/2012/05/30/the-moment-where-all-of-them-are-looking-at-you-or-epic-fail/"
+categories = ["Blog"]
++++
+There are days or weeks, you feel, every day something is failing. Crashing systems, strange bugs, ghosts. For some reason you don't know, why this happens, over and over. But you are the man in the middle. You're the one, having all those dependencies. Then you have to fix it.
+
+<!--more-->
+
+For sure, it's very annoying and sort of humiliating having a couple of people around you, always looking at your fingertips, what you're doing. In this moment, you don't have the slightest clue. What are you doing here? Pulling some experts, which also have no idea, what's going on. Looking very into detail, brings also no solution. It something sporadic, you can't fetch by your own. So what are you doing here? And why do you care at all?
+
+For me it became just too often reality. It really hurts, getting in such a situation. All your colleagues look up to you, hope you can fix it. So was I trying to fix it for a couple of times. Let me give you some insight and ideas, how maybe to aviod it.
+
+== Fixing DLL crashes - Talking ActiveX from Java
+
+In earlier times, where I thought, I could change the world, I was coding a GUI application. Nice Java thing, with some SWING user-interface. Not fast, but OK for early 2000's. Because it was some business app, we had sooner or later to integrate it with some 3rd-Party-Software. Unfortunately it was some native DLL which was Windows-based. Native and Java is not pretty cool, but some rare way, to enable that kind of integration. Well, me, keen Junior Java Dev, fetched some Visual C{plus}{plus} (after telling: It will not work stable) and started to create that integration. Suppose, I was for weeks on that, calling some 3 or 4 functions. And always these unpredictable crashes. Near to release date, it was 80% stable, but I was still stating: It's not reliable, and there is probably no way to make it stable.
+
+It came how it was supposed to. QA phase came, release date came, and this integration was still unstable. Then, a couple days before release, our company became a visit at 17h. A delegation of customer and 3rd-Party consultants. They wanted, well, help us on integration. Bit late, huh? All they did, was standing first around, forcing us, especially me, to produce quality. On that day, i started with C and did it all over the day. I had to stabilize that piece of software. First alone, then the visitors came. For the first 30 minutes, 4 people were standing around me, asking every 5 minutes something and giving every 8 minutes an advice, hints and so. If you were ever in such a situation, you knew, it won't help. It makes you nervous, every minute being asked and interrupted. Luckily, after this 30 to 40 minutes they went off having some talk (suppose they were bored).
+
+19h, 20h, no luck. Every 10 to 20 minutes somebody came to ask. Guess they thought, I wouldn't tell then, when I made it. 21h - they ordered pizza, I got some too, but ate it together with my computer. 22h - oh, some progress, 23h, hey, solution maybe found. At that time, the guys weren't much impressed of that and for sure not as euphoric as I was.
+
+After that it took for sure some more two hours to have it in a stable way, to have it in the software the correct integrated way, building the package and letting the QA take a look over it. That day I left at 2h in the night and I remember it as it would be yesterday. In the end, there was no thank you or sorry, we forced you with pressure. Some 2 or 3 years later the Software was abandoned and nobody used it, because strategies change. It's not worth, fighting that hard, it only kills you. If I would go home at 17h that day, It would be probably the last thing I did for that company.
+
+== The power to disrupt services for 1.000 customers a Minute (over two hours)
+
+Recently, just before leaving home i received a call. Someone from Incident management called me. "Umm, hello, do you know anything about your service level? It leads to login timeouts" was what I heard. And then i remembered, how it feels, being responsible, that over 1000 users/minute feel a service disruption. This leads then to multiple clicks, because a website is slow - perhaps it goes faster, when you as customer click twice or triple (with doubling/tripling also load on the backends).
+
+A look to the backend cluster told me, overload of Node 1, Node 1 not in cluster anymore. Then overload of Node 2 (it has now the load of two Nodes, because Node 1 is not active anymore) - overload. In meantime, Node 1 is back but Node 2 is offline. Pingpong. Affected customer count increases. Taking a look into the logs. You cannot really see, what the reason is. Well, database is slow, but in the next moment, database speeds up again. Strange. But it gets not better. Let's take a look at the monitoring. Hmm...there is no monitoring. Apparently, there was a workshop some months ago, but nobody cared. And also no one was really interested in new hardware. Those systems are quite old. Ok, Let‘s rethink with someone else. A look into the Thread-Count, Processor-Load and Memory-Usage says everything is fine. So what the heck happens here? And why is everything fast now?
+
+It turned out, that there were a lot of issues, which had impacts on the system. A new deployment, slower Backend-Databases, bad coding in High-Load components, Node-Overload and perhaps even a bad constellation between switching clusters.
+
+This Incident ended the same way it started: Somehow by it self, but it had also a positive effect. All the discussions about new hardware, new database servers, architecture changes found some listeners. Those actions were performed, since then the system is stable again.
+
+That are two stories, which left a very sustainable impression on me. It's hard, sometimes, and it's even harder to prevent those situations, even you recognize them. For me, are only a few ways left, how that stuff cannot harm me too much. For you: Find it out.

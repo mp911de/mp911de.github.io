@@ -1,0 +1,35 @@
++++
+title = "The future of lettuce"
+date = "2015-06-03T20:27:18"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "the-future-of-lettuce"
+wordpress_id = "215"
+url = "/2015/06/03/the-future-of-lettuce/"
+categories = ["Blog"]
++++
+In May 2014, I needed a Redis client. I had to collect log events within Redis (see https://github.com/mp911de/logcapture) during integration tests. The nature of integration tests and log events is, when tests are running, a lot is logged, but after the tests the connection is idle. Several clients caused connections to run into defective states, and I did not want remote log capturing kills my integration tests. So I took the best client amongst them all and started to fix the issues that were show stoppers.
+
+Now, about a year later, lettuce 3.2 is the most recent version, three versions were released since then. Developing lettuce is amazing. It's by far the most advanced low-level client. There are others like Spring Data Redis or Redisson that provide high-level functionality. I'm not talking about those high-level clients. I guess, my biggest mistake was connection pooling. I was supercilious, and I was convinced, that connection pooling is a killer feature and a must. I had only my use case on my mind. https://github.com/wg[@wg] https://github.com/wg/lettuce/pull/32#issuecomment-44167049[did not like connection pooling], too, and most probably it is the reason, why he never merged my pull request.
+
+However, my best decision was to start working on lettuce. I learned a lot, and I was able to support nearly all Redis 3.0 features: Sentinel, Cluster and a ton of commands. The features are well received, and the downloads increase every month.
+
+The question might arise: Where is the journey heading? What are the strategy and the roadmap?
+
+I want lettuce to be the most easy-to-use, advanced, and, flexible Java Redis client. I want to provide a synchronous, an asynchronous and a reactive API. https://github.com/mp911de/spinach[Spinach], the Java Disque client, is built on top of lettuce. A https://github.com/spring-projects/spring-data-redis/pull/104[pull request] for Spring Data Redis, upgrade lettuce to 3.2, is already in progress.
+
+The roadmap for lettuce 4.0:
+
+* Advanced Cluster API: Provide means to run commands on a selected set of cluster nodes
+* Pipelining for specific cluster commands
+* Improve RedisFuture
+* Add a reactive API
+* Drop Java 6 and 7 support and maintain the 3.x branch for a certain time.
+* Streamline connection resources, so that users can use different API's for the same resource
+* More community feedback
+
+I learned that plain Java futures are not flexible enough, that's the reason, why `RedisFuture` is a `ListenableFuture`. Lettuce 4.0 will use `CompleteableFutures` under the hood, and this will change the behavior. Currently `RedisFuture.get` does not throw an exception when the command errored within Redis. The ´RedisFuture.getError´ method provides the error text. `CompleteableFuture`'s require to complete either with a result or with an exception, and that, will be a breaking change for async users.
+
+Although downloads and the user base grow, the community around lettuce is far too small. I am grateful for every feedback and discussion on lettuce and it's API.
+
+I want the community to grow. I created recently the mailing list/Google Group https://groups.google.com/d/forum/lettuce-redis-client-users[lettuce-redis-client-users] and updated the contribution readme. https://github.com/mp911de/lettuce/issues[Github Issues] and the mailing list are great starting points to contribute.

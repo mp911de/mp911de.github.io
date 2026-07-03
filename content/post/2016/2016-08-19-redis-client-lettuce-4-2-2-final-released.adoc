@@ -1,0 +1,72 @@
++++
+title = "Redis Client lettuce 4.2.2.Final released"
+date = "2016-08-19T11:36:35"
+lastmod = "2025-01-03T22:48:02"
+draft = false
+slug = "redis-client-lettuce-4-2-2-final-released"
+wordpress_id = "259"
+url = "/2016/08/19/redis-client-lettuce-4-2-2-final-released/"
+categories = ["Blog"]
++++
+I just released lettuce 4.2.2.Final.
+
+This is a bugfix release that fixes several issues. Updating is recommended for +
+setups with frequent reconnects or frequent cluster topology changes during runtime.
+
+<!--more-->
+
+Thanks to all who made this release possible.
+
+lettuce 4.2.2 requires Java 8 and cannot be used with Java 6 or 7.
+
+== Commands
+
+* Deprecate SYNC command https://github.com/mp911de/lettuce/issues/319[++#++319]
+
+== Fixes
+
+* Fix sync/async/reactive methods for thread-safe https://github.com/mp911de/lettuce/pull/302[++#++302] (Thanks to https://github.com/jongyeol[@jongyeol])
+* Allow coordinated cross-slot execution using Iterable https://github.com/mp911de/lettuce/pull/303[++#++303] (Thanks to https://github.com/agodet[@agodet])
+* Allow MasterSlave connection using Sentinel if some Sentinels are not available https://github.com/mp911de/lettuce/issues/304[++#++304] (Thanks to https://github.com/RahulBabbar[@RahulBabbar])
+* Don't call AUTH in topology refresh https://github.com/mp911de/lettuce/issues/313[++#++313]
+* Record sent-time on queueing https://github.com/mp911de/lettuce/issues/314[++#++314] (Thanks to https://github.com/HaloFour[@HaloFour])
+* CommandHandler notifications called out of order https://github.com/mp911de/lettuce/issues/315[++#++315]
+* Fix ask redirection https://github.com/mp911de/lettuce/issues/321[++#++321] (Thanks to https://github.com/kaibaemon[@kaibaemon])
+* Check for isUnsubscribed() before calling subscriber methods https://github.com/mp911de/lettuce/issues/323[++#++323] (Thanks to https://github.com/vleushin[@vleushin])
+* Replace synchronized setters with volatile fields https://github.com/mp911de/lettuce/issues/326[++#++326] (Thanks to https://github.com/guperrot[@guperrot])
+* Store error at output-level when using NestedMultiOutput https://github.com/mp911de/lettuce/pull/328[++#++328] (Thanks to https://github.com/jongyeol[@jongyeol])
+* Fix master and slave address parsing for IPv6 addresses https://github.com/mp911de/lettuce/issues/329[++#++329] (Thanks to https://github.com/maksimlikharev[@maksimlikharev])
+* Guard command completion against exceptions https://github.com/mp911de/lettuce/issues/331[++#++331] (Thanks to https://github.com/vleushin[@vleushin])
+* Use a read-view for consistent Partition usage during Partitions updates https://github.com/mp911de/lettuce/issues/333[++#++333] (Thanks to https://github.com/OutOfBrain[@OutOfBrain])
+
+== Other
+
+* Improve test synchronization in PubSubRxTest https://github.com/mp911de/lettuce/issues/216[++#++216]
+* Change MethodTranslator's loadfactor to 1.0 for sync APIs performance https://github.com/mp911de/lettuce/pull/305[++#++305] (Thanks to https://github.com/jongyeol[@jongyeol])
+* Use at least 3 Threads when configuring default thread count https://github.com/mp911de/lettuce/issues/309[++#++309]
+* Replace own partition host and port only if the reported connection point is empty https://github.com/mp911de/lettuce/issues/312[++#++312]
+* Add workaround for IPv6 parsing https://github.com/mp911de/lettuce/issues/332[++#++332]
+* Provide multi-key-routing for exists and unlink commands using Redis Cluster https://github.com/mp911de/lettuce/issues/334[++#++334]
+* Add ConnectionWatchdog as last handler https://github.com/mp911de/lettuce/issues/335[++#++335]
+* Upgrade netty to 4.0.40.Final https://github.com/mp911de/lettuce/issues/336[++#++336]
+* Upgrade rxjava to 1.1.9 https://github.com/mp911de/lettuce/issues/337[++#++337]
+
+lettuce requires a minimum of Java 8 to build and run. It is tested continuously +
+against the latest Redis source-build.
+
+Javadoc: http://redis.paluch.biz/docs/api/releases/4.2.2.Final/
+
+Maven coordinates:
+
+*4.2.2.Final*
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>4.2.2.Final</version>
+</dependency>
+----
+
+Any feedback is appreciated or file an https://github.com/mp911de/lettuce/issues[issue on GitHub].

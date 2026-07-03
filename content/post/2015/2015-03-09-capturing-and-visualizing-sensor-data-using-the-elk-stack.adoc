@@ -1,0 +1,91 @@
++++
+title = "Capturing and visualizing sensor data using the ELK stack"
+date = "2015-03-09T17:27:20"
+lastmod = "2025-01-03T22:49:03"
+draft = false
+slug = "capturing-and-visualizing-sensor-data-using-the-elk-stack"
+wordpress_id = "207"
+url = "/2015/03/09/capturing-and-visualizing-sensor-data-using-the-elk-stack/"
+categories = ["Blog"]
++++
+One day a coworker came to me convincing me: Let’s do something cool with internet of things and sensors. Until now, I did not know anything about IoT sensors but my first idea was a sonic sensor that tells the distance.
+
+<!--more-->
+
+The idea behind IoT sensors is a network connected device that provides some data about something. Temperature, humidity, brightness, distance, electric power consumption, and many more. All the data is collected or submitted somewhere, and something else can react on this data. For example a temperature sensor in a house notices that the temperature goes down, smart heating could fire up and raise the temperature. Another use case could be refilling oil-fired heatings. I have myself such one. Once in a while I need to order fuel oil as soon as the fuel level reaches a certain threshold. A smart sensor could trigger notifications or even orders to my local oil dealer, so I get a delivery before I run out of fuel.
+
+But how to transport sensor data? Either you use http://mqtt.org/[MQTT] or do it on your own, for example using logstash.
+
+I’m a big fan of the ELK stack, and I maintain https://github.com/mp911de/logstash-gelf[logstash-gelf], a GELF connector for various Java-based logging frameworks. I came to the point the ELK stack is suitable for much more than log or transactional data. Event sourcing with the ELK stack allows a very detailed insight into applications and provides real-time monitoring of a business. logstash has versatile connectors and one of them is the TCP input combined with JSON. logstash allows you to pipeline the data somewhere: Towards ElasticSearch, triggering nagios events, sending E-Mails and many more.
+
+I created a test setup incorporating a RaspberryPi carrying a http://www.modmypi.com/blog/hc-sr04-ultrasonic-range-sensor-on-the-raspberry-pi[ultrasonic range sensor] and an ELK stack setup.
+
+link:/images/external/iot-distancemeter/iot-distancemeter.jpg[image:/images/external/iot-distancemeter/iot-distancemeter.jpg[RaspberryPi]]
+
+The RaspberryPi is sending its data regularly to logstash using the TCP input using JSON. JSON is the simplest data format available on IoT platforms. Any binary protocol would work out as well but is harder to implement. Sensor data is received by logstash and forwarded to ElasticSearch. The Kibana dashboard allows to select the data and create visualizations for the data.
+
+Here is the Python code running on the RaspberryPi gathering the distance value from the sonic sensor and submitting it to logstash (Find here more details on wiring the sonic sensor):
+
+[source,python]
+----
+import socket
+import json
+import time
+from distancemeter import get_distance,cleanup
+
+# Logstash TCP/JSON Host
+JSON_PORT = 9400
+JSON_HOST = '192.168.55.34'
+
+if __name__ == '__main__':
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((JSON_HOST, JSON_PORT))
+
+        while True:
+            distance = get_distance()
+            data = {'message': 'distance %.1f cm' % distance, 'distance': distance, 'hostname': socket.gethostname()}
+
+            s.send(json.dumps(data))
+            s.send('\n')
+            print ("Received distance = %.1f cm" % distance)
+            time.sleep(0.2)
+
+    # interrupt
+    except KeyboardInterrupt:
+        print("Program interrupted")
+----
+
+The logstash config contains two config elements: The input and the output. The input is a simple TCP input accepting messages in JSON format. The output goes straight to ElasticSearch:
+
+[source,ruby]
+----
+input{
+  tcp{
+    port => 9400
+    codec => "json_lines"
+  }
+}
+
+output{
+  elasticsearch_http{
+    host => "localhost"
+    port => 9200
+    index => "distance-%{+YYYY.MM.dd}"
+  }
+}
+----
+
+The visualization on the Kibana frontend displays tabular data and a trend of the distance: link:/images/external/iot-distancemeter/distancemeter-kibana3.png[image:/images/external/iot-distancemeter/distancemeter-kibana3.png[Kibana Visualization]]
+
+Playing around with the setup is great fun. The setup is minimal with maximum effect. I posted the code on https://github.com/mp911de/iot-distancemeter so you can try it yourself. The Github samples also contain a demo using https://github.com/mp911de/iot-distancemeter/blob/master/distancemeter_mqtt.py[MQTT] that is straightforward as well.
+
+https://twitter.com/jordansissel[@jordansissel] is having a talk on http://www.elasticon.com/apex/Elastic_ON_Agenda[March 11] about time series data playing around with sensors. Don't miss it!
+
+++++
+<blockquote class="twitter-tweet" lang="de"><p><a href="https://twitter.com/mp911de">@mp911de</a> hey cool! <a href="https://twitter.com/simianhacker">@simianhacker</a> and I are doing a talk on this topic at ElasticON a next week!</p>&mdash; @jordansissel (@jordansissel) <a href="https://twitter.com/jordansissel/status/572876547167678467">3. März 2015</a></blockquote>
+++++
+
+++++
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+++++

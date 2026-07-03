@@ -1,0 +1,223 @@
++++
+title = "Conferences"
+date = "2017-08-22T11:43:07"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "conferences"
+wordpress_id = "265"
+url = "/2017/08/22/conferences/"
+categories = ["Allgemein"]
++++
+== My upcoming events
+
+Oct 8th 2019
+
+*SpringOne Platform*
+
+Building event-driven Java applications using Redis Streams
+
+=== Past events
+
+June 24th 2019
+
+*Devoxx PL*
+
+https://cfp.devoxx.pl/talk/BTM-3733/Reactive_Relational_Database_Connectivity[Reactive Relational Database Connectivity]
+
+June 6th 2019
+
+*JUG Munich*
+
+Reactive Relational Database Connectivity
+
+May 23 2019
+
+*Spring Meetup Paris*
+
+Reactive Relational Database Connectivity
+
+May 14 2019
+
+*Java User Group Sevillia*
+
+https://www.meetup.com/de-DE/SVQJUG/events/256148846/[Reactive Relational Database Connectivity]
+
+May 8 2019
+
+*Devoxx UK*
+
+https://devoxxuk19.confinabox.com/talk/SNC-8613/Building_event-driven_Java_applications_using_Redis_Streams[Building event-driven Java applications using Redis Streams]
+
+April 25 2019
+
+*JUX Saxony*
+
+https://jugsaxony.org/veranstaltungen/113/reactive_relational_database_access/[Reactive Relational Database Connectivity]
+
+April 24 2019
+
+*JUG Berlin Brandenburg*
+
+http://jug-berlin-brandenburg.de/blog/2019/r2dbc.html[Reactive Relational Database Connectivity]
+
+April 08-12 2019
+
+*JUG CH Bern*
+
+https://www.jug.ch/html/events/2019/reactive_relational_database_access_be.html[Reactive Relational Database Connectivity]
+
+*JUG CH Luzern*
+
+https://www.jug.ch/html/events/2019/reactive_relational_database_access_lu.html[Reactive Relational Database Connectivity]
+
+*JUG CH Zürich*
+
+https://www.jug.ch/html/events/2019/reactive_relational_database_access_zh.html[Reactive Relational Database Connectivity]
+
+*EJUG AT Linz*
+
+Reactive Relational Database Connectivity
+
+*EJUG AT Vienna*
+
+https://www.meetup.com/de-DE/Enterprise-Java-User-Group-Austria/events/259323152/[Reactive Relational Database Connectivity]
+
+April 01-05 2019
+
+*microXchg 2019*
+
+http://microxchg.io/2019[Reactive Relational Database Connectivity]
+
+*EuregJUG*
+
+http://www.euregjug.eu/2019/02/06/reactive-relational-database-access-r2dbc[Reactive Relational Database Connectivity]
+
+*JUG Paderborn*
+
+https://calendar.google.com/calendar/embed?src=u17n4jh1q5gk920j7m4dera66s%40group.calendar.google.com&ctz=Europe%2FBerlin[Reactive Relational Database Connectivity]
+
+*JUG Hamburg*
+
+Reactive Relational Database Connectivity
+
+*JUG Hannover*
+
+https://www.meetup.com/de-DE/Java-User-Group-Hannover/events/256180939/[Reactive Relational Database Connectivity]
+
+March 26-28 2019
+
+*JUG Saar*
+
+https://www.meetup.com/de-DE/Java-User-Group-Saarland-jugsaar/events/256146252[Reactive Relational Database Connectivity]
+
+*JUG Mannheim*
+
+http://www.majug.de/2019/03/27/reactive-relational-database-connectivity/[Reactive Relational Database Connectivity]
+
+*JUG Stuttgart*
+
+https://www.jugs.org/va2019/03-28.html[Reactive Relational Database Connectivity]
+
+March 20-22 2019
+
+*Voxxed Days Bucharest*
+
+https://romania.voxxeddays.com/bucharest/2019-03-20/[Reactive Relational Database Connectivity]
+
+March 13 2019
+
+*Java User Group Karlsruhe*
+
+https://www.meetup.com/de-DE/Java-User-Group-Karlsruhe/events/258235982/[Reactive Relational Database Connectivity]
+
+March 13 2019
+
+*Java User Group Karlsruhe*
+
+https://www.meetup.com/de-DE/Java-User-Group-Karlsruhe/events/258235982/[Reactive Relational Database Connectivity]
+
+November 15, 2018
+
+*Redis Day 2018, London*
+
+https://speakerdeck.com/mp911de/building-event-driven-java-applications-using-redis-streams[Slides] • https://github.com/mp911de/redis-stream-demo[Code] • https://www.youtube.com/watch?v=YUDOi79upOM[Video]
+
+November 8, 2018
+
+*Java User Group Hamburg*
+
+https://www.meetup.com/de-DE/jug-hamburg/events/255863090/[Neues aus der Java-Welt: Das bringt CDI 2.0] • https://speakerdeck.com/mp911de/whats-new-in-cdi-2-dot-0-at-jug-hh[Slides] • https://github.com/mp911de/cdi-2.0[Code]
+
+September 24-27, 2018
+
+*SpringOne Platform 2018, Washington DC*
+
+https://www.youtube.com/watch?v=G6ejyX59vY8[Under the Hood of Reactive Data Access]
+
+May 23-25, 2018
+
+*Spring I/O 2018, Barcelona*
+
+https://2018.springio.net/sessions/under-the-hood-of-reactive-data-access[Under the Hood of Reactive Data Access]
+
+Apr 25, 2018
+
+*JAX 2018, Mainz*
+
+https://jax.de/core-java-jvm-languages/jvm-data-access-experts-panel/[JVM Data Access Panel]
+
+Dec 04-07, 2017
+
+*SpringOne Platform, San Francisco*
+
+https://springoneplatform.io/sessions/under-the-hood-of-reactive-data-access[Under the Hood of Reactive Data Access]
+
+Nov 09, 2017
+
+*JUG CH, Zurich*
+
+https://www.jug.ch/html/events/2017/testing_with_spring_boot_zh.html[Testing with Spring Boot] • https://github.com/mp911de/testing-with-spring-boot[Code]
+
+Nov 08, 2017
+
+*JUG CH, Bern*
+
+https://www.jug.ch/html/events/2017/reactive_spring.html[Reactive Spring] • https://speakerdeck.com/mp911de/reactive-spring[Slides] • https://github.com/mp911de/reactive-spring/tree/complete[Code]
+
+Oct 10, 2017
+
+*rheinJUG, Düsseldorf*
+
+https://www.meetup.com/de-DE/preview/rheinJUG/events/243539896[Reactive Spring] • https://speakerdeck.com/mp911de/reactive-spring[Slides] • https://github.com/mp911de/reactive-spring/tree/complete[Code]
+
+Sept 07, 2017
+
+*JUG Ostfalen*
+
+http://www.jug-ostfalen.de/event/2017/09/07/cdi.html[What's new in CDI 2.0 (JSR365)] • https://speakerdeck.com/mp911de/cdi-2-dot-0[Slides] • https://github.com/mp911de/cdi-2.0[Code]
+
+Jul 05, 2017
+
+*MaJUG Mannheim*
+
+http://www.majug.de/2017/07/05/spring-data-mongodb-deep-dive/[Spring Data MongoDB Deep Dive] • https://speakerdeck.com/mp911de/spring-data-mongodb-deep-dive[Slides] • https://github.com/mp911de/majug-spring-data-mongodb-deep-dive[Code]
+
+Jun 21 - 23, 2017
+
+*Devoxx PL, Krakow*
+
+* http://cfp.devoxx.pl/2017/talk/CEA-3379/Reactive_Meets_Data_Access[Reactive Meets Data Access] • https://speakerdeck.com/mp911de/reactive-meets-data-access[Slides] • http://mp911.de/reactive-meets-data-access-code[Code]
+* http://cfp.devoxx.pl/2017/talk/LRH-3758/Managing_secrets_at_scale[Managing Secrets at Scale] • https://speakerdeck.com/mp911de/managing-secrets-at-scale-devoxxpl2017[Slides] • https://github.com/mp911de/spring-cloud-vault-config-samples[Code]
+
+May 21 - 23, 2017
+
+*JAX, Mainz*
+
+https://jax.de/serverside-enterprise-java/montag-08-05-2017-reactive-spring/[Reactive Spring Workshop] • https://speakerdeck.com/mp911de/reactive-spring[Slides] • https://github.com/mp911de/reactive-spring[Code]
+
+Mar 28-29, 2017
+
+*JavaLand, Brühl*
+
+* https://programm.javaland.eu/2017/talk.html#talk?talkId=529412[Bau dir einen SuperPiBoy]
+* https://programm.javaland.eu/2017/talk.html#talk?talkId=531883[Reactive Coding Workshop mit Spring Boot]

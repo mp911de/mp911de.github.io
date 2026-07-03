@@ -1,0 +1,54 @@
++++
+title = "Disque Client spinach 0.2 released"
+date = "2015-09-25T08:22:43"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "disque-client-spinach-0-2-released"
+wordpress_id = "228"
+url = "/2015/09/25/disque-client-spinach-0-2-released/"
+categories = ["Blog"]
++++
+I released https://github.com/mp911de/spinach[spinach] 0.2 today. image:/images/external/github-emoji/1f422.png[/images/external/github-emoji/1f422]image:/images/external/github-emoji/1f422.png[/images/external/github-emoji/1f422]
+
+This release addresses minor issues and allows to use lettuce 3.3.Final. It adds support for more Disque commands and eases creation of a DisqueURI.
+
+<!--more-->
+
+== Enhancements
+
+* Provide a Reactive API https://github.com/mp911de/spinach/issues/4[++#++4] (shipped with 0.1.1)
+* Implement CLUSTER commands https://github.com/mp911de/spinach/issues/5[++#++5] (shipped with 0.1.1)
+* Implement JSCAN command https://github.com/mp911de/spinach/issues/6[++#++6] (shipped with 0.1.1)
+* Implement NACK command https://github.com/mp911de/spinach/issues/11[++#++11]
+* Upgraded lettuce from 3.2.Final to 3.3.Final https://github.com/mp911de/spinach/pull/13[++#++13] (Thanks to https://github.com/pulse00[@pulse00])
+
+== Other Changes
+
+* Bump rxjava to 1.0.14
+* Polishing and sugar for DisqueURI
+
+For complete information on spinach see the websites:
+
+* https://github.com/mp911de/spinach[http://github.com/mp911de/spinach]
+* http://spinach.paluch.biz.
+
+== Links
+
+* https://github.com/mp911de/spinach/releases/tag/0.2[Release on Github]
+* link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.redis%22%20AND%20a%3A%spinach%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/redis/spinach/0.2/spinach-0.2.jar[Download spinach 0.2]
+* https://github.com/mp911de/spinach/wiki[Wiki]
+* http://spinach.paluch.biz[Maven Site (Javadoc)]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>spinach</artifactId>
+    <version>0.2</version>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/spinach/issues[issues on GitHub].

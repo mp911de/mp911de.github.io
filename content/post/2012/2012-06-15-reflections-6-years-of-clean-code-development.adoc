@@ -1,0 +1,30 @@
++++
+title = "Reflections: 6 Years of Clean Code Development"
+date = "2012-06-15T19:32:07"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "reflections-6-years-of-clean-code-development"
+wordpress_id = "54"
+url = "/2012/06/15/reflections-6-years-of-clean-code-development/"
+categories = ["Blog"]
++++
+Now it's 6 years ago, since I started to apply Clean Code Development (CCD). For me it's today way more than http://www.clean-code-developer.com/[clean-code-developer.com]. It became a system of values, based on best practices, principles and a set of pragmatism.
+
+<!--more-->
+
+Clean Code Development (CCD) is - in short words - a very good definition, what professional software development should be. The Clean Code Developer initiative describes a well selected set like http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)[SOLID] principles, Keep it Simple, Test First. By applying these rules, you can really make sure, that spaghetti code, god classes and lying method names belong to the ancient past.
+
+CCD is derived from ideas and books from Martin Fowler, Robert C. Martin (Uncle Bob), Kent Beck and many more. Over the last years, lots of bad styles were discovered. Reasons for bad code are very different. But the top three are:
+
+[arabic]
+. Deadlines (No time)
+. Lack of knowledge
+. No need for clean code
+
+In my past projects I've seen lots of bad code. And true, there was also a time, where I didn't know the rules of professional software development. In that time I wrote lots of bad styled code. There's also the truth, that a lot of recent projects can state, they have clean code. More and more developers get interested in that topic, lots of managers too. Since some managers found out, they save time and money by going the clean code way, it became more popular. And in some companies even a law.
+
+CCD is an aspect of quality. This quality aspect begins in every developers head. Devs have to accept, investing more time in coding is worth the time. This is the time, which is going to be saved at least 3 times (while bugfixing, QA, enhancements, new employee introduction into the code and many more). In depth, Clean Code is a lot more. It's a life insurance for refactoring, enhancements - because it unit tested with a great test coverage.
+
+High quality within high performance teams is possible. Currently I'm passing the knowledge to individual developers or whole teams. Based on the Clean Code ideas Clean Code Training is a great fun. It remembers all participants what the roots of Clean Code are - it's fascinating, how much developers are interested in this topic. It leads to discussions with practical examples, how to solve a problem, how to introduce a principle or how to apply a practice.
+
+In the end, it all starts with Clean Code thinking and proceeds with small steps. It is possible to achieve real clean code, to have no bugs and to provide features on time. It's a great achievement.

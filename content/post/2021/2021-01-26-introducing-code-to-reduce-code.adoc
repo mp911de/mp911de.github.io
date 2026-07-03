@@ -1,0 +1,167 @@
++++
+title = "Introducing Code to reduce Code"
+date = "2021-01-26T10:30:27"
+lastmod = "2025-01-03T22:48:01"
+draft = false
+slug = "introducing-code-to-reduce-code"
+wordpress_id = "277"
+url = "/2021/01/26/introducing-code-to-reduce-code/"
+categories = ["Blog"]
++++
+____
+How adding a functional utility helps to avoid code duplications and leads to more readable code.
+____
+
+In https://github.com/spring-projects/spring-data-redis[Spring Data Redis], we support multiple Redis clients – Jedis and Lettuce. +
+Commands can be invoked either directly, in a transaction, or using pipelining.
+
+Direct commands get invoked – as the name probably reveals – directly by calling a client method and returning the result. In some cases, results require post-processing because the Redis driver reports a `Long` while Spring Data Redis would like to return `Boolean` or the driver returns a driver-specific type that requires conversion in a Spring Data type.
+
+<!--more-->
+
+Spring Data Redis also wants to provide a consistent exception experience so exception translation is as well part of what’s required when interacting with a Redis driver.
+
+In contrast to direct calls, we also have pipelining and transactions. Both of these defer the actual result until a later synchronization point. What’s happening when calling a Redis command on the Spring Data Redis API is that we call a pipelined or transactional variant of the Redis driver’s command method. These return typically a handle (`Response` or `Future`) that needs to be collected and potentially post-processed (conversion, exception translation).
+
+That has lead to code like the following:
+
+[source,java]
+----
+// Jedis
+@Override
+public DataType type(byte[] key) {
+
+    Assert.notNull(key, "Key must not be null!");
+
+    try {
+        if (isPipelined()) {
+            pipeline(
+                    connection.newJedisResult(connection.getRequiredPipeline().type(key), JedisConverters.stringToDataType()));
+            return null;
+        }
+        if (isQueueing()) {
+            transaction(connection.newJedisResult(connection.getRequiredTransaction().type(key),
+                    JedisConverters.stringToDataType()));
+            return null;
+        }
+        return JedisConverters.toDataType(connection.getJedis().type(key));
+    } catch (Exception ex) {
+        throw connection.convertJedisAccessException(ex);
+    }
+}
+
+@Override
+public Set<byte[]> keys(byte[] pattern) {
+
+    Assert.notNull(pattern, "Pattern must not be null!");
+
+    try {
+        if (isPipelined()) {
+            pipeline(connection.newJedisResult(connection.getRequiredPipeline().keys(pattern)));
+            return null;
+        }
+        if (isQueueing()) {
+            transaction(connection.newJedisResult(connection.getRequiredTransaction().keys(pattern)));
+            return null;
+        }
+        return connection.getJedis().keys(pattern);
+    } catch (Exception ex) {
+        throw connection.convertJedisAccessException(ex);
+    }
+}
+
+// Lettuce
+@Override
+public Long exists(byte[]... keys) {
+
+    Assert.notNull(keys, "Keys must not be null!");
+    Assert.noNullElements(keys, "Keys must not contain null elements!");
+
+    try {
+        if (isPipelined()) {
+            pipeline(connection.newLettuceResult(getAsyncConnection().exists(keys)));
+            return null;
+        }
+        if (isQueueing()) {
+            transaction(connection.newLettuceResult(getAsyncConnection().exists(keys)));
+            return null;
+        }
+        return getConnection().exists(keys);
+    } catch (Exception ex) {
+        throw convertLettuceAccessException(ex);
+    }
+}
+----
+
+There are multiple issues with this code:
+
+[arabic]
+. Repetition of exception translation in each method (`try…catch` blocks)
+. Decision of the execution mode in each command (`isPipelined`, `isQueueing`)
+. Multiple method exists (`return`)
+. Duplication of `pipeline` and `newLettuceResult`/`newJedisResult` calls
+. Code is error-prone for subtle bugs. Either the wrong method is called, or the args list can be incomplete or a result conversion might be missing.
+. Probable even more issues here.
+
+As you see, the current arrangement isn’t ideal. We started investigating on how to improve and came up with various approaches:
+
+[source,java]
+----
+    public Long exists(byte[]... keys) {
+    Assert.notNull(keys, "Keys must not be null!");
+    Assert.noNullElements(keys, "Keys must not contain null elements!");
+        
+    return doCall(connection -> connection.exists(keys), asyncConnection -> asyncConnection.exists(keys));
+}
+----
+
+Much better as a lot of the duplication is already gone. Still duplications as we operate on different APIs. Luckily, for Lettuce we can simplify the variant to a single method call. We don’t require a distinction of method calls between direct/pipelining/transactional invocations as Lettuce can return a `RedisFuture` in every case and Spring Data Redis can sort out the synchronization:
+
+[source,java]
+----
+return doCall(connection -> connection.exists(keys));
+----
+
+Better. But we can do probably even better which can improve readability. While having two closing parenthesis at the end isn’t a major concern, it’s still something that we can improve on. Also, we end up with a capturing lambda here. So let’s turn this code into a non-capturing Lambda with improved readability.
+
+[source,wp-block-code]
+----
+return connection.invoke().just(RedisKeyAsyncCommands::exists, keys);
+----
+
+We end up with a method reference and pass on the `keys` argument without capturing it. Conversion of results clearly adds to the complexity. With a proper fluent API declaration, using conversions becomes as simple as using the Java 8 Stream API:
+
+[source,wp-block-code]
+----
+connection.invoke().from(RedisKeyAsyncCommands::type, key).get(LettuceConverters.stringToDataType())
+
+// List example:
+
+return connection.invoke().fromMany(RedisHashAsyncCommands::hmget, key, fields)
+                .toList(source -> source.getValueOrElse(null));
+----
+
+What we’ve achieved is reduction of duplications and surface for potential bugs. However, that refactoring requires a bit of infrastructure. The key here is to capture the intent of the method invocation which can be applied in different contexts: Direct, transactional, and pipelining. The method invocation is only complete when we also capture how the result gets consumed – with or without a converter. That led to the introduction of `LettuceInvoker` (we started with Lettuce first). The invoker defines a series of method overloads and functional interfaces:
+
+[source,java]
+----
+<R> R just(ConnectionFunction0<R> function);
+<R, T1> R just(ConnectionFunction1<T1, R> function, T1 t1);
+…
+<R, T1, T2, T3, T4, T5> R just(ConnectionFunction5<T1, T2, T3, T4, T5, R> function, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5);
+
+interface ConnectionFunction0<R> {
+    RedisFuture<R> apply(RedisClusterAsyncCommands<byte[], byte[]> connection);
+}
+
+interface ConnectionFunction1<T1, R> {
+    RedisFuture<R> apply(RedisClusterAsyncCommands<byte[], byte[]> connection, T1 t1);
+}
+----
+
+The underlying implementation delegates the actual invocation to a single place that decides over the execution mode (direct/pipelining/transactional) simplifying maintenance in return. +
+Right now, `LettuceInvoker` works with capturing lambdas internally, but that’s an implementation detail that is isolated within `LettuceInvoker`. It doesn’t sprawl across the entire code base. It can be improved without touching all other methods.
+
+Here’s the https://github.com/spring-projects/spring-data-redis/blob/34b84543fdad9a2f82fee88b395eebca570385b7/src/main/java/org/springframework/data/redis/connection/lettuce/LettuceInvoker.java[full code of `LettuceInvoker`]
+
+There’s still a bit of challenge to improve debugging experience with `LettuceInvoker`. As net result, we introduced about 600 lines of code to remove 2900 lines of code which is a better result than expected.

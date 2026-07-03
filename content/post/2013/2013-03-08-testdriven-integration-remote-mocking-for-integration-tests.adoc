@@ -1,0 +1,123 @@
++++
+title = "Testdriven integration: Remote mocking for integration tests"
+date = "2013-03-08T13:23:57"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "testdriven-integration-remote-mocking-for-integration-tests"
+wordpress_id = "76"
+url = "/2013/03/08/testdriven-integration-remote-mocking-for-integration-tests/"
+categories = ["Blog"]
++++
+In my last post about link:index.php?option=com_content&view=article&id=70;testdriven-integration-remote-mocking-for-integration-tests&catid=8;blog&Itemid=108[Integrationtest-driven development/Test-driven integration] I was talking how to get started with integration testing. Sometimes it comes to the point, where your integration tests need more than only a database and a running system: You have additional dependencies like EJB's or Web-Services. What now? You can't always rely on test-systems: Sometimes there aren't any or only shared instances exist. Sometimes it's even harder to simulate a specific scenario using real services because of data and logic dependencies.
+
+<!--more-->
+
+== Remote Mocking
+
+For exactly those cases (and also decoupling) you should use remote mocking. This principle consists of providing a test dummy using remote interfaces. You simply re-implement a interface according to its spec for the really necessary parts. Then you use it.
+
+You might state: "That's simple" or "It can't be that easy" and you are right in both cases. There are for sure cases, where such a remote mocking approach does not work. For all the other cases: Let's take a look what's really going on. You can also pick up the code at Github: https://github.com/mp911de/remote-mocking
+
+=== What does a mock consist of?
+
+What is a mock? What is a remote mock? How are they different? And what do they do?
+
+A http://en.wikipedia.org/wiki/Mock_object[mock object] is an simulated object that mimics the behavior of a real object in controlled way. This implies, that you have a specific interface (API or spec), that you want to have simulated. SOAP APIs described in WSDL's are a wonderful example. A different good example is an EJB service. Both have an functional interface which can use a model for data interchange. REST services currently have no really standardized documentation form (WADL is just a trial).
+
+A regular code mock is instrumented using a http://www.sizovpoint.com/2009/03/java-mock-frameworks-comparison.html[mock framework]. The data is stored somehow in the context/thread context - so it's in-memory. After your VM/runtime is stopped, there is no trace and data available, what was stored in the memory. The next start requires again a setup in the memory. But you're lucky: Since you're going to write the test, you can write that bunch of code-lines to setup the mocks in the way you need them. Remote mocks are slightly different: The're mostly outside of your VM/runtime, which carries the tests. So you have no possibility to tell the mocks, how to behave or even perform any verifications. In addition to that, these mocks are not bound to your local process, the're remote and might be used by other's too, since the're remote. And this is the big difference to local/in-memory mocks: Decoupled and shared. And sometimes the mocks will survive your test (You don't want to start for each test a server...really.) which means, these mocks have a specific state in the moment your runtime starts up.
+
+This isn't really a problem. You have just to be aware of it. Now, what do mocks regularly: They behave the way you want them to behave (i.e. return predefined values in case predefined arguments are passed) and you can verify whether they were called (and inspect the parameters of the invocation). Pretty simple. So let's build a remote mocking framework. Or https://github.com/mp911de/remote-mocking[look here].
+
+[source,java]
+----
+  /**
+   * Setup mock data.
+   *
+   * @throws Exception
+   */
+  public void setupMockData() throws Exception {
+     
+      URL url = getClass().getResource("/mock-response.xml");
+
+      String contents = FileUtils.readFileToString(new File(url.toURI()));
+      String invocationKey = "AwsItemSearchWs/itemSearch/myId";
+
+      mockManagement.put(invocationKey, contents);
+  }
+
+  /**
+   * Here comes your remote service call. This time explicit to the mock.
+   *
+   * @throws Exception
+   */
+
+  public void callMock() throws Exception {
+
+      URL wsdlUrl = new URL("http://localhost:" + port + "/AWS?wsdl");
+      QName serviceName = new QName("http://webservices.amazon.com/AWSECommerceService/2011-08-01", "AWSECommerceService");
+      Service service = Service.create(wsdlUrl, serviceName);
+
+      AWSECommerceServicePortType port = service.getPort(AWSECommerceServicePortType.class);
+
+      Holder<OperationRequest> operationRequest = new Holder<OperationRequest>();
+      Holder<List<Items>> items = new Holder<List<Items>>();
+      port.itemSearch("aDomain", "myId", null, null, null, null, null, operationRequest, items);
+
+      assertNotNull(operationRequest.value);
+      assertEquals("theRequestId", operationRequest.value.getRequestId());
+  }  
+
+    
+  /**
+   * Perform verifications on the invocation.
+   *
+   * @throws Exception
+   */
+  public void verifyInvocation() throws Exception {
+      String invocationKey = "AwsItemSearchWs/itemSearch/myId";
+      MockInvocationData invocation = mockManagement.getInvocationData(invocationKey);
+      assertNotNull(invocation);
+
+      assertEquals(7, invocation.arguments.size());
+      assertEquals("<string>myId</string>", invocation.arguments.get(1));
+  } 
+----
+
+This snippet shows the usage of the mocking framework: You program the mock (setup the response), call the mock (I took something from Amazon) and afterwards I can verify whether the mock was called using the correct parameters. Sure you'll say: But I've got to call my application. And why do you verify your own call? You're right, the call to the mock is just a demo here. Usually you'd call your application which then uses the mock in a background call. And that's also the explanation for the verification. In integration-tests you perform grey-box or even black-box testing. You just know, that you call from a public point of view. You also know somehow your system. You know, what back end services are called. So you can perform also verifications, whether this service was called in the right manner.
+
+Now, in a real scenario, the mocks are hosted on a server, outside your runtime, but you have to tell the mocks your expectations. In my framework this can be done using either SOAP Web-Services or having a static part on disk. This API provides you to create/read/delete/list the expectations in a handy way. It's also possible to retrieve details for a specific invocation. Every invocation to a mock has to be identified somehow. Due to the API contract of your API you're not allowed to change your API, right? So you have to identify somehow your invocation without changing the API. It's possible in 99,5% of the cases. Simply pick a combination of Class-Name, Method-Name and a leading key (e.g. if you want to retrieve a customer you'd pick the customerId). It's sometimes hard to pick a useful value.
+
+The invocation key is also then used to retrieve the right response configuration. For very frequently used data, which is needed in many test cases (e. g. master data) it can be very handy to store the responses along in your SVN/Git/Hg...So you don't need to setup always this stuff in your tests.
+
+Now we've learned how a remote mocking framework might work. But let's come now to the core. How does the mock itself look like?
+
+[source,java]
+----
+@WebService(name = "AWSECommerceServicePortType")
+public class AwsItemSearchWs implements AWSECommerceServicePortType {
+    @Override
+    public void itemSearch(
+            String marketplaceDomain, String awsAccessKeyId, String associateTag, String xmlEscaping,
+            String validate, ItemSearchRequest shared, List<itemsearchrequest> request,
+             Holder<operationrequest> operationRequest, Holder<List<items>> items) {
+        MockInvocationRecorder.recordInvocation("AwsItemSearchWs/itemSearch/" + awsAccessKeyId, marketplaceDomain, awsAccessKeyId, associateTag, xmlEscaping, validate, shared, request);
+        AwsItemSearchResponse response = MockResponseFactory.getResponse("AwsItemSearchWs/itemSearch/" + awsAccessKeyId, AwsItemSearchResponse.class);
+        
+        operationRequest.value = response.itemSearchResponse.getOperationRequest();
+        items.value = response.itemSearchResponse.getItems();
+    }
+    ...
+}
+----
+
+Note: Some Annotations are stripped because of readability. See Githup repository for full source.
+
+No rocket science at all: You have a regular method, which accepts the interface parameters. After that you record the invocation and then retrieve the mock response. Everything else is done either by the framework or by the regular API part which exposes the defined functionality. This sort of framework helped me in several projects, which were located in a heavy SOA eco-system.
+
+=== A word on multiple mocks and data correlation
+
+Sometimes you run into scenarios, where you create for example a customer system using one service and then you can query data to the customer using a different system. Mostly the first services does something in a different system in the background which is then usable in a real environment. In a remote mocking world you have to take care of this by yourself. This is called data correlation. You're not writing integration tests to validate third party services for functionality (at least you shouldn't), you're writing tests to verify the functionality of your application. Data correlation can be sometimes really nasty, because the more test cases you have, the more data you have to set ip up. This way is still the better one, because having a bunch of test cases is better than having none but plenty of trust in your application. Your data setup should require a minimal amount of data. Don't start with big data design upfront. Just as little as possible, as much as necessary.
+
+== References
+
+* Remote mocking framework https://github.com/mp911de/remote-mocking

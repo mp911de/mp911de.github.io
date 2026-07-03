@@ -1,0 +1,33 @@
++++
+title = "INTER-NOTE - Notenshop"
+date = "2006-09-20T04:00:00"
+draft = false
+slug = "inter-note-notenshop"
+wordpress_id = "20"
+url = "/2006/09/20/inter-note-notenshop/"
+categories = ["Referenzen"]
++++
+== Warum sind Noten so günstig? Ganz einfach, weil es INTER-NOTE gibt.
+
+image:/images/2006/09/internote.png[/images/2006/09/internote]
+
+Gute Notenhefte können günstig zu haben sein. Dies beweist das Konzept von INTER-NOTE: In einem einzigartigen Online-Shop können musikalische Werke ausgewählt und zu einem persönlichen Notenheft zusammengestellt werden. Am nächsten Tag ist das gedruckte Notenheft da, und das zu einem unschlagbaren Preis.
+
+Für dieses besondere Projekt wurde daher ein ganz besonderer Shop konzipiert und realisiert. Nach der Auswahl und Bestellung der persönlichen Notenhefte werden alle Daten online an eine Druckerei übertragen und gedruckt. Sämtliche Druckvorlagen sind als PDF-Dateien verfügbar und werden nach Kundenwunsch entsprechend zusammengestellt und mit Titel sowie Inhaltsverzeichnis versehen.
+
+Der Online-Shop ist mehrsprachig ausgelegt und wird mit einer Web-Admin-Oberfläche verwaltet.
+
+*Eckdaten*
+
+* Konzept
+* Realisierung
+* Planung und Installation der Betriebsumgebung (Linux)
+* Onlineübermittlung der Druckdaten (als PDF) an die Druckerei
+* Statusverfolgung von Bestellungen (Track & Trace)
+* Publikation der Website
+* Datenspeicher: MySQL mit eigenem Objektframework
+* Schnittstellen zu Payment-Providern (VISA, MasterCard, PayPal & Lastschrift)
+* Umfeld: Java & J2EE, HTML/CSS/JSP/Tomcat, Java ServerFaces (MyFaces), Eclipse, Verschlüsselung (RSA, AES, PKCS, PKI, versch. Hash-Algorithmen, BouncyCastle), Lieferantenschnittstellen
+
+++**++Kontakt++**++ Webseite: http://www.inter-note.com +
+E-Mail: info@inter-note.com

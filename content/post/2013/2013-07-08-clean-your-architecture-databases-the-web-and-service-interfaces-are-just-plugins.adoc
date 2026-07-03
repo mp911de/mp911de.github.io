@@ -1,0 +1,49 @@
++++
+title = "Clean your Architecture: Databases, the Web and Service-Interfaces are just plugins"
+date = "2013-07-08T11:35:48"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "clean-your-architecture-databases-the-web-and-service-interfaces-are-just-plugins"
+wordpress_id = "87"
+url = "/2013/07/08/clean-your-architecture-databases-the-web-and-service-interfaces-are-just-plugins/"
+categories = ["Blog"]
++++
+For quite a long time I was seeking for a reasonable explanation of software architecture. Nobody could provide a sufficient description. Developers and software architects would describe their architecture perhaps this way: We use Model-View-Controller for the Web, EJB as Controller, havin Hibernate as persistence framework.
+
+Layering, multi-tier, Hibernate, Java Server-Faces aren't an architecture. They are ideas for code organization, tools or somewhat, but for sure not an architecture.
+
+<!--more-->
+
+http://java.dzone.com/articles/clean-architecture[Uncle Bob's comparison] to buildings makes quite good to understand, what architecture is: Architecture tells you what the purpose of something is.
+
+For example, my house consists of a cellar, stairway, some floors and a roof. So you see at first sight: It's a house. A building having an altar, aisles, kneeing racks and a bell tower would be most likely a church. A really tall building, having lots of elevators, a über-modern glass curtain wall lets you expect some kind of office building.
+
+Knowing the delivery mechanism or that an application uses Model-View-Controller does not tell you, what this application does. Which are the business entities and the use cases? Where are they placed? Which relations do they have? In a clean architecture, business entities and use cases are the central part. They are the application, the core. A clean architecture is free from frameworks, which helps to unclutter your code. It is testable, because boundaries decouple it's components from the slow and integrative components.
+
+Wether you use remote services, a database, a service bus or what else, it does not matter. These are details. Your business code does just not care, where it retrieves its data from. You care, but it's not the time to decide on this up front. Persistence is a plugin, but not the center of your application. You should treat the persistent entities accordingly. They are persistent representations which are needed in order to construct your business entities. Perhaps they're even not persistent.
+
+See, a good architecture allows you to postpone decisions. Decisions which or event whether you use a database. Or how the delivery mechanism will be. Will it be a web application? Or a rich client? It does not matter until you really get to there.
+
+Until then you can focus on your business rules and the model.
+
+How can we get there? How can we achieve this goal which seems to be a fairy tale?
+
+By decoupling and dependency inversion. A decoupled system defines boundaries. These boundaries are the gateways from/into your plugins. A database is a plugin. Your UI is a plugin.
+
+== Onion Architecture
+
+A good, clean architecture is built like an onion (see Jeffrey Palermo). It has layers, from the inner core up to the outer boundaries. The number of layers depends on your application's needs. You are UI-less, so you won't need most likely Model-View-Controller, because there is no View, instead there might be a REST or SOAP API. Inner layers must not know the outer layers. They must not know class-/field names and structures. In order to access from outer to inner levels you create boundaries, in a Java world interfaces. These boundaries connect both layers and provide access to the encapsulated functionality. Data structures are passed in structs, classes, maps, by arguments or lists, just the way you need it.
+
+image:/images/external/jeffreypalermo/image-0-59-.png[/images/external/jeffreypalermo/image-0-59-]
+
+In the middle center you have your business entities. And by business entities I do not mean your Hibernate classes. The business entities represent your business model: An order, an employee, a payroll run and so on. These entities incorporate enterprise rules, which could by a relation between an employee and a payroll run. If you change your business entities, this has a major impact on your application.
+
+The next level are your use cases (sometimes called Controllers or Services). These contain the real business code, the application rules. What has to happen in case a payroll run is started. Which actions should be performed for a newly arrived employee. These controllers interact directly with the business entities. If you need to retrieve another business entity, which is not directly accessible in memory, you would go to the persistence and ask for it. But persistence is a resource on the next layer. You don't even know that it's there. All you have is a boundary that allows you to retrieve the needed data. In an example you would lookup another employee, because you want to assign the manager on the new employee. Your business code should not know anything of the outside world at all.
+
+Let's dig into detail: At this boundary you just know the outcome: An employee business entity. Not a record, not a hibernate-annotated object, no remote interface object. You could mask them by also using interfaces, but this is somehow expensive and uncool, having interfaces for every transfer object. The better approach is, that the database data access object or web-service client constructs directly the business entity and passes it back to it's caller.
+
+By decoupling, you keep the application portable and testable. This is true because you have nothing else than the business code in the inner core. You can change the delivery mechanism, from Web UI to Web-Service to Rich-Client or the other way around without re-writing the whole application. You can change the database from relational to document store to in-memory with just adding new persistence adapter implementations.
+
+This way of thinking offers an obvious conclusion: JAX-WS annotated, persistence-annotated classes do not belong into your core application.
+
+What's your clean architecture?

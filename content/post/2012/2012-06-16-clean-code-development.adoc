@@ -1,0 +1,13 @@
++++
+title = "Clean Code Development: Code Examples"
+date = "2012-06-16T19:04:55"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "clean-code-development"
+wordpress_id = "55"
+url = "/2012/06/16/clean-code-development/"
+categories = ["Blog"]
++++
+I want to give you a better insight in Clean Code. Therefore i created a bunch of code lines with examples. These show you a set of good/bad (after/before) scenarios. You can find these at GitHub:
+
+https://github.com/mp911de/CCD

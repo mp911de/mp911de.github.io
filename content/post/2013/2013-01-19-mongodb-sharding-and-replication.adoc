@@ -1,0 +1,36 @@
++++
+title = "MongoDB Sharding and Replication"
+date = "2013-01-19T21:45:34"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "mongodb-sharding-and-replication"
+wordpress_id = "72"
+url = "/2013/01/19/mongodb-sharding-and-replication/"
+categories = ["Blog"]
++++
+MongoDB is known for its easy and near zeroconf setup. But when it comes to the point, to setup a sharded cluster with replication, things can get complex. Therefore I'd like to provide a configuration tooling to setup such a cluster with only a couple of simple commands.
+
+<!--more-->
+
+link:/images/external/mongodb/tag-aware-sharding.png[image:/images/external/mongodb/tag-aware-sharding.png[/images/external/mongodb/tag-aware-sharding]] I started recently to dig into that topic because of a personal interest. Sure, a project is coming to to me for using MongoDB. I wanted to know, how to setup such a cluster.
+
+My first headache was the router/config-server thing. I didn't get, that it's necessary to setup first 1 or 3 config-servers, each a tuple of mongod --configsrv and mongos. These do not store any of your applications data, they only coordinate sharding.
+
+The rest of the part is quite easy and straight-forward. Setup as much shards and replica-sets as you need. Well, a 3 x 3 cluster for testing and playing arround is quite nice. But now you get 3 config servers (3 x mongod and 3 x mongos) , 9 shards so you get 15 instances and 15 config files with appropriate init.d/start/stop scripts. And you have to deploy that stuff.
+
+This led me to create a simple set of scripts to create such a configuration. You easily setup your settings, which describe your environment and perform following steps:
+
+* Create mongo config
+* Deploy it to the servers (via SSH)
+* Perform finalization (usually you do not perform root@SSH, instead you su or sudo it) and start the instances
+* Invoke the create replicas script (generated)
+* Invoke the setup sharding script (generated)
+* That's it.
+
+You can find that code at GitHub: https://github.com/mp911de/mongo-shardgen
+
+And in case you got stuck: following links helped me to get through:
+
+* http://docs.mongodb.org/manual/administration/sharding/
+* http://cookbook.mongodb.org/operations/convert-replica-set-to-replicated-shard-cluster/
+* http://docs.mongodb.org/manual/core/sharding/

@@ -1,0 +1,26 @@
++++
+title = "Save early, save often: Die Geschichte des Backups"
+date = "2011-08-30T15:27:17"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "save-early-save-often-die-geschichte-des-backups"
+wordpress_id = "43"
+url = "/2011/08/30/save-early-save-often-die-geschichte-des-backups/"
+categories = ["Blog"]
++++
+Erst neulich habe ich meine Server konsolidiert und virtualisiert. Aus 3 Root-Servern habe ich zu einem größeren Root-Server mit virtualisierten Sub-Systemen zusammengeführt.
+
+<!--more-->
+
+Dabei war die Virtualisierung das geringste Problem. Es stellen sich bei mehreren virtuellen Instanzen plötzlich andere Fragen:
+
+* Wie erfolgt der Startup?
+* Wo werden die Sicherungen/Snapshots abgelegt?
+* Wie wird eine zentrale Verteilung von Konfigurationsdateien durchgeführt?
+* Design des internen Netzwerk (Bus)
+
+Sind einige der Fragen geklärt, so ist das Initiale setup möglich. Als Tekkie verführen auch technische Spielereien (MySQL NDB Cluster) aufgrund der vielen VM-Möglichkeiten zum Einsatz. So auch in meinem Fall.
+
+Mein Cluster war von Anfang an ein wenig instabil, aber dies ist bei einer Installation wenig verwunderlich. Nach einigen Tagen jedoch, hängten sich die VM's regelmäßig auf und mussten durchgestartet werden. Dies führte irgendwann zu inkonsistenten Filesystemen und defekten Cluster-Filesystemen. Und diesem Umstand habe ich einen kompletten Verlust der MySQL-Daten zu verdanken. Wird das Cluster-Filesystem instabil (bei zwei Nodes/Replicas), helfen auch keine Tricks mehr, zumal ich nach dem Setup keine regelmäßige Datensicherung konfiguriert hatte.
+
+Fazit: So schnell wie möglich an Backup & Restore denken.

@@ -1,0 +1,82 @@
++++
+title = "EMF-Modelle in Datenbanken (Teneo/Hibernate & EMF)"
+date = "2008-08-02T19:35:15"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "emf-modelle-in-datenbanken-teneohibernate-a-emf"
+wordpress_id = "24"
+url = "/2008/08/02/emf-modelle-in-datenbanken-teneohibernate-a-emf/"
+categories = ["Blog"]
++++
+Was kann man mit dem Eclipse Modeling Framework so anstellen?. Nun, zum Beispiel statt das Modell in XML zu serialisieren, können die Daten auch in einer Datenbank abgespeichert werden.
+
+<!--more-->
+
+Manuelle Persistenz ist in diesem Fall nur was für die, die entweder spezielle Bedürfnisse haben oder http://www.eclipse.org/emft/projects/teneo/[Teneo] nicht kennen. Teneo bringt ein EMF Modell (basierend auf Ecore/EObject) mit Hilfe von JPA oder Hibernate in eine Datenbank. Dabei fällt der klassische Teil der ER Modellierung weg, da bereits das Modell designed wurde. Zum Funktionsumfang gehören neben automatischer ID (Synthetic ID) und Versionierung auch ein automatisches Mapping während der Initialisierung. Aus diesem Grund lohnt es sich, das generierte ER-Modell zu übernehmen (oder zur Laufzeit automatisiert erzeugen zu lassen - hbm2ddl)
+
+Die automatischen Funktionen können durch Annotationen (z.B. @Id) auf eigene Eigenschaften (Features in der EMF-Terminologie) gesetzt werden. Auch das Mapping kann durch Teneo im Vorfeld generiert und bei der Initialisierung angegeben werden (siehe Properties).
+
+[source,code]
+----
+hibernate.connection.driver_class=org.hsqldb.jdbcDriver
+hibernate.connection.url=jdbc:hsqldb:hsql://127.0.0.1/library
+hibernate.connection.username=sa
+hibernate.connection.password= hibernate.dialect=org.hibernate.dialect.HSQLDialect
+
+teneo.mapping.hibernate_mapping_file=true
+teneo.mapping.mapping_file_name=/hibernate.cfg.xml
+----
+
+Die Mapping-File wird dabei als Resource (Class.getResource()) geladen. Alternativ kann die Eigenschaft mappingXML (in HbDataStore) mit dem Inhalt der Mapping-XML-File befüllt werden. Die Properties sind der erste Teil. Nun folgt ein wenig Code (aus dem Teneo-Beispiel):
+
+[source,java]
+----
+// Create the DataStore.
+final String dataStoreName = "LibraryDataStore"
+final HbDataStore dataStore = HbHelper.INSTANCE.createRegisterDataStore(dataStoreName);
+
+// Configure the EPackages used by this DataStore.
+dataStore.setEPackages(new EPackage[] { LibraryPackage.eINSTANCE });
+Properties hbProperties = new Properties();
+hbProperties.load(getClass().getResourceAsStream("hibernate.properties"); 
+dataStore.setProperties(hbProperties);
+
+// Initialize the DataStore. This sets up the Hibernate mapping and
+// creates the corresponding tables in the database.
+dataStore.initialize();
+final SessionFactory sessionFactory = dataStore.getSessionFactory();
+
+// Open a new Session and start Transaction.
+Session session = sessionFactory.openSession();
+session.beginTransaction();
+// Create a Library.
+Library library = LibraryFactory.eINSTANCE.createLibrary();
+library.setName("My Library");
+// Make it persistent.
+session.save(library);
+        
+// Create a writer...
+Writer writer = LibraryFactory.eINSTANCE.createWriter();
+writer.setName("JRR Tolkien");
+
+// ...and one of his books.
+Book book = LibraryFactory.eINSTANCE.createBook();
+book.setAuthor(writer);
+book.setPages(305);
+book.setTitle("The Hobbit");
+book.setCategory(BookCategory.SCIENCE_FICTION);
+
+// Add the Writer and Book to the Library. They are made
+// persistent automatically because the Library is itself
+// already persistent.
+library.getWriters().add(writer);
+library.getBooks().add(book);
+ // Commit Transaction and close Session
+
+session.getTransaction().commit();
+session.close();
+----
+
+Im wesentlichen werden einmalig die persistenten Packages definiert, der DataStore wird initialisiert und danach folgt Hibernate as usual. Während der Initialisierung des DataStore erfolgt bereits eine Verbindung zur Datenbank.
+
+Ausgestattet mit diesen Werkzeugen lassen sich EMF Modelle nicht nur als XML persistent ablegen, sondern auch in einer Datenbank.

@@ -1,0 +1,96 @@
++++
+title = "Integrationtest-driven development/Testdriven integration"
+date = "2013-02-28T20:23:07"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "integrationtest-driven-development-testdriven-integration"
+wordpress_id = "75"
+url = "/2013/02/28/integrationtest-driven-development-testdriven-integration/"
+categories = ["Blog"]
++++
+TDD (test-driven development) is a well known development process for now. You start with a idea of a solution and the test. Then you proceed within a cycle of writing production code, then test code again, start over.
+
+<!--more-->
+
+This sort of development works out pretty well to build rapidly good software (in most cases). Yet you will come very fast to the limits of unit testing. The reason for this is quite simple: As soon as you start using mocks or only small, decoupled parts of your system, you assume a specific behavior (i.e. a method returns null instead an exception in case something could not be found). This contracts are tested mostly independent of each other. This leads to isolation and this isolation can cause bugs again. You assume a state/behavior which is not met. This sort of bugs appears then in run-time for the first time. Pretty uncool, because now you did test first and still you come to the point, where bugs appear very late.
+
+There is indeed a feasible approach: Testdriven integration (TDI). TDI is very much the same like unit testing. There are a few differences and pre-requisites, but let's start with the similarities.
+
+[source,java]
+----
+@Test
+public void testCreateCustomer() {
+    IntegrationData.loadSQLFile(HibernateSessionFactory.getSession(), "testdata/" + getClass().getSimpleName() + "/testdata.sql");
+    MyWebServiceUnderTest webService = SOAPClientFactory.getMyWebServiceUnderTest();
+    
+    Result result = webService.createCustomer("John", "Appleseed");
+    assertNotNull(result.getIdOfNewRecord());
+    Customer customer = IntegrationData.loadSQLFile(HibernateSessionFactory.getSession(), "SELECT c from Customer c where id = ?",result.getIdOfNewRecord()); 
+    assertEquals("John", customer.getFirstName());
+    assertEquals("Appleseed", customer.getLastName());
+}
+----
+
+== TDI - first steps
+
+You do TDD? Cool, re-use your framework (such as JUnit or TestNG). An integration test follows the same principles as isolated unit tests. You setup your system under test (SUT), you invoke the test-method and verify afterwards your assertions. Why also choosing a different framework for integration than you use for regular unit tests.
+
+Let's assume you have a server using a database and you want to test the server software. Instead of direct methods you have to test against your public interfaces. In-container testing is as well possible but from my point of view much more complex to setup.
+
+Now, in a regular test you would start with the test first and then write production code. Let's assume you have already a running system, so is this still test-driven? Yep, because you start with a test and a non-integration tested system. You have to setup the test scenario and basing on the results of your test you fix then the production code, run the test and start over again. The cycles will be definitely more than 30secs (according to Uncle Bob), because you will have to fix, build and probably redeploy your app.
+
+=== Preparation phase
+
+In a regular unit test you would setup some mocks for a database or something like that. Now, you want to test against a running system. So you have to rethink a bit. Unit tests are isolated and you can run them anywhere and anytime. Integration tests rely usually on running systems, up to date databases - dependencies which can be available or not. I'll come back later to the 'not'-case. This leads to three challenges:
+
+[arabic]
+. You have to know the system you test against (databases, application servers, paths, ...)
+. That stuff has to be up and running
+. You have to have a sort of base-line
+
+The first one is easy to handle. My favorite is to store everything needed (url's, server names, ...) within property files. Then you can reference these using system properties or property replacement in build tools such as Maven or Gradle. From my experience you even add a local override possibility to enable the developers to tweak some params without the need to check into your source code management.
+
+The second challenge is a bit harder. You have to make sure, that the components are up and running. This means installed and started. A good approach is an automated build with a deployment post-processing step. It's not always applicable that way, but works in the most cases.
+
+The third one is probably in the most scenarios the hardest one: You have to reset all components before your test to a base-line. A state of data, where you can rely on. It's very important to know your initial state, because you build your tests and results on top of this state. The problem hereby is not the reset itself, it's more about defining the data. In some recent projects base-lines were defined by devs, so it was a short-cut to get things done.
+
+Until now we are still on our pre-requisites. But let's come now to the real preparation which is needed in order to run the test. This step now depends on your testing scenarios. If you just want to query data using a remote service, which relies on your base-line, so there's not much to do. In case you want to retrieve/modify test-specific data, you have to bring it into your system. Most systems rely on databases (either relational or No-SQL).
+
+Now you would also either call some preparation methods or run a bunch of scripts/statements in order to adjust/insert the needed data. It's good to start having it as simple as possible, since you will need it and you have to get familiar with this procedure. I always favor a single entry point, which allows you the common operations: Querying, inserting, updating and deleting. So create one utility class which allows you to handle all that stuff in a handy way. You'll need it later on for verifications.
+
+A similar situation applies also to the service access: You have to invoke something. This 'something' has to be connected/looked up/addressed in any manner. It's quite easy for SOAP services/RMI: You create your client in advance and create an instance of it using your endpoint address. REST goes nearly the same way. In case you use remote EJB, you setup the initial context. It's again handy to create a class containing all the accessors to construct such a client for your service.
+
+=== Execution phase
+
+Within the execution you go for the real invocation. Here you perform one or more calls to your system using the right parameters. Synchronous calls are the easiest: Your application will wait until the call is finished. Async calls are a bit harder. An asynchronously processed call returns immediately, but the processing is not finished. What then? You have to synchronize yourself: You have to wait until you find out, the process has finished. Most async processes change something. This change is then perhaps done even within your database. So just wait until this change appears. http://tempusfugitlibrary.org/[Tempus fugit] provides a handy set of classes which can be used to create conditions with timeout. You create a method, which is then invoked on a regular basis ("polling") for a certain time ("timeout"). In case the condition is met within the timeout, so fine. If now, you'll get an exception which causes your test fail. And see, now we're in the verification phase.
+
+=== Verification phase
+
+So, your call to the system under test was successfull. Good. Now let's verify the outcome. This now depends also on your context. Sometimes it's sufficent to validate the direct outcome of your call. Sometimes you've got to take a look somewhere else: A cache, the filesystem, your database. You fetch the data, perform some assertions and that's it in most cases. Sometimes you've got to ask some remote systems, such as remote mocks. This way you can find out, whether something remote was called. In a follow up you'll learn about remote mocking, which is pretty cool and much easier than you might think.
+
+== A note on reproducability
+
+In an isolated environment all your tests are freshly initialized. After each test session/test run the Java VM shuts down and is freshly started on the next step. Similar applies to the integration test on your client side. But what about the server and the resources? These are started and initialized with the deployment. Installing a new server/database/dataset on each test call is very costly and time consuming. Therefore most of us would reuse a running system. This is good because you can recheck after the test what's the state or what went wrong. But after each test, the data and the state are different than the baseline. This means, with every test you run, you change your environment. And this is perhaps one of the most important things you have to be aware of. Imagine you insert one a record with a predefined primary key. It works for the first time, but the second test run will fail with an duplicate primary key error.
+
+A solution? It's quite easy, because you have to follow two principles:
+
+[arabic]
+. Isolate the test data between the test cases (i.e. don't re-use always the same customer or order id. Use separate for each case)
+. Cleanup old data before you start your test
+
+If you follow these two, the only thing that then might happen is, that a test is ran twice in the same time (you share the environment with somebody else). This is something, everybody fears and treated as deal-breaker for such shareable infrastructure. From my experience (one system for 12 devs) it happens very very (very very) rare. I had in 2 years development only 3 incidents because of this, and tests ran twice a day. So don't overrate.
+
+== Test data management
+
+For nearly every test you start, you have to have test data available. The range is often from simple static values up to complex data, which is distributed but must fit each other. In my test I was used to store the data along with the test. A simple naming scheme using the testclass' name as folder containing large data structures turned out to work pretty well.
+
+The more your software evolves and grows the more it's probably to change more and more test data. This can be because of adding needed fields, renaming stuff and so on. The work to change and adjust everything can be sometimes annoying. It's stupid work of open-edit-close - for hundreds or thousands of files. I did not find a perfect recipe how to deal with it. The only thing about this I've learned is: The effort is paid by the causing project :-)
+
+== Mocking and remote mocking
+
+Sometimes life is not that easy: Server and database. Sometimes you've to rely on remote services: SOAP, EJB, REST, Mainframes. But you have to have control over your data, you don't want to rely on other test systems. Seems like a dead-end plan. That's not the case! Sure, everybody who tried to run a regular mocking framework using remoting might had failed. I'll present you a simple and feasible approach to remote mocking. Stay tuned!
+
+== References
+
+* Tempus fugit library http://tempusfugitlibrary.org/
+* JUnit test framework http://junit.org/

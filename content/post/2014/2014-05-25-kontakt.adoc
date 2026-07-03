@@ -1,0 +1,25 @@
++++
+title = "Kontakt"
+date = "2014-05-25T15:12:04"
+draft = false
+slug = "kontakt"
+wordpress_id = "118"
+url = "/2014/05/25/kontakt/"
+categories = ["Allgemein"]
++++
+== Mark Paluch
+
+Heckenpfad 14 +
+69469 Weinheim +
+Germany
+
+[width="100%",cols="20%,20%,20%,20%,20%",]
+|===
+|E-Mail |mpaluch@paluch.biz | |Telefon |0 62 01/65 04 24-0
+| | | |Fax |0 62 01/65 04 24-9
+| | | | |
+|Github |http://github.com/mp911de | | |
+|JBoss Community |http://community.jboss.org/people/mp911de | | |
+|Xing |http://community.jboss.org/people/mp911de[]http://www.xing.com/profile/Mark_Paluch | | |
+|Twitter |http://community.jboss.org/people/mp911de[]http://www.xing.com/profile/Mark_Paluch[]https://twitter.com/mp911de | | |
+|===

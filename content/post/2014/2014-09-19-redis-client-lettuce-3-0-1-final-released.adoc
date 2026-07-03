@@ -1,0 +1,55 @@
++++
+title = "Redis Client lettuce 3.0.1 Final released"
+date = "2014-09-19T06:04:00"
+lastmod = "2025-01-03T22:49:12"
+draft = false
+slug = "redis-client-lettuce-3-0-1-final-released"
+wordpress_id = "179"
+url = "/2014/09/19/redis-client-lettuce-3-0-1-final-released/"
+categories = ["Blog"]
++++
+lettuce 3.0.1 was released. This is a bugfix release fixing some major bugs.
+
+This release contains:
+
+== Fixes
+
+* Test improvements for more stability
+* URI for sentinel connections
+* Provide static syncHandler
+* Handle premature channelInactive while ongoing close (avoid NPE)
+* Fix signature of clusterSlaves https://github.com/mp911de/lettuce/issues/18[++#++18]
+* Fix SCAN command with scan args
+
+== Enhancements
+
+* Optimized CRC16 calculation (thanks to Jedis for co-working)
+* Use fine grained exceptions for Timeout, CommandExecution and Connection
+
+== Links
+
+* https://github.com/mp911de/lettuce/releases/tag/3.0.1.Final[Release on Github]
+* http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22biz.paluch.Redis%22%20AND%20a%3A%22lettuce%22[Artifact overview on Maven Central]
+* http://search.maven.org/remotecontent?filepath=biz/paluch/Redis/lettuce/3.0.1.Final/lettuce-3.0.1.Final.jar[Download lettuce 3.0.1.Final]
+* https://github.com/mp911de/lettuce/wiki[Wiki]
+* http://redis.paluch.biz[Maven Site (Javadoc)]
+
+Maven coordinates:
+
+[source,xml]
+----
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.1.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>biz.paluch.redis</groupId>
+    <artifactId>lettuce</artifactId>
+    <version>3.0.1.Final</version>
+    <classifier>shaded</classifier>
+</dependency>
+----
+
+Any feedback is appreciated or create https://github.com/mp911de/lettuce/issues[issues on GitHub].

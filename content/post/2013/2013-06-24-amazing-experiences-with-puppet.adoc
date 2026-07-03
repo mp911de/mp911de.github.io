@@ -1,0 +1,21 @@
++++
+title = "Amazing experiences with Puppet"
+date = "2013-06-24T08:22:01"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "amazing-experiences-with-puppet"
+wordpress_id = "85"
+url = "/2013/06/24/amazing-experiences-with-puppet/"
+categories = ["Blog"]
++++
+Do you know https://puppetlabs.com[Puppet]? Puppet is a system management/provisioning tooling. It's intended to specify a set of resources (files, software packages and many more) to be in a certain state. This is very hand for all the cases, where you need for example Apache and PHP, you want to apply an own php.ini, have a customized logrotate.conf, some cron jobs... All this can be specified using Puppet. The first time your system boots, all the specifications are applied and you don't have to copy config files anymore. Puppet runs also every 30mins (by default) to check for new/changed rules.
+
+<!--more-->
+
+Recently I created a new VM, which had a Puppet specification. 122 seconds after booting it had a custom MySQL installation, PHP5 and Apache2 configured and everything was up and running. This example illustrates very good, how disaster recovery works at it's finest.
+
+== Continuous Delivery
+
+Puppet often used with the term Continuous Delivery. Puppets strength is the automated, templated and unattended setup. Puppet runs every 30mins. Puppet config data is stored in a local file system directory, which can be populated from SVN or Git. Usually I'd push a release to a certain stage, but Puppet is, due it's poller principle, a pull-mechanism. Puppet runs unsynchronized on multiple machines, the Puppet process has no relation of the execution time to other nodes.
+
+From my point of view I would see Puppet in Continuous Delivery as infrastructure automation and configuration file supplier. The deployment scripts should not be a part of Puppet. Perhaps it's only a way of thinking-thing of me.

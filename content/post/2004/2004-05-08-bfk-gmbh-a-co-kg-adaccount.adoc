@@ -1,0 +1,27 @@
++++
+title = "BFK GmbH & Co. KG - AdAccount"
+date = "2004-05-08T00:00:00"
+draft = false
+slug = "bfk-gmbh-a-co-kg-adaccount"
+wordpress_id = "18"
+url = "/2004/05/08/bfk-gmbh-a-co-kg-adaccount/"
+categories = ["Referenzen"]
++++
+image:/images/2004/05/logo-bfk.gif[/images/2004/05/logo-bfk]
+
+== Darauf fliegen die Spediteure
+
+Für die international renommierte Spedition BFK wurde das System AdAccount angepasst und als "Speditionsprogramm" eingeführt.
+
+Die Unternehmenssoftware dient der Verwaltung der internen Prozesse sowie der Aufträge. Das System verwaltet die Aufträge, die Sendungen und Kunden und unterstützt die Akquise (CRM). Alle wichtigen Prozesse der Buchhaltung und Fakturierung sind enthalten Zudem bietet das System viele komfortable Auswertungen. Eckdaten
+
+* Datenspeicherung in SQL Server
+* Sehr kurze Antwortzeiten (Anforderung)
+* Prozessbeschreibung mittels UML (Enterprise Architect)
+* Planung der Systemlandschaft
+* Übernahme der bereits vorhandenen Daten (Excel)
+* Realisierung des Systems
+* Implementierung neuer Features (Online-Package-Tracking)
+* Schulung der Anwender sowie der System Administratoren
+* Hotline & Support
+* Umfeld: Java, JDBC, SQL Server, JSP/Tomcat, WebServices/XML, HTML Reporting, Enterprise Architect, Oberflächen Design

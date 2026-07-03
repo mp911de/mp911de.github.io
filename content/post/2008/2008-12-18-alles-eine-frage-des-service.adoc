@@ -1,0 +1,35 @@
++++
+title = "Alles eine Frage des Service"
+date = "2008-12-18T21:09:07"
+lastmod = "2025-01-03T22:49:35"
+draft = false
+slug = "alles-eine-frage-des-service"
+wordpress_id = "29"
+url = "/2008/12/18/alles-eine-frage-des-service/"
+categories = ["Blog"]
++++
+Bei SOA stellt sich nur noch diese Frage. Aber eine Service-Architektur erfordert nicht gleich ein Enterprise Backend.
+
+Es gibt viele Ansätze und Möglichkeiten, einzelne Dienste zu veröffentlichen, zu benutzen und diese auch zu realisieren. Ich möchte einen kurzen Überblick darüber schaffen, welche Erfahrungen ich gemacht habe - Eine Enterprise Anwendung mit JEE Bordmitteln jenseits von OSGi.
+
+<!--more-->
+
+Was ist ein Service? Ein Service kann eigentlich alles sein, was fachliche oder Business Logik ausführt. Ein Service kann die aktuelle Uhrzeit liefern, er kann eine Zahlung durchführen, die Datenbearbeitung in einer Oberfläche bereitstellen (als Controller) oder nur einen Prozess anstoßen.
+
+Gerade bei den technisch anspruchsvollen Dingen ist es wichtig, eine genaue Trennung zwischen den einzelnen Komponenten zu erreichen. Der Entwickler einer Anwendung kann kaum alle technischen Möglichkeiten ständig im Detail kennen; er soll sich im Tagesgeschäft, der Realisierung von fachlichen Anforderungen, möglichst auf die Business Logik konzentrieren.
+
+Diese Trennung ermöglicht die Trennung von technischen und fachlichen Entwicklern. Gerade bei Enterprise Systemen ändert sich selten die Technik oder die Architektur-Basis, also ist ein stabiles Fundament um so wichtiger. Eine Architektur, die es möglichst transparent erlaubt, die Geschäftslogik zu implementieren. Dabei fließt auch ein entscheidender Grundsatz mit ein: Abstrahiere das Problem, dann ist es keines mehr.
+
+Ein Blick auf erfolgreiche Java Projekte (z.B. Eclipse) verrät: Die Welt besteht zum Großteil aus Interfaces, das verleiht Flexibilität.
+
+image:/images/2008/12/control1.png[/images/2008/12/control1]Mit der dargestellten Vererbung und Struktur hat auch in Zeiten von EJB 3.0 der Service Locator seine Daseinsberechtigung. Ständig mit dem Context zu entwickeln, die Remote Exceptions zu behandeln macht keinen Spaß. Und auch immer einen Application Server während der ganzen Integration zu betreiben schlägt jedem Entwickler auf's RAM.
+
+Daher auch die Idee der Einführung eines Local-/Remote Modus. Zwar bringt diese Vorgehensweise weitere Klassen mit sich, der Entwicklung kommt dies stark entgegen. Klassisch implementiert der Service das Service-Interface. Und auch das Argument (eigentlich Ausrede): "Die Implementierung können wir irgendwann mal austauschen" erhält mit dieser Lösung seine Berechtigung/Wahrheit. Statt nur einer Implementierung gibt es von Anfang an zwei: Der Service und ein Remote Service Wrapper.
+
+Für den Remote-Modus werden Remote-Wrapper eingesetzt, die das Remote-Handling übernehmen. Das Gegenstück zum Remote Wrapper kann EJB, ein WebService, plain RMI oder gar RMI over JMS sein. Im Local-Modus wird der Service direkt instanziiert. Die Entscheidung, ob ein Service Remote oder Lokal angesprochen wird, wird nun dort getroffen wo sie hingehört: Im Service Access Layer.
+
+In einer Stateful Application, bei der auch der aktuelle Sitzungsstatus wichtig ist, muss auch ein Transfer der Session Daten vorgenommen werden. Ein Traum ist natürlich das transparente Session Handling, was z.B. bei JBoss durch eigene EJB Interceptoren möglich ist. Um J2EE-konform zu sein, bleibt nur ein Ausweg: Im EJB Remote-Interface muss die Session übergeben werden und so wird das Remote-Interface immer vom Service-Interface abweichen.
+
+link:/images/2008/12/control2.png[image:/images/2008/12/control2-small.png[/images/2008/12/control2-small]]
+
+Diese Aufteilung erlaubt es jedem Application Assembler, der die vorhandenen Services integriert, ohne weitere technische Hürden, seine Business Logik zu erreichen und zu verwenden. Spätestens wenn auch die Persistenz-Schicht ein austauschbarer Service wird (und damit meine ich nicht unterschiedliche Datenbanken, sondern wirklich anders), wird einem klar: Alles kann ein Service sein.

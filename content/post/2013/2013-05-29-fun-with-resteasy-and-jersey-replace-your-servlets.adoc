@@ -1,0 +1,145 @@
++++
+title = "Fun with RESTEasy and Jersey: Replace your Servlets!"
+date = "2013-05-29T08:51:10"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "fun-with-resteasy-and-jersey-replace-your-servlets"
+wordpress_id = "84"
+url = "/2013/05/29/fun-with-resteasy-and-jersey-replace-your-servlets/"
+categories = ["Blog"]
++++
+Some time ago I got in touch with one of my 2006 written applications. I got flashed at the moment I looked into my code.
+
+My intention was to perform some improvements. 2006 had very few frameworks to deal with HTTP interfaces. The most common interface types were GUIs (JSP/JSF) and some SOAP Services. Writing HTTP interfaces for API use (calls from JavaScripts and so on) was still a hard way in Java applications. In most cases servlets were used. Those servlets received either Query- or Form-Params to perform the processing. Sometimes they even accepted/produced some XML. Let me show you some examples and how to solve them using current technology.
+
+<!--more-->
+
+== Preview Servlet
+
+Purpose of the preview servlet was to serve preview images. Preview images are identified by a bunch of parameters. Type, a versionId and so on. For not writing two or three servlets all preview logic is contained within the servlet.
+
+[source,java]
+----
+@Override
+public void handleService(HttpServletRequest request, 
+    HttpServletResponse response) throws ServletException, 
+    IOException
+{
+
+    JSPTool jt = new JSPTool(request);
+
+    long id = jt.getInt("id");
+    int compilation = jt.getInt("compilation");
+    int page = jt.getInt("page");
+    String dest = jt.getString("dest");
+    String mode = jt.getString("mode");
+    String lang = jt.getString("lang");
+    String type = jt.getString("type");
+    String size = jt.getString("size");
+
+    WebControl web = new WebControl(session, getServiceProvider());
+    IScoreControl control = web.getScoreControl();
+    m_previewAction.setContext(web);
+
+    try
+    {
+            if (type.equals("quickscorepreview") && id != 0)
+            {
+                    quickScorePreview(control, request, response, id);
+            }
+----
+
+This snippet shows you the entry point of the servlet. This piece of code retrieves lots of variables in order to decide what to to. Let's improve it using JAX-WS RS, the REST API for Java:
+
+[source,java]
+----
+@GET
+@Path("score/version/{versionId}.png")
+@Produces("image/png")
+public Response getScorePreviewpng(@PathParam("versionId") long versionId, 
+    @Context HttpServletRequest request) throws Exception
+{
+    ...
+}
+
+@GET
+@Path("score/version/{versionId}/{page}/{size}.png")
+@Produces("image/png")
+public Response getScorePreviewPng(@PathParam("versionId") long versionId, 
+    @PathParam("page") int page, @PathParam("size") String size, 
+    @Context HttpServletRequest request) throws IOException
+{
+    ...
+}
+----
+
+ +
+That code expresses much more what it does. A major change is the descriptive way of the methods. Each method is annotated. To be very honest, there was also one more change: The url pattern changed from something like /Preview?type=quickscorepreview&id=1234 +
+to /preview/score/version/1234.png which is also much easier to read.
+
+=== Go Servlet
+
+I like simple entry point to applications. And they should be static somehow. This time we're talking about the Go-Servlet. Depending on the url the servlet performs a redirect. If you want to search for something and you want to link it somewhere, you just have to use /go/search/beethoven. The handler behind the url will send you to the correct resource.
+
+As soon as you see the code we'll dig into mud.
+
+[source,java]
+----
+@Override
+public void handleService(HttpServletRequest request, 
+    HttpServletResponse response) throws ServletException, 
+    IOException
+{
+    String url = request.getRequestURI();
+    String servlet = request.getServletPath();
+    String param = "";
+    String cmd = "";
+    int index = url.indexOf(servlet);
+    
+    if (index != -1)
+    {
+        param = url.substring(index + servlet.length() + 1);
+    }
+
+    if (param.length() < 1)
+    {
+           
+        index = param.indexOf('/', 1);
+
+        if (param.length() < index && index != -1)
+        {
+            cmd = param.substring(0, index);
+----
+
+Yuck! Lots of substring-ing for resolving the individual pieces. Regex could help here, but would be still hard to read. Let's refactor the servlet to a JAX-WS RS-conform piece of code.
+
+[source,java]
+----
+@Path("score/{id}")
+@GET
+public Response getScore(@PathParam("id") String id, @Context UriInfo uriInfo, 
+    @Context HttpServletRequest req) throws IOException, URISyntaxException
+{
+    ...
+}
+
+@Path("search/{id}")
+@GET
+public Response getSearch(@PathParam("id") String id, @Context UriInfo uriInfo, 
+    @Context HttpServletRequest req) throws IOException, URISyntaxException
+{
+    ...
+}
+----
+
+Again we got rid of unnecessary complexity and code. Refactoring of these two took (only the Java side) just 1 or 2 hours. Beneath url and parameter parsing there are a lot more of possibilities which make Java HTTP interfaces fun again:
+
+* AJAX
+* JSON data exchange (JAXB/Jackson/Jettison)
+* XML data exchange (JAXB)
+* Serving real REST resources
+* Caching
+
+== JSR 311 AX-RS: The JavaTM API for RESTful Web Services
+
+JSR311 describes the REST API within the Java world. It was finally released in Oct 2008. Jersey (Sun Impl of JSR311) was started in early/mid 2007.

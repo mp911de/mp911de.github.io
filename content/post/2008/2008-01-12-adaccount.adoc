@@ -1,0 +1,142 @@
++++
+title = "AdAccount"
+date = "2008-01-12T00:00:00"
+draft = false
+slug = "adaccount"
+wordpress_id = "16"
+url = "/2008/01/12/adaccount/"
+categories = ["Referenzen"]
++++
+== image:/images/2008/01/adaccount.png[AdAccount Button]
+
+CRM Easywhere! Verwaltung mit System. Für alle. Von überall aus.
+
+<!--more-->
+
+Das ewige Suchen hat ein Ende. Nie wieder verstreute Daten oder veraltete Informationen.
+
+Behalten Sie Projekte, Aufträge & Rechnungen mit AdAccount im Blick. AdAccount ist eine erweiterbare und flexible Customer-Relationship-Management-Suite. Durch viele Auswertungsmöglichkeiten kontrollieren Sie direkt Ihre Kosten und Umsätze.
+
+AdAccount begleitet Sie und Ihre Kunden von der Akquise, über den regelmäßigen Kontakt bis zur Abwicklung & Fakturierung Ihrer Leistungen. Ein professionelles Forderungsmanagement ist bereits im Paket enthalten.
+
+Steuern Sie Ihre Lieferanten und integrieren Sie Ihre Rechnungs-Ein- & Ausgänge um tagesaktuelle Daten & Zahlen für Ihr Unternehmen abrufen zu können. Eine Demoversion ist jederzeit verfügbar.
+
+== Funktionsumfang
+
+Jede Branche ist speziell, jedes Unternehmen arbeitet anders. Deshalb möchten wir Ihnen neben der Standard-Funktionalität auch eine individuelle Lösung anbieten, die auf Ihre Bedürfnisse zugeschnitten ist. Fordern Sie Info-Material an.
+
+Die Standard-Funktionalitäten im Überblick:
+
+Kunden & Kontakte
+
+* Verwaltung von Akquise-Kunden, den zugehörigen persönlichen Kontakten sowie der Aufzeichnung der stattgefundenen Kommunikation.
+* Übernahme der Akquise-Kunden in den Kundenstamm
+* Verwaltung von vereinbarten Stundensätzen, vertraglich festgelegten Preisen & Festpreisen
+* Erstellung von Preis-Kalkulationen pro Kunde unter Berücksichtigung Ihrer verfügbaren Ressourcen
+* Verwaltung von individuellen Angeboten mit Dateianhängen (z.B. Word, Excel, PowerPoint, PDF und allen anderen)
+* Erstellung von Standardangeboten basierend auf Ihren Standardprodukten / Leistungen
+* Verwaltung und Zuweisung von Aufgaben für Kunden (z.B. Wiedervorlage) an individuelle Mitarbeiter (Delegationsmanagement)
+* Fragebögen für Kontakte (z.B. während des Gespräches)
+* Verwaltung von Standortinformationen & Sonderadressen
+* Kundenkonten mit detailiertem Zahlungsverlauf
+* Archivierung der Kunden- sowie Kontakt-Daten
+* detaillierte Änderungshistorie
+* diverse Kosten- & Umsatz-Auswertungen (individuell)
+* Für die Papier-Kundenakte: Barcode- und Scannerunterstützung (zur Zeit nur für Windows)
+* direkter, serverbasierter Druck von Barcodelabels möglich
+
+Projektverwaltung
+
+* Verwaltung von Projekten mit Projekt-Phasen (Meilensteinen) / Aufträgen
+* Buchung von Projekt-Kosten (individuell)
+* Abrechnung von Projekt-Kosten nach Phasen oder freien Zeiträumen
+* Verwaltung von vereinbarten Stundensätzen / vertraglich festgelegten Preisen mit Soll / Ist / Maximal-Funktionen
+* Erstellung von Preis-Kalkulationen pro Kunde unter Berücksichtigung Ihrer verfügbaren Ressourcen
+* Verwaltung von Projekt-Teams
+* Verwaltung von Projekt-Daten mit Datei-Anhängen (individuell)
+* diverse Kosten- & Umsatz-Auswertungen (individuell)
+* detaillierte Änderungshistorie
+* Für die Papier-Projektakte: Barcode- und Scannerunterstützung (zur Zeit nur für Windows)
+* direkter, serverbasierter Druck von Barcodelabels möglich
+
+Auftragsverwaltung / Fakturierung
+
+* Auftragsverfolgung und Weiterführung nach Kunde oder Projekt (Angebot / Bestätigung / Lieferschein / Rechnung / Gutschrift)
+* Abrechnung von Projekten (individuell)
+* Weiterberechnung von Lieferanten-Leistungen oder interner Kostenstellen
+* Berechnung von vereinbarten Stundensätzen, Preisen & Produkten
+* Zahlungsverfolgung durch Kundenkonten
+* Forderungsmanagement bei Zahlungsverzug (Mahnwesen)
+* Ausdruck von Aufträgen und detaillierten Positionen (abgerechnete Aufwände / Stunden, Produktdetails), kunden- oder projektbezogen (individuell)
+* detaillierte Änderungshistorie
+* Barcode- und Scannerunterstützung (zur Zeit nur für Windows), so finden Sie direkt Ihre Belege
+
+Lieferanten & Produkte
+
+* Lieferantenverwaltung mit Lieferantenkonten (Zahlungsverlauf)
+* Produktverwaltung (individuell nach Branche)
+* Verwaltung von Eingangs-Rechnungen / Gutschriften mit Weiterberechnungsfunktion an Kunde / Projekt bishin zu Zahlungserinnerungen
+* integrierte Lagerverwaltung mit automatischer Einlagerungs- / Kommissionierungssteuerung
+* Erstellung von Lieferscheinen und Rechnungen für Lageraktivitäten
+* Barcode- und Scannerunterstützung (zur Zeit nur für Windows)
+
+weitere Funktionalitäten
+
+* Import von z.B. DATEV-Kontoauszügen für maschinelle Erfassung von Zahlungsein- & -ausgängen
+* Export von Buchhaltungsdaten (Ein- / Ausgangsbelege) für die Buchhaltung (z.B. DATEV oder Lexware)
+* Export von DTAUS-Dateien mit automatisierter Erstellung von Sammel-Lastschriften / -Gutschriften (für z.B. StarMoney oder SFirm)
+* Verschiedene Ausdruckprofile (mit Logo / ohne Logo & verschiedene Anschriften etc.)
+* Verwaltung von Adresslisten für Mailing-Aktionen oder Auswertungen (Export z.B. als CSV Datei für Excel)
+* Erfassung von Projektaufwänden pro Mitarbeiter (individuell)
+* Ausdruck von „Stundenblättern“ für externe Dienstleister (Freigaben)
+* Verwaltung von Benutzerberechtigungen (AdAccount)
+* Integration in bereits vorhandene Systeme (z.B. Adressbuch für Telefonanlage oder Export von Buchhaltungsdaten, Synchronisation von Kontakten und Aufgaben mit Outlook etc.)
+* Stammdaten können individuell und durch berechtigte Benutzer gepflegt werden (z.B. AGB, Zahlungs- & Lieferkonditionen, Länder, Kategorien, Stati, Ressourcen, Ausdruck-Profile, Benutzer-Verwaltung uvm.)
+
+...und natürlich jeweilige individuelle und branchenbezogene Anpassungen.
+
+== Technische Daten
+
+Als ein modernes System basiert AdAccount auf Java 1.5 sowie diversen open source Komponenten. AdAccount kann sowohl im lokalen Netzwerk als auch über das Internet / VPN benutzt werden.
+
+Oberfläche
+
+Für den Zugriff auf AdAccount gibt es generell drei Möglichkeiten:
+
+* Web Client
+* Rich Client im lokalen Netzwerk
+* Rich Client im Remote-Modus
+
+Der Web Client wird auf einem entsprechenden Server betrieben, der zentral administriert werden kann. Es sind keinerlei Installationen auf den Arbeitsplatzsystemen erforderlich. Zudem ist der Web Client unabhängig vom Betriebssystem.
+
+Der Rich Client hingegen sieht aus, wie eine 100 % Standardanwendung auf dem jeweiligen Betriebssytem. Durch den Einsatz von SWT (Standard Widget Toolkit) wird die Oberfläche des Betriebssystem benutzt und somit entstehen keinerlei Performancenachteile. Als Betriebssystem für den Rich Client kann Windows (voller Funktionsumfang), Linux (eingeschränkter Funktionsumfang, besonders bei Barcode-Scanner) oder Apple MacOS X (eingeschränkter Funktionsumfang, besonders bei Barcode-Scanner) verwendet werden. Im Remote-Modus ist ein Server mit Web Client erforderlich, da über diesen Weg die Kommunikation stattfindet (XML-Schnittstelle). Optional kann eine Verschlüsselung der Daten verwendet werden.
+
+Datenbank
+
+Zur Ablage der Daten von AdAccount ist ein Datenbanksystem erforderlich. In der Datenbank werden sämtliche Kunden-, Projekt- und Auftragsdaten gespeichert. Als Datenbanksystem kann eine der folgenden Datenbanken benutzt werden:
+
+* Microsoft SQL Server
+* MySQL
+* Oracle
+
+Server
+
+Zum Betrieb der Web Client-Komponente ist ein Webserver (Servletcontainer) erforderlich. Auf diesem Server werden sowohl die Zugriffe des Web Clients als auch die Kommunikation mit dem Rich Client im Remote-Modus verarbeitet. Als Serversoftware kann eines der nachfolgenden Produkte benutzt werden:
+
+* Apache Tomcat
+* JBoss Application Server
+* J2EE 1.4-konformer Application Server
+
+Zur Performancesteigerung können auch Cluster-Systeme erstellt werden. Da ein direkter, serverbasierter Druck von z.B. Barcodelabels möglich ist, können Server-Drucker angesprochen werden. Diese können entweder lokal, direkt am Server, oder über das Netzwerk betrieben werden. Als optimaler Barcodedrucker haben sich die Drucker von DYMO erwiesen. Es können natürlich auch andere Drucker verwendet werden.
+
+*Dokumente*
+
+Zur Ausgabe von Rechnungen, Lieferscheinen etc. wird das PDF-Format benutzt. Daher ist auf jedem Client ein PDF-Reader erforderlich (z.B. Adobe Acrobat ab Version 4). Im Rich Client wird der PDF-Reader direkt als Plugin angesprochen. Zusätzlich können die Dokumente direkt an ein Dokumentenmanagementsystem übergeben und archiviert werden.
+
+Verschlüsselung
+
+Um einen sicheren Transport während des Rich Client Remote-Modus zu gewährleisten, gibt es zwei Möglichkeiten, die sowohl alleine als auch kombiniert betrieben werden können:
+
+[arabic]
+. Einsatz von SSL Zertifikaten zur Verschlüsselung der Webkommunikation
+. Benutzung der integrierten Verschlüsselungskomponente (AES, 128 Bit, 192 Bit & 256 Bit) zur Verschlüsselung der XML Daten

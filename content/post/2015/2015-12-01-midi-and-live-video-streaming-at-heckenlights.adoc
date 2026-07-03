@@ -1,0 +1,47 @@
++++
+title = "MIDI and Live Video Streaming at Heckenlights"
+date = "2015-12-01T06:45:40"
+lastmod = "2025-01-03T22:48:49"
+draft = false
+slug = "midi-and-live-video-streaming-at-heckenlights"
+wordpress_id = "236"
+url = "/2015/12/01/midi-and-live-video-streaming-at-heckenlights/"
+categories = ["Blog"]
++++
+At its heart, Heckenlights relies on MIDI and Live Video Streaming technologies to bring the live experience to website visitors. Let me tell you today how MIDI and Live Video Streaming is done at Heckenlights.
+
+<!--more-->
+
+link:/images/2015/12/MIDI-and-Livestreaming.png[image:/images/2015/12/MIDI-and-Livestreaming.png[/images/2015/12/MIDI-and-Livestreaming]]
+
+Light shows are usually arranged around a particular performance and controlled by humans at event time. Light show arrangements in this style are great because they allow much freedom and tons of channels to be controlled. Light operators can take control at any time.
+
+Heckenlights has no fixed program. The songs played on http://heckenlights.org[heckenlights.org] are fully user controlled. There is no arrangement upfront. The key technology for Heckenlights is MIDI. Users can upload music as MIDI files to http://heckenlights.org[heckenlights.org] and watch and hear them play. The MIDI protocol represents music data in an easy to understand style. The relevant parts express whether a music note is `on` or `off` (There are many more MIDI messages but let’S go with on/off for now). The note state is translated to a light `on`/`off` state using an http://www.robot-electronics.co.uk/htm/eth_rly16tech.htm[ethernet-bound relay] controlled by the https://github.com/mp911de/midi-relay[midi-relay] software. The controller software uses a MIDI file as input and the MIDI sequencer plays („sequences“) the track. Playing MIDI using Java is great because the API allows to register as https://docs.oracle.com/javase/8/docs/api/javax/sound/midi/Receiver.html[Receiver] to receive all the MIDI messages. It’s then up to the receiver what it does with the data. In my case, it’s translating the particular notes to signals for the relay. This makes the lights dance to the rhythm of the music.
+
+ +
+
+[source,java]
+----
+Receiver receiver = Receiver receiver = new Receiver() 
+    public void send(MidiMessage mm, long timeStamp) 
+        System.out.println("MidiMessage: " + mm);
+    }
+}
+
+Sequencer s = MidiSystem.getSequencer(false);
+s.getTransmitter().setReceiver(receiver);
+s.open();
+s.setSequence(MidiSystem.getSequence(new URL("http://www.bluegrassbanjo.org/buffgals.mid")));
+s.start(); // The playback runs on a different thread.
+----
+
+link:/images/2015/12/UM-SX1.jpg[image:/images/2015/12/UM-SX1.jpg[/images/2015/12/UM-SX1]] Dancing lights without the music are only half the fun. http://Heckenlights.org[Heckenlights.org] provides therefore an audio/video live stream. Let’s take a look at the audio part itself. MIDI can be used to not only control Christmas lights (hehe), but it’s designed to control music instruments in a way to produce music. Most computers working with MIDI have a built-in software synthesizer and that was my last years’ audio source. Now, the internal software synthesizer is limited in audio quality. If you listen to a built-in software synthesizer versus a hardware instrument, then you quickly recognize the differences. Software synthesizers require a fair bit of CPU time to produce the sound. +
+My controller machine is „just“ a Mac Mini, which also runs other services like the live stream transcoder, so it’s quite busy with other tasks. This year I decided to use an external MIDI interface since my basement is full of synthesizers. This year the audio stream comes from a https://www.rolandmusik.de/products/fantom-x8/[Roland Fantom X8] that is connected using an USB MIDI interface to the controller machine. The https://github.com/mp911de/midi-relay[midi-relay] software controls the relays and the MIDI signals to the hardware synthesizer. By using the https://docs.oracle.com/javase/8/docs/api/javax/sound/midi/package-summary.html[Java MIDI API] MIDI signals can be re-routed in real time. One data source, multiple usages. Audio from the MIDI tracks is played outside my yard and is fed into the video live stream.
+
+link:/images/2015/12/FantomX8.jpg[image:/images/2015/12/FantomX8.jpg[/images/2015/12/FantomX8]]
+
+Standing in front of my house and watching the lights dance is great but that’s just half the fun. http://Heckenlights.org[Heckenlights.org] wow-effect would not be able without a live stream.
+
+Video is captured by a simple Web-Cam (Logitech C525 HD) on a tripod. The audio part is produced by the hardware synthesizer mentioned earlier. Both streams are captured and muxed with a https://obsproject.com[streaming producer software]. Afterwards the stream is pushed to an https://github.com/j0sh/crtmpserver[RTMP server]. The producer software itself runs 24h because it’s a GUI software. It requires a stable network connection, otherwise it just stops streaming. No one’s there to start/stop the stream outside the broadcasting timeframe. Therefore the first stream is buffered on the RTMP server. Now comes another piece into play. I used last year https://libav.org/avconv.html[avconv], the fork of https://www.ffmpeg.org/[ffmpeg] for streaming and encoding. The encoding eats up a lot of CPU. Sometimes the image stuttered because of overload. Today the avconv process „just“ copies the stream from the RTMP server to http://ustream.tv[UStream.tv]. The simple stream copy does not stress the CPU and avconv has an excellent command-line interface so it’s very simple to start & kill the process.
+
+Combining the MIDI control and feeding back the synthesized audio into the stream creates the live experience at http://heckenlights.org. Buffering on stream-producer and http://ustream.tv[ustream.tv] levels introduces a 10 to 20 seconds delay but having the live stream on the website is really amazing. It gives every website visitor the possibility to play with Heckenlights and see what’s happening. In general, live streaming is an advanced topic and there are a lot of commercial solutions. It’s possible to set up live streaming fully with open source software but you have to dig yourself into the topic.

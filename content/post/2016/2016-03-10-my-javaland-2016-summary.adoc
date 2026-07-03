@@ -1,0 +1,42 @@
++++
+title = "My JavaLand 2016 Summary"
+date = "2016-03-10T09:14:46"
+draft = false
+slug = "my-javaland-2016-summary"
+wordpress_id = "255"
+url = "/2016/03/10/my-javaland-2016-summary/"
+categories = ["Blog"]
++++
+The last two days, 08.03 - 09.03.2016, I attended JavaLand 2016. I was lucky having a talk about „What’s New in CDI 2.0“ and it was great for me. This year JavaLand came up with a Newcomer track for speakers that didn’t speak at a larger conference before. We were 10 speakers, each having a 20-minute slot.
+
+This year JavaLand Keynote was more of an overview of the conference announcing 109 talks with over 390 submissions and about 30 Newcomer submissions of which 10 were accepted. Over 800 people attended the keynote.
+
+<!--more-->
+
+JavaLand had on the evening before the conference a community dinner with lots of known people attending.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="und" dir="ltr">.<a href="https://twitter.com/JavaLandConf">@JavaLandConf</a> FUN!  <a href="https://t.co/dKRFeO6xDj">pic.twitter.com/dKRFeO6xDj</a></p>&mdash; Amelia Eiras (@ameliaeiras) <a href="https://twitter.com/ameliaeiras/status/706881440491958273">7. März 2016</a></blockquote>
+++++
+
+The first day of the conference was quite cold and had some interesting talks. The much more interesting day was the second day having three Spring talks, a talk about the MVC JSR and a couple of security-related talks. The plain Java and Microservices-related talks are ok, but nothing really new whereas security-related talks contain a whole bunch of great details to apply when dealing with passwords, user logins and much more. The most fun part was learning from other talks, seeing very nice slides, code demos and the most important part: Having lots of fun with friends. The other day my thought was: Having a talk on JavaLand is to share knowledge but you really attend JavaLand because of the amazing people having fun.
+
+The best talk for me was „ToTP or not ToTP“ by Reinier Zwitserloot and Roel Spilker held in a Shakespeare style.
+
+++++
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Next up ToTP or not ToTP <a href="https://twitter.com/hashtag/javaland2016?src=hash">#javaland2016</a> <a href="https://t.co/q72nusjdMC">pic.twitter.com/q72nusjdMC</a></p>&mdash; Bernd Schönbach (@boernd_s) <a href="https://twitter.com/boernd_s/status/707551632196820992">9. März 2016</a></blockquote>
+++++
+
+JavaLand had lots of community activities (29 Events) for Code-Golf, Architecture-Kata, Early-Adopters providing fun, challenge, and good knowledge for all who attended. The weather for Open Park event left some room for improvements because it was cold, so riding the Black Mamba turned the nose into a block of ice.
+
+One thing that I personally missed was some Social Media awareness. I saw lots of JavaLand-related tweets, but a dedicated hashtag and some Social Media walls would be great to get a feeling for what’s going on, some trends and impressions from other talks.
+
+I’m looking forward to the next JavaLand in March 2017, 28th – 30th.
+
+Oh, one more thing: Here’s the link to my Slides „https://speakerdeck.com/mp911de/whats-new-in-cdi-2-dot-0-jsr-365[What’s New in CDI 2.0]“.
+
+link:/images/2016/03/IMG_1423.jpg[image:/images/2016/03/IMG_1423.jpg[/images/2016/03/IMG++_++1423]] link:/images/2016/03/IMG_1425.jpg[image:/images/2016/03/IMG_1425.jpg[/images/2016/03/IMG++_++1425]] link:/images/2016/03/IMG_1427.jpg[image:/images/2016/03/IMG_1427.jpg[/images/2016/03/IMG++_++1427]] link:/images/2016/03/IMG_1429.jpg[image:/images/2016/03/IMG_1429.jpg[/images/2016/03/IMG++_++1429]] link:/images/2016/03/IMG_1430.jpg[image:/images/2016/03/IMG_1430.jpg[/images/2016/03/IMG++_++1430]] link:/images/2016/03/IMG_1434.jpg[image:/images/2016/03/IMG_1434.jpg[/images/2016/03/IMG++_++1434]] link:/images/2016/03/IMG_1435.jpg[image:/images/2016/03/IMG_1435.jpg[/images/2016/03/IMG++_++1435]] link:/images/2016/03/IMG_1436.jpg[image:/images/2016/03/IMG_1436.jpg[/images/2016/03/IMG++_++1436]] link:/images/2016/03/IMG_1437.jpg[image:/images/2016/03/IMG_1437.jpg[/images/2016/03/IMG++_++1437]]
+
+++++
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+++++

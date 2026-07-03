@@ -1,0 +1,73 @@
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>
+    {{- if .IsHome }}
+      {{ site.Title }}
+    {{ else }}
+      {{ printf "%s - %s" .Title site.Title }}
+    {{ end -}}
+  </title>
+
+  {{- $desc := or .Description site.Params.description site.Title }}
+  <meta name="description" content="{{ $desc }}" />
+  <meta
+    name="author"
+    content="{{ or .Params.author site.Params.name site.Title }}"
+  />
+
+  {{- $light_bg := .Scratch.Get "light_bg" }}
+  {{- $dark_bg := .Scratch.Get "dark_bg" }}
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: light)"
+    content="{{ $light_bg }}"
+  />
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: dark)"
+    content="{{ $dark_bg }}"
+  />
+
+  <script>
+    const t = localStorage.getItem('theme');
+    if (t) document.documentElement.dataset.theme = t;
+  </script>
+
+  <link rel="preload" as="image" href="{{ `theme.png` | absURL }}" />
+
+  {{- $css := slice (resources.Get "main.css") (resources.Get "from-dusk-till-dawn.css") (resources.Get "custom.css") | resources.Concat "css/bundle.css" | minify | fingerprint }}
+  <link
+    rel="stylesheet"
+    href="{{ $css.Permalink }}"
+    integrity="{{ $css.Data.Integrity }}"
+  />
+
+  {{- with site.Params.faviconSvg }}
+    <link rel="icon" href="{{ . | absURL }}" type="image/svg+xml" />
+  {{- end }}
+  <link
+    rel="icon"
+    href="{{ site.Params.favicon | default `favicon.ico` | absURL }}"
+    sizes="32x32"
+  />
+  {{- with site.Params.appleTouchIcon }}
+    <link rel="apple-touch-icon" href="{{ . | absURL }}" />
+  {{- end }}
+
+  {{- range .AlternativeOutputFormats }}
+    <link
+      rel="{{ .Rel }}"
+      type="{{ .MediaType.Type }}"
+      href="{{ .Permalink }}"
+      title="{{ site.Title }}"
+    />
+  {{- end }}
+  <link rel="canonical" href="{{ .Permalink }}" />
+
+  {{- if hugo.IsProduction }}
+    {{- template "_internal/opengraph.html" . }}
+  {{- end }}
+  {{- hugo.Generator }}
+</head>

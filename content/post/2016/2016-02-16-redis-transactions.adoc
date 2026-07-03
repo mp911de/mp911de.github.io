@@ -1,0 +1,78 @@
++++
+title = "Redis transactions"
+date = "2016-02-16T11:02:25"
+lastmod = "2025-01-03T22:48:49"
+draft = false
+slug = "redis-transactions"
+wordpress_id = "243"
+url = "/2016/02/16/redis-transactions/"
+categories = ["Blog"]
++++
+Redis transactions allow to group multiple commands and to execute them sequentially. The whole transactional state is isolated from other users and becomes visible once a transaction is committed.
+
+A Redis transaction is different from transactions in, let’s say, relational databases. A Redis transaction feels more like a queue/stack of commands because commands are queued and the execution is deferred. This is true for reads and writes. The real surprise is the read commands because any return value is returned only upon transaction execution.
+
+<!--more-->
+
+A specialty of Redis transactions is that Redis transactions can be made conditional. Conditional transactions allow optimistic locking using check-and-set. A conditional transaction watches one or more keys. If one of the watched keys is changed outside of the transaction, the transaction is discarded.
+
+Transactions are controlled using four commands and live within the scope of a connection:
+
+* `MULTI`: Initiate a transaction
+* `EXEC`: Execute the queued commands
+* `DISCARD`: Discard the queued commands and leave the transactional mode (call it roll-back)
+* `WATCH`: Watch a key for change and make the following transaction conditional. Watches are executed before the `MULTI` command is issued
+* `UNWATCH`: Reset the watch state for a key.
+
+Redis commands within a transaction can be executed once the `MULTI` command was issued.
+
+....
+> MULTI
+OK
+> INCR foo
+QUEUED
+> INCR bar
+QUEUED
+> EXEC
+1) (integer) 1
+2) (integer) 1
+....
+
+This command sequence illustrates a transaction on the `redis-cli`. The transaction is started using the `MULTI` keyword, two `INCR` commands are queued for different keys. When the transaction is executed with `EXEC` the results of the commands are returned.
+
+Commands within a transaction get two responses. The one response is `QUEUED` at the time the command was sent to Redis. The second response, the true value or command response is returned once the transaction is executed.
+
+This can be weird for users because they would expect a read command to return the value when executing the command. Instead, the execution is deferred and `QUEUED` is the immediate response to a command when the command is executed within a transaction.
+
+== Redis Standalone, Master-Slave, and Sentinel
+
+Transactions within Redis are bound to a particular node. Everything that happens on the node stays on the node unless it is replicated to a slave node. Master-Slave setups benefit from replication so the results are replicated to the slaves. There’s no difference in behavior whether you use a self-configured Redis Master-Slave or your whether your Redis nodes are managed by Redis Sentinel. Beyond that, there is no transaction coordinator when it comes up to clustering.
+
+== Redis Cluster
+
+Transactions within a Redis Cluster are a different story. In Redis Cluster, a particular node is a master for one or more hash-slots, that’s the partitioning scheme to shard data amongst multiple nodes. One hash-slot, calculated from the keys used in the command, lives on one node. Commands with multiple keys are limited to yield to the same hash-slot. Otherwise, they are rejected. Such constellations are called cross-slot.
+
+Transactions seem to be the solution to execute commands to cross-slot keys but at a certain point, one would leave the scope of one node and would need another node to continue the transaction. This can be if the one key lives on one node and the other key lives on another node. There is still no transaction coordination and that can sometimes be an issue to Redis Cluster issues.
+
+A high-level API providing transactional support for Redis Cluster faces multiple issues and there are two strategies so far, how to deal with transactions in Redis Cluster:
+
+=== Support transactions if all keys are located on one node
+
+This option allows fully-featured transactions. The client library is required to keep track of the node the transaction is executed and prohibit keys outside the slot range for the time the transaction is in progress. Because the slot can be only determined by using a command containing a key, the client needs to set a transactional flag and on the very first command containing a key the MULTI command needs to be issued, right before the first command within the transaction. The limitation here is clearly the requirement to have all keys located on one node.
+
+=== Distributed transactions
+
+In this case, multiple transactions are started on all nodes that join the distributed transaction. This distributed transaction can include keys from all master nodes. Once the transaction is executed, the client library triggers the execution of the transaction, the library collects all results (to maintain the order of command results) and returns it to the caller.
+
+This style of transactions is transparent to the client. As soon as a key on a particular node is requested and the node is not yet part of the transaction, a `MULTI` command is issued to join the node to the transaction. The drawback here is that transactions cannot be conditional anymore (`WATCH`). The individual transactions have no knowledge whether a key was changed on a different node, and so one transaction could be rolled back while the other transactions would succeed. Sounds a bit like two-phase-commit.
+
+== Conclusion
+
+Redis Transactions feels like atomic command batching that can be made conditional. It’s important to remember that command execution is deferred because read results return at the moment of transaction execution and not at the time the command is issued.
+
+For Redis Cluster, clients have not decided on a global strategy. It’s safe to run transactions on a particular Redis Cluster node but you’re limited to the keys served by that node. Both possible strategies have properties that might be useful for certain use-cases but also come with limitations.
+
+== Read More
+
+* http://redis.io/topics/transactions[Redis Transactions]
+* http://redis.io/topics/cluster-tutorial[Redis Cluster]

@@ -1,0 +1,15 @@
++++
+title = "It's evolution"
+date = "2013-01-29T08:22:24"
+lastmod = "2025-01-03T22:49:33"
+draft = false
+slug = "its-evolution"
+wordpress_id = "73"
+url = "/2013/01/29/its-evolution/"
+categories = ["Blog"]
++++
+In the early days of development, where technical approaches and feasibilities were depending on "is there any solution available", lots were happy connecting a database using a web front end. Decoupling and abstraction layers were built to hide the complex persistence API. Ugly web wrappers were also tried to decouple. In the end, you got lots of framework stuff, just because there wasn't anything else.
+
+Today it evolved. Spring hides and provides lots of functionality. Enterprise Java provides API's for nearly everything that modern applications use: Persistence, Web control, Web-Services. But somehow, thinking did not change much since then. Today we see tons of mappings, abstractions and decoupling layers. Is it really necessary to build data access objects in case you use JPA? Do you need mappings and tons of layers for exposing database data using a REST API?
+
+It's worth rethinking. Just because we always did isn't the right answer.

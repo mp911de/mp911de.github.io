@@ -1,0 +1,135 @@
++++
+title = "Unit-Testing of Web-Services with JUnit - SOAP Services"
+date = "2012-05-23T08:30:58"
+lastmod = "2025-01-03T22:49:34"
+draft = false
+slug = "unit-testing-of-web-services-with-junit-soap-services"
+wordpress_id = "53"
+url = "/2012/05/23/unit-testing-of-web-services-with-junit-soap-services/"
+categories = ["Blog"]
++++
+With modern Tooling it's easy, to Mock a WebService - take your Service-Class, inject Mocks (for your dependencies) and tell the Mocks how to behave. The next usual Stage is Integration testing. That one can become hard, you have to rely on remote services. Once the remote service is down, you even can't test the webService remoting. Does the stack behave in the right way? How about the WSDL? Is it right?
+
+<!--more-->
+
+There is indeed a Test in between, which helps you to close that gap (or at least parts of it). So, you're providing a webservice (for my Example a Java JAX-WS) and want to test it.
+
+Let's take three classes:
+
+* ICalculator - the calculator Backend
+* ITestWebService - WebService Interface (handy for direct client usage)
+* TestWebService - WebService implementation
+
+[source,java]
+----
+@WebService(endpointInterface = "de.paluch.test.ITestWebService")
+public class TestWebService implements ITestWebService {
+
+    private ICalculator calc;
+
+    @Override
+    public int add(int a, int b) {
+        return calc.add(a, b);
+    }
+}
+
+@WebService
+public interface ITestWebService {
+
+    /**
+     * Adds a plus b and returns the result.
+     */
+    int add(@WebParam(name = "a") int a, @WebParam(name = "b") int b);
+}
+public interface ICalculator {
+    /**
+     * Adds a plus b and returns the result.
+     */
+    int add(int a, int b);
+}
+
+@RunWith(MockitoJUnitRunner.class)
+public class TestWebServiceTest {
+
+    @InjectMocks
+    private TestWebService sut = new TestWebService();
+
+    @Mock
+    private ICalculator calc;
+
+    @Test
+    public void testAdd() {
+        when(calc.add(1, 2)).thenReturn(3);
+
+        int result = sut.add(1, 2);
+
+        assertEquals(3, result);
+    }
+}
+----
+
+ 
+
+Now, in a usual Test you would create a Test-Class, using the webservice impl TestWebService as SUT (System under test) and inject a Mock into ICalculator field calc. You can for sure run your tests, you will test the Java part of the webservice. But what if you have broken annotations? What if the webservice spec does not work with the webservice stack? This will yield in errors as soon as you deploy and run your app (perhaps even when the service is invoked for the first time). Not so handy.
+
+So let's take a look, what else is possible. Perhaps you've heard of the Endpoint-Class. Its intended for webservice publishing. Sounds like a server and it is. Using
+
+[source,java]
+----
+Endpoint.publish("http://localhost/MyWebService", instance);
+----
+
+you can easily publish your webservice. For sure, it's not the best Idea for High-Availability/High-Performance and Maintainable Apps, but for Unit-Testing sufficient. Let me show you now how to setup a JUnit Test using remoting:
+
+[source,java]
+----
+@RunWith(MockitoJUnitRunner.class)
+public class TestWebServiceRemoteTest {
+
+    private static Endpoint endpoint;
+    private static int port;
+
+    @InjectMocks
+    private static TestWebService sut = new TestWebService();
+
+    @Mock
+    private ICalculator calc;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        port = RemoteUtil.findFreePort();
+        endpoint = Endpoint.publish("http://localhost:" + port + "/testWebService", sut);
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        endpoint.stop();
+    }
+
+    @Test
+    public void testAddNoMockSetup() throws Exception {
+        URL wsdlUrl = new URL("http://localhost:" + port + "/testWebService?wsdl");
+        QName serviceName = new QName("http://test.paluch.de/", "TestWebServiceService");
+        Service service = Service.create(wsdlUrl, serviceName);
+
+        ITestWebService port = service.getPort(ITestWebService.class);
+
+        int result = port.add(1, 2);
+
+        assertEquals(0, result);
+    }
+}
+----
+
+That test creates a real SOAP Endpoint and uses remoting to access the WSDL and to invoke the service. The only difficulty is knowing the services' QName. But don't be afraid, if you use a empty QName, the JAX-WS stack will tell you about known webservices. On my machine the remoting test takes some 100msec - pretty fast - if you think about what is handled under the surface and what we do not see.
+
+[source,java]
+----
+javax.xml.ws.WebServiceException:  is not a valid service. Valid services are: {http://test.paluch.de/}TestWebServiceService
+    at com.sun.xml.internal.ws.client.WSServiceDelegate.(WSServiceDelegate.java:220)
+    at com.sun.xml.internal.ws.client.WSServiceDelegate.(WSServiceDelegate.java:165)
+    at com.sun.xml.internal.ws.spi.ProviderImpl.createServiceDelegate(ProviderImpl.java:93)
+    ....
+----
+
+Now it's your turn. You can find my Sources at GitHub, see https://github.com/mp911de/Public/tree/master/webservice-test

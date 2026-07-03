@@ -1,0 +1,11 @@
++++
+title = "Come back to projects"
+date = "2014-03-24T19:35:44"
+lastmod = "2025-01-03T22:49:32"
+draft = false
+slug = "come-back-to-projects"
+wordpress_id = "114"
+url = "/2014/03/24/come-back-to-projects/"
+categories = ["Blog"]
++++
+It happens currently all the time. I’m always coming back to projects I worked on. Over and over I’m meeting old coworkers and colleagues. Same faces, sometimes a bit older than I left them. This raises mixed feelings. It’s sort of coming home, thus it is different.

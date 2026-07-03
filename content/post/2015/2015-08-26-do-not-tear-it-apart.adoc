@@ -1,0 +1,45 @@
++++
+title = "Do not tear it apart!"
+date = "2015-08-26T20:25:41"
+lastmod = "2025-01-03T22:48:50"
+draft = false
+slug = "do-not-tear-it-apart"
+wordpress_id = "220"
+url = "/2015/08/26/do-not-tear-it-apart/"
+categories = ["Blog"]
++++
+Implementing https://github.com/mp911de/CleanArchitecture[clean architecture] is amazing. A https://github.com/RetroMocha/obvious[clean architecture] fundamentally changes the way you create software and perform changes to existing code. The architectural style, also known as Jacobson architecture or https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html[Onion architecture], is based on the business rules. Meaning the application model and use cases. These parts become the explicit core of such an application. The core is agnostic against the database, the web, and frameworks, which are then just plugins to the application.
+
+<!--more-->
+
+The clean architecture style has one flaw that I have become aware of. This post helps to understand some limitations of the clean architecture and explains how to destroy the whole value you created by applying clean architecture to your code.
+
+Any coder capable checking out the code repository is able to understand the components in a clean architecture project. The link:(https://github.com/mp911de/CleanArchitecture)[top-level directory] are big fat direction signs because of a clear and concise naming: Application model, use cases, external integrations. One might want to extend a use case, and the direction where to find the use cases is very clear. The other one might want to change some persistence detail. Also very clear to find out, where to go. The code organization supports the orientation within the code by segmenting the application within components with clear responsibilities.
+
+The success and effects of clean architecture projects get obvious after a while. Increasing performance, shorter time to get familiar with the code. Any new team member got acclimatized with the application within of a few days. Down from weeks to days until the first change is committed. That’s a major achievement in comparison to my previous projects. But then, a major strategy decision fell over our team: Let’s create a platform out of the initial results. Use some common parts to build other systems basing on the clean architecture project and improve the system even further. The decision is justifiable: Why building things twice, why creating duplicates whereas there is good working code.
+
+== And we did so.
+
+The original project was refactored over and over, to extract common parts, build abstractions and interfaces. Major code parts were moved from one project repository to another to create a framework; a foundation for future applications.
+
+The story sounds good, but you know what? The result is crap. Not everything, but the essential parts got worse than in an any-architecture-project.
+
+So, why is this: The clean architecture project knows ideally one level in which the code is organized. Everything is close to each other, the whole code is in one project repository, and you have all you need lies within your range. By splitting the code into abstraction levels and different repositories, the individual code parts move apart from each other. The almost no-distance within the single clean architecture project becomes now an on-purpose distance. The parts drift away from each other to a certain distance.
+
+You’re searching for something particular? You have to look now in at least two code repositories. Is the thing you want to change part of the current project of the framework thing? And then, depending how the integration of both parts is done, the framework has to be released to make use of the changes.
+
+The application can be as clean as it could ever be; by tearing it apart nearly all benefits are lost. That said, do not tear apart your application by putting the code on multiple abstraction levels that are located in different repositories (or have a certain distance from each other). You’ll loose a huge part of the comfort and performance that was achieved by the initial clean architecture.
+
+== So, no parts of clean architecture can be reused?
+
+You can, and there is a reasonable way how to reuse great parts, no need for the offensive tonality.
+
+The very first lines of the post describe a nice and nearby, ideal world, which also exists. A very honest look at a hand of software applications reveals that software applications deal with a composition of aspects and domains. Let’s use an application user to illustrate what I want to explain. By usual means, applications are protected. Sensitive and company-internal data is not exposed to anyone. Before one can use the application, an authentication has to come into place. The described application operates at least within a user domain - I use the term domain as it’s known from https://en.wikipedia.org/wiki/Domain-driven_design[domain-driven design]. Then, the application provides its own use cases: placing orders, calculating the payroll, drawing mindmaps and so on. These use-cases belong to one or multiple domains.
+
+Typically, a domain consists of application-independent and application-specific business rules. I like to call them application model and use case. There is a sort of user interface how to invoke the use cases and sometimes a part, where the data is stored: A database integration, some remote services and many other types that I could think of.
+
+Performing a cut on domain level to move the domain from one project to another almost always does not need any further code modifications. No artificial abstraction layers, no code parts where the two halves live in separate code repositories. Taking just the part out of one project and putting it into another one for reusing preserves the structure and does not tear the code apart. Huge parts of the clean architecture benefits survive because the structure is still the same. It might be, that the one or the other class needs to be adjusted, but that’s it.
+
+'''''
+
+The two most common ways to split/reuse code are adding (artificial) abstraction layers and moving whole domains. The abstraction layer way kills the values gained by clean architecture, moving whole domains preserves huge parts. Sometimes, but not always, micro-services could be a key component for reuse. But it’s like always: It depends.

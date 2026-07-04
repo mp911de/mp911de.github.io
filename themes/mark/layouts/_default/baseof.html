@@ -21,22 +21,29 @@
     <script>
       const btn = document.querySelector('.moon-btn');
       const metas = document.querySelectorAll('meta[name="theme-color"]');
-      btn.addEventListener('click', () => {
-        const root = document.documentElement;
-        const isDark = root.dataset.theme
+      const root = document.documentElement;
+      const isDark = () =>
+        root.dataset.theme
           ? root.dataset.theme === 'dark'
           : matchMedia('(prefers-color-scheme: dark)').matches;
-        const next = isDark ? 'light' : 'dark';
+      btn.setAttribute('aria-pressed', isDark());
+      let fadeTimer;
+      btn.addEventListener('click', () => {
+        const next = isDark() ? 'light' : 'dark';
+        clearTimeout(fadeTimer);
         root.classList.add('theme-fade');
         root.dataset.theme = next;
-        localStorage.setItem('theme', next);
+        btn.setAttribute('aria-pressed', next === 'dark');
+        try {
+          localStorage.setItem('theme', next);
+        } catch {}
         metas.forEach((m) =>
           m.setAttribute(
             'content',
             next === 'dark' ? '{{ $preset.darkBg }}' : '{{ $preset.bg }}',
           ),
         );
-        setTimeout(() => root.classList.remove('theme-fade'), 900);
+        fadeTimer = setTimeout(() => root.classList.remove('theme-fade'), 900);
       });
 
       // ring easter egg: animate via .ringing so a hover exit can fade out

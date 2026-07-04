@@ -53,10 +53,15 @@ nav.social a:hover svg {
     opacity: 0;
     transform: scale(0.013);
     pointer-events: none;
-    will-change: transform, opacity;
     /* fade-out on hover exit; the leave handler freezes the ring's current
        frame inline, drops .ringing, and lets this transition carry it to 0 */
     transition: opacity 0.6s ease;
+}
+
+/* promote to a compositor layer only while the hover countdown runs;
+   a permanent will-change pins a 720px layer on every page load */
+.moon-btn:hover .moon-ring {
+    will-change: transform, opacity;
 }
 
 /* growth and glow run as separate tracks. growth is one unbroken curve of

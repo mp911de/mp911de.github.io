@@ -21,7 +21,8 @@
     </article>
   {{- end }}
 
-  {{- partial "post-list.html" (first 15 $pages) }}
+  {{- /* the teaser already shows the newest post; the list starts below it */}}
+  {{- partial "post-list.html" (first 15 (after 1 $pages)) }}
   <p>
     <a class="archive-link" href="{{ `archive/` | absURL }}">Archive</a>
   </p>

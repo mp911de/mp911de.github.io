@@ -31,8 +31,21 @@
   />
 
   <script>
-    const t = localStorage.getItem('theme');
-    if (t) document.documentElement.dataset.theme = t;
+    let t;
+    try {
+      t = localStorage.getItem('theme');
+    } catch {}
+    if (t) {
+      document.documentElement.dataset.theme = t;
+      // the media attributes follow the OS scheme; a stored override
+      // must win here too or Safari tints its chrome with the old color
+      document.querySelectorAll('meta[name="theme-color"]').forEach((m) =>
+        m.setAttribute(
+          'content',
+          t === 'dark' ? '{{ $dark_bg }}' : '{{ $light_bg }}',
+        ),
+      );
+    }
   </script>
 
   <link rel="preload" as="image" href="{{ `theme.png` | absURL }}" />

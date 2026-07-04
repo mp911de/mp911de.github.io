@@ -148,9 +148,24 @@ nav.social a:hover svg {
     filter 1.6s cubic-bezier(0.45, 0.05, 0.35, 1);
 }
 
-/* dusk cross-fade while switching; the moon keeps its own sprite slide */
+/* dusk cross-fade while switching; the moon keeps its own sprite slide.
+   only elements that own a color get a transition — plain text inherits
+   body's animating color for free. a universal selector here starts an
+   independent transition on every element, which drops frames on iOS */
 html.theme-fade body,
-html.theme-fade body *:not(.moon-btn) {
+html.theme-fade a,
+html.theme-fade hr,
+html.theme-fade blockquote,
+html.theme-fade td,
+html.theme-fade th,
+html.theme-fade code,
+html.theme-fade pre,
+html.theme-fade .admonitionblock,
+html.theme-fade .tableblock .title,
+html.theme-fade .post-meta,
+html.theme-fade .post-list time,
+html.theme-fade footer.site,
+html.theme-fade .highlight span {
     transition: background-color 0.8s ease,
     color 0.8s ease,
     border-color 0.8s ease !important;

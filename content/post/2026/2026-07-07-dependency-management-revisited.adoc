@@ -1,0 +1,139 @@
++++
+title = "Dependency Management revisited"
+date = "2026-07-07T21:45:00"
+draft = false
+slug = "dependency-management-revisited"
+url = "/2026/07/07/dependency-management-revisited/"
+categories = ["Blog"]
++++
+
+Ten or fifteen years ago, dependency management was mostly periodic maintenance.
+A framework release here, a library release there, an occasional build plugin update, and usually enough time to make a deliberate call.
+
+That cadence has changed drastically.
+Popular libraries, build plugins, cloud SDKs, and GitHub Actions now move at very different speeds.
+The question on release day is no longer whether there are dependencies to upgrade.
+There usually are.
+The question has evolved into which upgrades deserve what level of attention now, which ones can wait, and how much confidence each change has earned.
+
+<!--more-->
+
+== Many clocks at once
+
+The pace is uneven.
+Several projects still release in calm cycles.
+Others produce a steady stream.
+Spring Framework shipped 7 releases in 2008, most of them patch releases, then 25 in 2023 and 34 in 2025.
+Jackson follows a roughly monthly cadence, with about a dozen releases a year.
+Guava went from 9 releases in 2011 to 18 in 2018.
+The AWS SDK routinely clears 200 releases in a year.
+Maven can stay quiet for a while, and then ship 14 releases in a single year.
+
+NPM is its own universe.
+A high, near-constant release volume meets version-range defaults, and those forces pull in two directions at once: staying current, or keeping builds reproducible.
+Once these sources meet in the same build, dependency management is less a single update check and more the work of keeping several clocks in view.
+
+== Infinite `scanForVulnerableDependencies()` loop
+
+Over the years, the rate of vulnerability findings has steadily increased, and security scanners have made part of the problem visible.
+Not that the software had fewer vulnerabilities in the decades before.
+Those vulnerabilities just did not have the visibility they have today.
+A vulnerable dependency should not sit there just because nobody looked.
+
+Still, the scanner only raises its hand.
+Someone has to follow up on the call to action, find a replacement version, decide whether it fits the branch, understand the migration cost, and make the change.
+
+== Where do you even look?
+
+Where do you start?
+Project sites, GitHub releases, Maven Central, a build tool report, a plugin portal, an advisory page, a tool such as https://github.com/mthmulders/mcs[mcs], the Maven Versions Plugin, or maybe a custom tool you built yourself. That list is not a workflow. It is the problem showing itself.
+
+Having a good workflow to determine your dependency versions is key once you have more than a handful of dependencies.
+Even starting with Maven alone involves a multitude of plugins before you add a single project dependency to your `pom.xml`.
+
+== Dependabot is a good start, until it is not
+
+Dependabot turns invisible drift into visible work.
+For a single branch or a small project, that can be exactly right.
+
+A steady stream of pull requests keeps arriving, but the work becomes triage, branch management, review, and deciding which updates are worth carrying forward.
+On older branches in particular, that can easily create more process than value.
+Dependabot still has a point: A properly curated pull request build based on GitHub Actions, if you happen to use them, is a valuable validation of the dependency upgrade candidate.
+
+== Semantic upgrading
+
+With a background in maintaining open source projects, mostly libraries, I think carefully about which dependencies to upgrade and when.
+Semantic upgrading has emerged over the years as a good balance between recency, risk management, and being mindful of whoever consumes the library.
+The version you ship tells your users how much upgrade effort to expect, so your dependency choices should respect that signal.
+
+* When you ship a patch release: Upgrade to patch versions across your dependencies. Not a minor, not a major.
+* When you ship a minor or feature release: The upgrade appetite of users is likely higher than with a patch release. A minor release may ask for a limited amount of change when upgrading. Therefore, upgrade only to a newer minor version or the latest compatible minor.
+* When you ship a major release: Larger dependency jumps have a more natural home.
+
+This is not a law.
+It is a practice that has worked well over the years, eliminating entire categories of problems by following good guidance.
+It is a way to keep upgrade appetite aligned with the effort suggested by a version bump, and with the release you ask your users to consume.
+
+Semantic versioning is guidance, not a guarantee, and that is even more true today than a decade ago.
+It helps estimate effort.
+It can also hint at how many new features made it into a release, and how much surface area may have changed.
+Build system plugins often have their own cadence and do not always follow the same rules as libraries.
+Even for regular dependencies, the version number is only the start of the decision.
+
+== Trust is part of the model
+
+Semantic upgrading gives you a default.
+Trust tells you how much evidence you need before accepting the default.
+Some dependencies earn trust over years.
+Their patch releases are carefully considered, their minor releases are a delightful upgrade experience, and breaking changes are documented where people will see them.
+Those projects make upgrades boring in the best possible way.
+In a few cases, you can almost upgrade blindly and expect very little to break.
+
+Others deserve a reserved place in your attention.
+Almost every upgrade comes with surprises.
+Sometimes even a patch release intentionally ships an incompatible API change.
+For those dependencies, the version number is not enough.
+Upgrades need testing, validation, and sometimes code changes.
+
+== GitHub Actions are different
+
+GitHub Actions fall into a different category of dependency management.
+A workflow can refer to an action by branch, tag, or SHA.
+Branch and tag references are convenient, https://github.blog/changelog/2025-08-15-github-actions-policy-now-supports-blocking-and-sha-pinning-actions/[but they can move].
+That matters in a CI system where access tokens, release credentials, and the product delivery pipeline may be within reach.
+A moving reference can quietly point to a vulnerable version.
+
+https://docs.github.com/en/actions/reference/security/secure-use[SHA pinning] reduces that risk, but creates another problem unless the version stays visible, for example as `0123abc ++#++ v5.4.0`.
+Such a practice requires a significant commitment from all involved maintainers.
+Without such a link, the build remains reproducible. But reproducible is not the same as understandable: The SHA increases entropy and loses the visible connection to the action version in use, which adds cognitive load.
+
+== HITL; AFK
+
+I am coming at this mostly from maintaining open source Java projects.
+Each project has regular dependencies, build plugins, release branches, and CI workflows.
+The problem is not that there is no tooling.
+The problem is finding the right amount of tooling for the moment.
+Where does the human belong in the loop?
+Which tasks should run away from the keyboard?
+
+Some projects benefit from rich release and maintenance automation.
+This is not merely about branching, tagging, pushing, or building artifacts.
+The more interesting toolset is aware of how and where your project defines dependency versions.
+It understands the current versions in use at scale.
+It resolves available upgrade candidates and provides enough information to make a decision, such as surfacing release versions between the used and newest version, including release dates.
+Once a maintainer decides which dependencies to upgrade and which target versions to use, tooling creates dependency upgrade tickets, for example GitHub issues, commits each upgrade against its ticket, and finally pushes the commits to the remote.
+For some projects, tools like these represent the exact right balance between a human in the loop and automation.
+
+For other projects, such a model can pose too much ceremony.
+
+== The middle ground
+
+Confine human attention to where it is essential.
+Automate the complex parts and ask for judgment in the loop where it matters.
+Show people only what is worth their time, especially now, when reserves for cognitive work and mental energy are low.
+Let a human decide what to upgrade, when to upgrade, and how much risk appetite fits the next release, with the information required to make that decision.
+
+Good tooling should understand the build system, the dependency ecosystem, the current branch, the available versions, and the context that makes an upgrade sensible or not.
+It should provide enough assistance to keep dependency upgrades boring.
+Not everything should be automated.
+The goal is not to stop the clocks: It is to keep enough context in view that release day is still a decision, not a search exercise.
